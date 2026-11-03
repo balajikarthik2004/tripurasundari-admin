@@ -1,0 +1,143 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --font-heading: 'Montserrat', sans-serif;
+    --font-body: 'Roboto', sans-serif;
+    --font-number: 'Inter', system-ui, -apple-system, sans-serif;
+    --temple-burgundy: #55132D;
+    --temple-maroon: #681B37;
+    --temple-gold: #B68A36;
+    --temple-gold-light: #E2BC6B;
+    --temple-cream: #F8F5EF;
+  }
+
+  html {
+    font-size: 16.75px;
+    font-family: var(--font-body);
+  }
+
+  body {
+    background-color: #F8F5EF;
+    color: #28212A;
+    font-family: var(--font-body);
+    font-weight: 400;
+    overflow-x: hidden;
+  }
+
+  /* Headings & Display Typography using Montserrat */
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading);
+    letter-spacing: -0.01em;
+  }
+
+  h1 {
+    font-weight: 700;
+  }
+
+  h2 {
+    font-weight: 700;
+  }
+
+  h3 {
+    font-weight: 600;
+  }
+
+  h4, h5, h6 {
+    font-weight: 600;
+  }
+
+  /* Body, Forms, Inputs, Buttons, & Controls using Roboto */
+  button, input, select, textarea, label, table, th, td {
+    font-family: var(--font-body);
+  }
+}
+
+/* Explicit Typography Utility Classes */
+.font-heading,
+.font-serif {
+  font-family: var(--font-heading) !important;
+}
+
+.font-body,
+.font-sans {
+  font-family: var(--font-body) !important;
+}
+
+.font-montserrat {
+  font-family: 'Montserrat', sans-serif !important;
+}
+
+.font-roboto {
+  font-family: 'Roboto', sans-serif !important;
+}
+
+.font-number,
+.font-mono,
+.tabular-nums {
+  font-family: var(--font-number) !important;
+  font-variant-numeric: tabular-nums lining-nums;
+  -moz-font-feature-settings: "tnum" 1, "lnum" 1, "cv05" 1;
+  -webkit-font-feature-settings: "tnum" 1, "lnum" 1, "cv05" 1;
+  font-feature-settings: "tnum" 1, "lnum" 1, "cv05" 1;
+}
+
+/* Custom sleek scrollbar for sidebar */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 5px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(226, 188, 107, 0.2);
+  border-radius: 9999px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(226, 188, 107, 0.4);
+}
+
+/* Subtle backdrop blur for mobile drawer overlay */
+.drawer-backdrop {
+  background-color: rgba(40, 33, 42, 0.6);
+  backdrop-filter: blur(2px);
+}
+
+/* Hide scrollbar utility */
+.scrollbar-none::-webkit-scrollbar,
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-none,
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+@layer utilities {
+  /* Elevate microscopic/cramped font classes across all pages to a balanced, comfortable reading size */
+  .text-\[8px\],
+  .text-\[8\.5px\],
+  .text-\[9px\],
+  .text-\[9\.5px\] {
+    font-size: 0.72rem !important; /* ~12.1px */
+  }
+
+  .text-\[10px\],
+  .text-\[10\.5px\] {
+    font-size: 0.765rem !important; /* ~12.8px */
+  }
+
+  .text-\[11px\],
+  .text-\[11\.5px\] {
+    font-size: 0.81rem !important; /* ~13.6px */
+  }
+}
+
+
+

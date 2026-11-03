@@ -1,0 +1,101 @@
+// Announcements Content Data Model
+// Supports references to events (e.g. EVT-2026-001)
+
+export const INITIAL_ANNOUNCEMENTS = [
+  {
+    id: 'ANN-2026-001',
+    title: 'Diwali Mela 2026: Extended 24-Hour Darshan Timings & E-Pass Advisory',
+    slug: 'diwali-mela-2026-extended-darshan',
+    relatedEventId: 'EVT-2026-001', // Linked to Diwali Mahotsav
+    category: 'Festival Update',
+    priority: 'Urgent', // Normal, Important, Urgent
+    shortDescription: 'Sanctum doors will remain open continuously from dawn 10 Nov through midnight 12 Nov for Diwali pilgrims.',
+    fullContent:
+      'The Mata Tripura Sundari Temple Administration Trust hereby informs all devotees that in anticipation of high pilgrim congregation during Diwali Mahotsav 2026, the main temple sanctum doors will remain continuously open for 24 hours between 10 November 2026 and 12 November 2026. Special queue holding lanes have been prepared along East Plaza. E-Pass reservation holders are requested to report 30 minutes prior to their allocated entry slot at Gate 2. Senior citizens and divyangjan devotees may access priority ramp entry through Gate 4.',
+    publishDate: '28 Oct 2026',
+    expiryDate: '13 Nov 2026',
+    status: 'Published', // Draft, Published, Scheduled, Archived
+    pinned: true,
+    showOnHomepage: true,
+    verificationStatus: 'Verified',
+    author: 'District Magistrate & Trust Secretary',
+    attachmentUrl: null,
+  },
+  {
+    id: 'ANN-2026-002',
+    title: 'Advisory on Sacred Bostami Turtle Feeding Regulations at Kalyan Sagar',
+    slug: 'turtle-feeding-regulations-kalyan-sagar',
+    relatedEventId: null,
+    category: 'Visitor Advisory',
+    priority: 'Important',
+    shortDescription: 'Only certified nutrient pellets and puffed rice permitted at Kalyan Sagar ghat steps to protect endangered turtles.',
+    fullContent:
+      'To ensure the health and biological conservation of the sacred Bostami softshell turtles (Nilssonia nigricans) residing in Kalyan Sagar lake, visitors are strictly instructed to feed only authorized puffed rice (muri) and Fisheries Department certified pellets available at licensed stalls. Disposal of plastic bags, synthetic wrappers, fried foods, or flowers into the lake is strictly prohibited under Gomati District Environmental By-laws.',
+    publishDate: '20 Oct 2026',
+    expiryDate: '31 Dec 2026',
+    status: 'Published',
+    pinned: true,
+    showOnHomepage: true,
+    verificationStatus: 'Verified',
+    author: 'Environmental Advisory Committee',
+    attachmentUrl: null,
+  },
+  {
+    id: 'ANN-2026-003',
+    title: 'Temporary Footpath & East Gate Railing Maintenance Notice',
+    slug: 'footpath-railing-maintenance-east-gate',
+    relatedEventId: null,
+    category: 'Facility Information',
+    priority: 'Normal',
+    shortDescription: 'Masonry restoration on eastern ghat approach steps from 01 Nov to 03 Nov 2026.',
+    fullContent:
+      'Routine structural maintenance and anti-slip stone treatment on the eastern steps descending toward Kalyan Sagar is scheduled between 01 Nov and 03 Nov. Pilgrims are advised to follow barricaded directional arrows and utilize North Parikrama corridor during work hours (08:00 AM to 04:00 PM).',
+    publishDate: '30 Oct 2026',
+    expiryDate: '04 Nov 2026',
+    status: 'Published',
+    pinned: false,
+    showOnHomepage: false,
+    verificationStatus: 'Verified',
+    author: 'PWD Civil Infrastructure Wing',
+    attachmentUrl: null,
+  },
+  {
+    id: 'ANN-2026-004',
+    title: 'Scheduled System Upgrade for Online Darshan Booking Portal',
+    slug: 'portal-upgrade-maintenance',
+    relatedEventId: null,
+    category: 'Administrative Update',
+    priority: 'Normal',
+    shortDescription: 'Online reservation services will undergo maintenance on 05 Nov between 01:00 AM and 03:00 AM.',
+    fullContent:
+      'The temple administration will perform cloud server maintenance and payment gateway security patch updates. Offline counter tickets will remain fully operational at Udaipur Matabari help desks without interruption.',
+    publishDate: '01 Nov 2026',
+    expiryDate: '06 Nov 2026',
+    status: 'Scheduled',
+    pinned: false,
+    showOnHomepage: false,
+    verificationStatus: 'Requires Review',
+    author: 'IT Infrastructure Cell',
+    attachmentUrl: null,
+  },
+  {
+    id: 'ANN-2026-005',
+    title: 'Archived Notice: Navratri 2026 Special Pass Allocation Completed',
+    slug: 'navratri-2026-pass-allocation',
+    relatedEventId: null,
+    category: 'Darshan Information',
+    priority: 'Normal',
+    shortDescription: 'All Navratri special darshan quotas were successfully concluded on 22 October 2026.',
+    fullContent:
+      'The administrative trust records its gratitude to the thousands of devotees who participated peacefully in Sharadiya Navratri celebrations.',
+    publishDate: '10 Oct 2026',
+    expiryDate: '23 Oct 2026',
+    status: 'Archived',
+    pinned: false,
+    showOnHomepage: false,
+    verificationStatus: 'Verified',
+    author: 'Temple Trust Desk',
+    attachmentUrl: null,
+  },
+];
+
