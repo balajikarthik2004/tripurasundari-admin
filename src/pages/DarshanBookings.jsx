@@ -199,7 +199,10 @@ function DarshanBookingsContent({ isEmbedded = false }) {
       {/* Module Page Header (Hidden when embedded) */}
       {!isEmbedded && (
         <div className="bg-white rounded-2xl p-5 border border-stone-200/90 shadow-xs flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-          <div>
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-lg bg-[#55132D]/10 text-[#55132D] flex items-center justify-center shrink-0">
+              <Calendar className="w-4 h-4 text-[#55132D]" />
+            </div>
             <h1 className="text-2xl font-bold font-serif text-stone-900 tracking-tight">
               Darshan & Bookings Administration
             </h1>

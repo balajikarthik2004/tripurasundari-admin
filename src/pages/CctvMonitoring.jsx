@@ -153,10 +153,15 @@ export default function CctvMonitoring() {
       {/* 1. ONE HEADING CARD */}
       <div className="bg-white rounded-2xl border border-stone-200/90 p-5 sm:p-6 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-stone-900 tracking-tight font-serif">
-            CCTV &amp; Premises Monitoring
-          </h1>
-          <p className="text-xs text-stone-500 mt-1">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-lg bg-[#55132D]/10 text-[#55132D] flex items-center justify-center shrink-0">
+              <Camera className="w-4 h-4 text-[#55132D]" />
+            </div>
+            <h1 className="text-xl sm:text-2xl font-bold text-stone-900 tracking-tight font-serif">
+              CCTV &amp; Premises Monitoring
+            </h1>
+          </div>
+          <p className="text-xs text-stone-500 mt-1 ml-10">
             Real-time IP surveillance feeds across sanctum sanctorum, parikrama corridor, and campus perimeter
           </p>
         </div>

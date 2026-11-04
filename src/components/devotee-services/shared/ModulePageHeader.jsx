@@ -1,8 +1,29 @@
 import React from 'react';
-import { Plus } from 'lucide-react';
+import {
+  Plus,
+  CalendarCheck,
+  HeartHandshake,
+  Utensils,
+  ShoppingBag,
+  Building2,
+  Users,
+  Sparkles,
+} from 'lucide-react';
+
+function getHeaderIcon(title) {
+  const t = (title || '').toLowerCase();
+  if (t.includes('booking') || t.includes('darshan') || t.includes('sacred service')) return CalendarCheck;
+  if (t.includes('donation') || t.includes('fund')) return HeartHandshake;
+  if (t.includes('annadanam') || t.includes('kitchen') || t.includes('food')) return Utensils;
+  if (t.includes('prasad') || t.includes('store')) return ShoppingBag;
+  if (t.includes('facilit') || t.includes('campus') || t.includes('accommodation')) return Building2;
+  if (t.includes('devotee') || t.includes('vip')) return Users;
+  return Sparkles;
+}
 
 export default function ModulePageHeader({
   title,
+  icon: PropIcon,
   subtitle,
   categoryBadge,
   primaryActionLabel,
@@ -10,6 +31,7 @@ export default function ModulePageHeader({
   primaryActionIcon: ActionIcon = Plus,
   secondaryAction,
 }) {
+  const ResolvedIcon = PropIcon || getHeaderIcon(title);
   const cleanActionLabel = primaryActionLabel
     ? primaryActionLabel.replace(/^\+\s*/, '')
     : '';
@@ -18,6 +40,11 @@ export default function ModulePageHeader({
     <div className="bg-white rounded-xl border border-stone-200/90 p-4 sm:p-4.5 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
       <div className="min-w-0">
         <div className="flex items-center gap-2.5">
+          {ResolvedIcon && (
+            <div className="w-8 h-8 rounded-lg bg-[#55132D]/10 text-[#55132D] flex items-center justify-center shrink-0">
+              <ResolvedIcon className="w-4 h-4 text-[#55132D]" />
+            </div>
+          )}
           <h1 className="text-xl sm:text-2xl font-bold font-serif text-stone-900 tracking-tight leading-tight">
             {title}
           </h1>
@@ -27,7 +54,6 @@ export default function ModulePageHeader({
             </span>
           )}
         </div>
-        
       </div>
 
       <div className="flex flex-wrap items-center gap-2 shrink-0 self-stretch sm:self-auto justify-start sm:justify-end">

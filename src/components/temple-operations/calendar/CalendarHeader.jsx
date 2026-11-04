@@ -1,5 +1,5 @@
 import React from 'react';
-import { Plus } from 'lucide-react';
+import { Plus, Calendar } from 'lucide-react';
 import { useTempleCalendar } from '../../../context/TempleCalendarContext';
 
 export default function CalendarHeader() {
@@ -14,9 +14,14 @@ export default function CalendarHeader() {
     <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pt-1 pb-1">
       {/* Left: Title & View Switcher */}
       <div className="flex items-center gap-4 flex-wrap">
-        <h1 className="text-2xl font-bold font-serif text-stone-900 tracking-tight">
-          Temple calendar
-        </h1>
+        <div className="flex items-center gap-2.5">
+          <div className="w-8 h-8 rounded-lg bg-[#55132D]/10 text-[#55132D] flex items-center justify-center shrink-0">
+            <Calendar className="w-4 h-4 text-[#55132D]" />
+          </div>
+          <h1 className="text-2xl font-bold font-serif text-stone-900 tracking-tight">
+            Temple Calendar
+          </h1>
+        </div>
 
         {/* View Switcher: Month | Week | Agenda */}
         <div className="flex items-center bg-stone-100 rounded-xl p-1 border border-stone-200/80 text-xs font-semibold">
