@@ -105,9 +105,9 @@ export default function CrowdStatusCard() {
             <g id="mandala-petals" opacity="0.75">
               {Array.from({ length: 20 }).map((_, i) => (
                 <g key={`petal-${i}`} transform={`rotate(${i * 18} 100 100)`}>
-                  {/* Outer Petal Accolade Contour - Increased height to y=6 */}
+                  {/* Outer Petal Accolade Contour */}
                   <path
-                    d="M 88.5 25.5 C 86.5 17.5, 93 11, 100 6 C 107 11, 113.5 17.5, 111.5 25.5"
+                    d="M 88.5 24 C 86.5 16, 93 10, 100 5 C 107 10, 113.5 16, 111.5 24"
                     fill="#FFFDF7"
                     fillOpacity="0.45"
                     stroke="#C88728"
@@ -117,7 +117,7 @@ export default function CrowdStatusCard() {
                   />
                   {/* Inner Parallel Arch */}
                   <path
-                    d="M 91.5 25.5 C 90 18.5, 94.5 13, 100 9.5 C 105.5 13, 110 18.5, 108.5 25.5"
+                    d="M 91.5 24 C 90 17.5, 94.5 12, 100 8.5 C 105.5 12, 110 17.5, 108.5 24"
                     fill="none"
                     stroke="#D97706"
                     strokeWidth="0.75"
@@ -125,25 +125,25 @@ export default function CrowdStatusCard() {
                   />
                   {/* Base Inner Trefoil Scallop */}
                   <path
-                    d="M 94.5 25.5 C 95.5 21, 97.5 19, 100 19 C 102.5 19, 104.5 21, 105.5 25.5"
+                    d="M 94.5 24 C 95.5 20, 97.5 18, 100 18 C 102.5 18, 104.5 20, 105.5 24"
                     fill="none"
                     stroke="#D97706"
                     strokeWidth="0.7"
                     opacity="0.8"
                   />
                   {/* Center Vein & Teardrop Bindu */}
-                  <line x1="100" y1="11" x2="100" y2="18" stroke="#D97706" strokeWidth="0.7" strokeLinecap="round" />
-                  <circle cx="100" cy="14" r="0.75" fill="#D97706" />
+                  <line x1="100" y1="10" x2="100" y2="17" stroke="#D97706" strokeWidth="0.7" strokeLinecap="round" />
+                  <circle cx="100" cy="13" r="0.75" fill="#D97706" />
                   {/* Base Connecting Scallop */}
-                  <path d="M 88.5 25.5 Q 100 27.5 111.5 25.5" fill="none" stroke="#C88728" strokeWidth="0.8" />
-                  <circle cx="88.5" cy="25.5" r="0.75" fill="#D97706" />
+                  <path d="M 88.5 24 Q 100 25.8 111.5 24" fill="none" stroke="#C88728" strokeWidth="0.8" />
+                  <circle cx="88.5" cy="24" r="0.75" fill="#D97706" />
                 </g>
               ))}
               {/* Outer Boundary Hairline Rim */}
-              <circle cx="100" cy="100" r="74.5" stroke="#C88728" strokeWidth="0.9" fill="none" />
+              <circle cx="100" cy="100" r="76" stroke="#C88728" strokeWidth="0.9" fill="none" />
             </g>
 
-            {/* LAYER 2 & 3: PROMINENT ENLARGED GAUGE (radius = 68) */}
+            {/* LAYER 2 & 3: PROMINENT ENLARGED GAUGE (radius = 68, strokeWidth = 16) */}
             <g transform="rotate(-90 100 100)">
               {/* Deep Burgundy Base Track */}
               <circle
@@ -151,7 +151,7 @@ export default function CrowdStatusCard() {
                 cy="100"
                 r={radius}
                 stroke="url(#burgundyTrackGradient)"
-                strokeWidth="13"
+                strokeWidth="16"
                 strokeLinecap="round"
                 fill="none"
               />
@@ -162,7 +162,7 @@ export default function CrowdStatusCard() {
                 cy="100"
                 r={radius}
                 stroke="url(#saffronArcGradient)"
-                strokeWidth="13"
+                strokeWidth="16"
                 strokeDasharray={circumference}
                 strokeDashoffset={strokeDashoffset}
                 strokeLinecap="round"
@@ -177,7 +177,7 @@ export default function CrowdStatusCard() {
             <circle
               cx="100"
               cy="100"
-              r="61.5"
+              r="60"
               stroke="#C88728"
               strokeWidth="0.8"
               fill="none"
