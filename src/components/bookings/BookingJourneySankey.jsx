@@ -66,6 +66,7 @@ function TempleDomeIcon({ className = 'w-6 h-6' }) {
 
 export default function BookingJourneySankey({ onNavigateWithFilter }) {
   const [hoveredFlow, setHoveredFlow] = useState(null);
+  const [hoveredCard, setHoveredCard] = useState(null);
 
   // =========================================================
   // 100% RECONCILED MASTER DATASET (3,750 BOOKINGS)
@@ -90,6 +91,7 @@ export default function BookingJourneySankey({ onNavigateWithFilter }) {
       icon: <TempleDomeIcon className="w-5 h-5 text-[#B45309]" />,
       iconBg: 'bg-[#FEEAD9]',
       top: 'top-[18px]',
+      summary: '1,766 Completed, 450 Confirmed, 192 Pending, 72 Cancelled',
     },
     {
       id: 'pooja',
@@ -102,6 +104,7 @@ export default function BookingJourneySankey({ onNavigateWithFilter }) {
       icon: <LotusIcon className="w-5 h-5 text-[#D97706]" />,
       iconBg: 'bg-[#FEF3C7]',
       top: 'top-[122px]',
+      summary: '698 Completed, 178 Confirmed, 76 Pending, 28 Cancelled',
     },
     {
       id: 'other',
@@ -114,6 +117,7 @@ export default function BookingJourneySankey({ onNavigateWithFilter }) {
       icon: <Sparkles className="w-5 h-5 text-[#7E22CE]" />,
       iconBg: 'bg-[#F3E8FF]',
       top: 'top-[226px]',
+      summary: '206 Completed, 52 Confirmed, 22 Pending, 10 Cancelled',
     },
   ];
 
@@ -128,6 +132,7 @@ export default function BookingJourneySankey({ onNavigateWithFilter }) {
       badgeColor: 'text-[#15803D]',
       icon: <CheckCircle2 className="w-4 h-4 text-[#16A34A]" />,
       top: 'top-[14px]',
+      summary: '1,766 from Darshan, 698 from Pooja & Seva, 206 from Other Services',
     },
     {
       id: 'confirmed',
@@ -139,6 +144,7 @@ export default function BookingJourneySankey({ onNavigateWithFilter }) {
       badgeColor: 'text-[#1D4ED8]',
       icon: <Calendar className="w-4 h-4 text-[#2563EB]" />,
       top: 'top-[88px]',
+      summary: '450 from Darshan, 178 from Pooja & Seva, 52 from Other Services',
     },
     {
       id: 'pending',
@@ -150,6 +156,7 @@ export default function BookingJourneySankey({ onNavigateWithFilter }) {
       badgeColor: 'text-[#B45309]',
       icon: <Clock className="w-4 h-4 text-[#D97706]" />,
       top: 'top-[162px]',
+      summary: '192 from Darshan, 76 from Pooja & Seva, 22 from Other Services',
     },
     {
       id: 'cancelled',
@@ -161,6 +168,7 @@ export default function BookingJourneySankey({ onNavigateWithFilter }) {
       badgeColor: 'text-[#BE123C]',
       icon: <XCircle className="w-4 h-4 text-[#E11D48]" />,
       top: 'top-[236px]',
+      summary: '72 from Darshan, 28 from Pooja & Seva, 10 from Other Services',
     },
   ];
 
@@ -183,16 +191,17 @@ export default function BookingJourneySankey({ onNavigateWithFilter }) {
   };
 
   // =========================================================================
-  // SPACIOUS 300px HIGH CANVAS GEOMETRY
-  // Stage 1 Source: [8, 156] (w=148, h=146, centered at y=150)
-  // Stage 2 Categories: [290, 485] (w=195, h=56 each, 48px gap between cards)
-  // Stage 3 Outcomes: [690, 952] (w=262, h=44 each, 30px gap between cards)
+  // ZERO-GAP SEAMLESS GEOMETRY (Canvas: 960px x 300px)
+  // Ribbons start 10px INSIDE source cards and terminate 18px INSIDE destination cards.
+  // The rounded corners of the cards sit on top (z-10) with solid backgrounds,
+  // completely eliminating any corner notches or disconnected gaps!
   // =========================================================================
 
-  // Stage 1 -> Stage 2 (3 Continuous Flow Ribbons)
+  // Stage 1 -> Stage 2 (Tucked from x1=146 [under Hero at x=156] to x2=302 [under Category at x=290])
   const stage1Links = [
     {
       id: 's1-darshan',
+      catId: 'darshan',
       from: 'Total Bookings',
       to: 'Darshan',
       count: 2480,
@@ -205,6 +214,7 @@ export default function BookingJourneySankey({ onNavigateWithFilter }) {
     },
     {
       id: 's1-pooja',
+      catId: 'pooja',
       from: 'Total Bookings',
       to: 'Pooja & Seva',
       count: 980,
@@ -217,6 +227,7 @@ export default function BookingJourneySankey({ onNavigateWithFilter }) {
     },
     {
       id: 's1-other',
+      catId: 'other',
       from: 'Total Bookings',
       to: 'Other Bookable Services',
       count: 290,
@@ -229,12 +240,13 @@ export default function BookingJourneySankey({ onNavigateWithFilter }) {
     },
   ];
 
-  // Stage 2 -> Stage 3 (12 Individual, Cleanly Separated Ribbons)
-  // x1 = 485, x2 = 690, deltaX = 205
+  // Stage 2 -> Stage 3 (Tucked from x1=475 [under Category at x=485] to x2=708 [under Outcome at x=690])
   const stage2Links = [
-    // --- FROM DARSHAN (2,480 total: y span 26 -> 66) ---
+    // --- FROM DARSHAN ---
     {
       id: 'flow-darshan-completed',
+      catId: 'darshan',
+      outId: 'completed',
       from: 'Darshan',
       to: 'Completed',
       count: 1766,
@@ -247,6 +259,8 @@ export default function BookingJourneySankey({ onNavigateWithFilter }) {
     },
     {
       id: 'flow-darshan-confirmed',
+      catId: 'darshan',
+      outId: 'confirmed',
       from: 'Darshan',
       to: 'Confirmed / Active',
       count: 450,
@@ -259,6 +273,8 @@ export default function BookingJourneySankey({ onNavigateWithFilter }) {
     },
     {
       id: 'flow-darshan-pending',
+      catId: 'darshan',
+      outId: 'pending',
       from: 'Darshan',
       to: 'Pending',
       count: 192,
@@ -271,6 +287,8 @@ export default function BookingJourneySankey({ onNavigateWithFilter }) {
     },
     {
       id: 'flow-darshan-cancelled',
+      catId: 'darshan',
+      outId: 'cancelled',
       from: 'Darshan',
       to: 'Cancelled',
       count: 72,
@@ -282,9 +300,11 @@ export default function BookingJourneySankey({ onNavigateWithFilter }) {
       gradient: 'url(#gradDarshanCancelled)',
     },
 
-    // --- FROM POOJA & SEVA (980 total: y span 134 -> 166) ---
+    // --- FROM POOJA & SEVA ---
     {
       id: 'flow-pooja-completed',
+      catId: 'pooja',
+      outId: 'completed',
       from: 'Pooja & Seva',
       to: 'Completed',
       count: 698,
@@ -297,6 +317,8 @@ export default function BookingJourneySankey({ onNavigateWithFilter }) {
     },
     {
       id: 'flow-pooja-confirmed',
+      catId: 'pooja',
+      outId: 'confirmed',
       from: 'Pooja & Seva',
       to: 'Confirmed / Active',
       count: 178,
@@ -309,6 +331,8 @@ export default function BookingJourneySankey({ onNavigateWithFilter }) {
     },
     {
       id: 'flow-pooja-pending',
+      catId: 'pooja',
+      outId: 'pending',
       from: 'Pooja & Seva',
       to: 'Pending',
       count: 76,
@@ -321,6 +345,8 @@ export default function BookingJourneySankey({ onNavigateWithFilter }) {
     },
     {
       id: 'flow-pooja-cancelled',
+      catId: 'pooja',
+      outId: 'cancelled',
       from: 'Pooja & Seva',
       to: 'Cancelled',
       count: 28,
@@ -332,9 +358,11 @@ export default function BookingJourneySankey({ onNavigateWithFilter }) {
       gradient: 'url(#gradPoojaCancelled)',
     },
 
-    // --- FROM OTHER SERVICES (290 total: y span 238 -> 270) ---
+    // --- FROM OTHER SERVICES ---
     {
       id: 'flow-other-completed',
+      catId: 'other',
+      outId: 'completed',
       from: 'Other Bookable Services',
       to: 'Completed',
       count: 206,
@@ -347,6 +375,8 @@ export default function BookingJourneySankey({ onNavigateWithFilter }) {
     },
     {
       id: 'flow-other-confirmed',
+      catId: 'other',
+      outId: 'confirmed',
       from: 'Other Bookable Services',
       to: 'Confirmed / Active',
       count: 52,
@@ -359,6 +389,8 @@ export default function BookingJourneySankey({ onNavigateWithFilter }) {
     },
     {
       id: 'flow-other-pending',
+      catId: 'other',
+      outId: 'pending',
       from: 'Other Bookable Services',
       to: 'Pending',
       count: 22,
@@ -371,6 +403,8 @@ export default function BookingJourneySankey({ onNavigateWithFilter }) {
     },
     {
       id: 'flow-other-cancelled',
+      catId: 'other',
+      outId: 'cancelled',
       from: 'Other Bookable Services',
       to: 'Cancelled',
       count: 10,
@@ -383,10 +417,28 @@ export default function BookingJourneySankey({ onNavigateWithFilter }) {
     },
   ];
 
-  // Helper for generating standard smooth cubic Bézier ribbon path
   const makeRibbonPath = (x1, y1_0, y1_1, x2, y2_0, y2_1) => {
     const cx = (x1 + x2) / 2;
     return `M ${x1} ${y1_0} C ${cx} ${y1_0}, ${cx} ${y2_0}, ${x2} ${y2_0} L ${x2} ${y2_1} C ${cx} ${y2_1}, ${cx} ${y1_1}, ${x1} ${y1_1} Z`;
+  };
+
+  // Compute active highlighting when user hovers a card or a flow ribbon
+  const isLinkActive = (link, isStage1 = false) => {
+    if (hoveredFlow) {
+      return hoveredFlow.id === link.id;
+    }
+    if (hoveredCard) {
+      if (hoveredCard.type === 'total') return true;
+      if (hoveredCard.type === 'category') {
+        if (isStage1) return link.catId === hoveredCard.id;
+        return link.catId === hoveredCard.id;
+      }
+      if (hoveredCard.type === 'outcome') {
+        if (isStage1) return true; // subtle link
+        return link.outId === hoveredCard.id;
+      }
+    }
+    return null; // default neutral state
   };
 
   return (
@@ -402,7 +454,7 @@ export default function BookingJourneySankey({ onNavigateWithFilter }) {
               Booking Journey Flow
             </h2>
             <p className="text-[11.5px] text-stone-500 font-sans">
-              Three-stage devotee flow from service intake to final booking outcomes
+              Interactive devotee journey from service intake to final booking outcomes
             </p>
           </div>
         </div>
@@ -414,140 +466,138 @@ export default function BookingJourneySankey({ onNavigateWithFilter }) {
         </div>
       </div>
 
-      {/* 2. Spacious 300px High Coordinated Canvas: EXACT 960px width with High-Clarity Flowing Ribbons */}
+      {/* 2. Spacious 300px High Coordinated Canvas: Seamless Tucked Ribbons with Card Masks */}
       <div className="w-full overflow-x-auto custom-scrollbar pb-1">
         <div className="relative w-[960px] h-[300px] mx-auto select-none">
-          {/* Continuous Bézier Ribbons SVG Canvas: Touches nodes at the exact pixel */}
+          {/* =========================================================
+              LAYER 0 (BEHIND CARDS): Continuous Bézier Ribbons Canvas
+              Tucked under card boundaries so rounded corners mask seamlessly!
+             ========================================================= */}
           <svg
-            className="absolute inset-0 w-[960px] h-[300px]"
+            className="absolute inset-0 w-[960px] h-[300px] z-0"
             viewBox="0 0 960 300"
             fill="none"
           >
             <defs>
               {/* Stage 1 -> Stage 2 Gradients */}
               <linearGradient id="ribbonToDarshan" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stopColor="#751838" stopOpacity="0.6" />
-                <stop offset="50%" stopColor="#D97706" stopOpacity="0.5" />
-                <stop offset="100%" stopColor="#FDBA74" stopOpacity="0.75" />
+                <stop offset="0%" stopColor="#751838" stopOpacity="0.75" />
+                <stop offset="50%" stopColor="#D97706" stopOpacity="0.65" />
+                <stop offset="100%" stopColor="#FDBA74" stopOpacity="0.85" />
               </linearGradient>
               <linearGradient id="ribbonToPooja" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stopColor="#751838" stopOpacity="0.55" />
-                <stop offset="50%" stopColor="#D97706" stopOpacity="0.45" />
-                <stop offset="100%" stopColor="#FDE047" stopOpacity="0.7" />
+                <stop offset="0%" stopColor="#751838" stopOpacity="0.7" />
+                <stop offset="50%" stopColor="#D97706" stopOpacity="0.6" />
+                <stop offset="100%" stopColor="#FDE047" stopOpacity="0.8" />
               </linearGradient>
               <linearGradient id="ribbonToOther" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stopColor="#751838" stopOpacity="0.5" />
-                <stop offset="50%" stopColor="#9333EA" stopOpacity="0.4" />
-                <stop offset="100%" stopColor="#D8B4FE" stopOpacity="0.7" />
+                <stop offset="0%" stopColor="#751838" stopOpacity="0.65" />
+                <stop offset="50%" stopColor="#9333EA" stopOpacity="0.55" />
+                <stop offset="100%" stopColor="#D8B4FE" stopOpacity="0.8" />
               </linearGradient>
 
-              {/* Stage 2 -> Stage 3 (12 High-Clarity Unique Gradients) */}
-              {/* From Darshan */}
+              {/* Stage 2 -> Stage 3 (12 High-Clarity Gradients) */}
               <linearGradient id="gradDarshanCompleted" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stopColor="#FB923C" stopOpacity="0.65" />
-                <stop offset="50%" stopColor="#34D399" stopOpacity="0.6" />
-                <stop offset="100%" stopColor="#10B981" stopOpacity="0.8" />
+                <stop offset="0%" stopColor="#FB923C" stopOpacity="0.7" />
+                <stop offset="50%" stopColor="#34D399" stopOpacity="0.7" />
+                <stop offset="100%" stopColor="#10B981" stopOpacity="0.9" />
               </linearGradient>
               <linearGradient id="gradDarshanConfirmed" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stopColor="#FB923C" stopOpacity="0.6" />
-                <stop offset="50%" stopColor="#60A5FA" stopOpacity="0.55" />
-                <stop offset="100%" stopColor="#3B82F6" stopOpacity="0.75" />
+                <stop offset="0%" stopColor="#FB923C" stopOpacity="0.65" />
+                <stop offset="50%" stopColor="#60A5FA" stopOpacity="0.65" />
+                <stop offset="100%" stopColor="#3B82F6" stopOpacity="0.85" />
               </linearGradient>
               <linearGradient id="gradDarshanPending" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stopColor="#FB923C" stopOpacity="0.55" />
-                <stop offset="50%" stopColor="#FBBF24" stopOpacity="0.55" />
-                <stop offset="100%" stopColor="#F59E0B" stopOpacity="0.75" />
+                <stop offset="0%" stopColor="#FB923C" stopOpacity="0.6" />
+                <stop offset="50%" stopColor="#FBBF24" stopOpacity="0.65" />
+                <stop offset="100%" stopColor="#F59E0B" stopOpacity="0.85" />
               </linearGradient>
               <linearGradient id="gradDarshanCancelled" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stopColor="#FB923C" stopOpacity="0.5" />
-                <stop offset="50%" stopColor="#FB7185" stopOpacity="0.55" />
-                <stop offset="100%" stopColor="#E11D48" stopOpacity="0.8" />
+                <stop offset="0%" stopColor="#FB923C" stopOpacity="0.55" />
+                <stop offset="50%" stopColor="#FB7185" stopOpacity="0.6" />
+                <stop offset="100%" stopColor="#E11D48" stopOpacity="0.9" />
               </linearGradient>
 
-              {/* From Pooja & Seva */}
               <linearGradient id="gradPoojaCompleted" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stopColor="#FBBF24" stopOpacity="0.65" />
-                <stop offset="50%" stopColor="#34D399" stopOpacity="0.6" />
-                <stop offset="100%" stopColor="#10B981" stopOpacity="0.8" />
+                <stop offset="0%" stopColor="#FBBF24" stopOpacity="0.7" />
+                <stop offset="50%" stopColor="#34D399" stopOpacity="0.7" />
+                <stop offset="100%" stopColor="#10B981" stopOpacity="0.9" />
               </linearGradient>
               <linearGradient id="gradPoojaConfirmed" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stopColor="#FBBF24" stopOpacity="0.6" />
-                <stop offset="50%" stopColor="#60A5FA" stopOpacity="0.55" />
-                <stop offset="100%" stopColor="#3B82F6" stopOpacity="0.75" />
+                <stop offset="0%" stopColor="#FBBF24" stopOpacity="0.65" />
+                <stop offset="50%" stopColor="#60A5FA" stopOpacity="0.65" />
+                <stop offset="100%" stopColor="#3B82F6" stopOpacity="0.85" />
               </linearGradient>
               <linearGradient id="gradPoojaPending" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stopColor="#FBBF24" stopOpacity="0.55" />
-                <stop offset="100%" stopColor="#F59E0B" stopOpacity="0.75" />
+                <stop offset="0%" stopColor="#FBBF24" stopOpacity="0.6" />
+                <stop offset="100%" stopColor="#F59E0B" stopOpacity="0.85" />
               </linearGradient>
               <linearGradient id="gradPoojaCancelled" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stopColor="#FBBF24" stopOpacity="0.5" />
-                <stop offset="50%" stopColor="#FB7185" stopOpacity="0.55" />
-                <stop offset="100%" stopColor="#E11D48" stopOpacity="0.8" />
+                <stop offset="0%" stopColor="#FBBF24" stopOpacity="0.55" />
+                <stop offset="50%" stopColor="#FB7185" stopOpacity="0.6" />
+                <stop offset="100%" stopColor="#E11D48" stopOpacity="0.9" />
               </linearGradient>
 
-              {/* From Other Services */}
               <linearGradient id="gradOtherCompleted" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stopColor="#C084FC" stopOpacity="0.6" />
-                <stop offset="50%" stopColor="#34D399" stopOpacity="0.6" />
-                <stop offset="100%" stopColor="#10B981" stopOpacity="0.8" />
+                <stop offset="0%" stopColor="#C084FC" stopOpacity="0.7" />
+                <stop offset="50%" stopColor="#34D399" stopOpacity="0.7" />
+                <stop offset="100%" stopColor="#10B981" stopOpacity="0.9" />
               </linearGradient>
               <linearGradient id="gradOtherConfirmed" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stopColor="#C084FC" stopOpacity="0.55" />
-                <stop offset="50%" stopColor="#60A5FA" stopOpacity="0.55" />
-                <stop offset="100%" stopColor="#3B82F6" stopOpacity="0.75" />
+                <stop offset="0%" stopColor="#C084FC" stopOpacity="0.65" />
+                <stop offset="50%" stopColor="#60A5FA" stopOpacity="0.65" />
+                <stop offset="100%" stopColor="#3B82F6" stopOpacity="0.85" />
               </linearGradient>
               <linearGradient id="gradOtherPending" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stopColor="#C084FC" stopOpacity="0.55" />
-                <stop offset="50%" stopColor="#FBBF24" stopOpacity="0.55" />
-                <stop offset="100%" stopColor="#F59E0B" stopOpacity="0.75" />
+                <stop offset="0%" stopColor="#C084FC" stopOpacity="0.6" />
+                <stop offset="50%" stopColor="#FBBF24" stopOpacity="0.65" />
+                <stop offset="100%" stopColor="#F59E0B" stopOpacity="0.85" />
               </linearGradient>
               <linearGradient id="gradOtherCancelled" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stopColor="#C084FC" stopOpacity="0.55" />
-                <stop offset="50%" stopColor="#FB7185" stopOpacity="0.55" />
-                <stop offset="100%" stopColor="#E11D48" stopOpacity="0.8" />
+                <stop offset="0%" stopColor="#C084FC" stopOpacity="0.6" />
+                <stop offset="50%" stopColor="#FB7185" stopOpacity="0.6" />
+                <stop offset="100%" stopColor="#E11D48" stopOpacity="0.9" />
               </linearGradient>
             </defs>
 
-            {/* =========================================================
-                STAGE 1 -> STAGE 2 FLOW RIBBONS (x1=156 to x2=290)
-               ========================================================= */}
-            {stage1Links.map((link) => (
-              <path
-                key={link.id}
-                d={makeRibbonPath(156, link.y1_0, link.y1_1, 290, link.y2_0, link.y2_1)}
-                fill={link.gradient}
-                stroke="rgba(255,255,255,0.7)"
-                strokeWidth="0.8"
-                className="transition-opacity duration-200 cursor-pointer"
-                opacity={hoveredFlow && hoveredFlow.id !== link.id ? 0.3 : 1}
-                onMouseEnter={() =>
-                  setHoveredFlow({
-                    id: link.id,
-                    from: link.from,
-                    to: link.to,
-                    count: link.count,
-                    percent: link.percent,
-                  })
-                }
-                onMouseLeave={() => setHoveredFlow(null)}
-              />
-            ))}
-
-            {/* =========================================================
-                STAGE 2 -> STAGE 3 FLOW RIBBONS (x1=485 to x2=690)
-                12 Distinct, Spacious Category-to-Outcome Connections
-               ========================================================= */}
-            {stage2Links.map((link) => {
-              const isHovered = hoveredFlow && hoveredFlow.id === link.id;
-              const isFaded = hoveredFlow && hoveredFlow.id !== link.id;
+            {/* STAGE 1 -> STAGE 2 FLOW RIBBONS (Tucked: x1=146 to x2=302) */}
+            {stage1Links.map((link) => {
+              const active = isLinkActive(link, true);
+              const opacity = active === true ? 1 : active === false ? 0.18 : 0.9;
               return (
                 <path
                   key={link.id}
-                  d={makeRibbonPath(485, link.y1_0, link.y1_1, 690, link.y2_0, link.y2_1)}
+                  d={makeRibbonPath(146, link.y1_0, link.y1_1, 302, link.y2_0, link.y2_1)}
                   fill={link.gradient}
-                  stroke={isHovered ? '#751838' : 'rgba(255,255,255,0.85)'}
-                  strokeWidth={isHovered ? 1.5 : 0.8}
-                  opacity={isFaded ? 0.18 : isHovered ? 1 : 0.88}
+                  className="transition-all duration-200 cursor-pointer"
+                  opacity={opacity}
+                  onMouseEnter={() =>
+                    setHoveredFlow({
+                      id: link.id,
+                      from: link.from,
+                      to: link.to,
+                      count: link.count,
+                      percent: link.percent,
+                    })
+                  }
+                  onMouseLeave={() => setHoveredFlow(null)}
+                />
+              );
+            })}
+
+            {/* STAGE 2 -> STAGE 3 FLOW RIBBONS (Tucked: x1=475 to x2=708, Zero-Gap) */}
+            {stage2Links.map((link) => {
+              const active = isLinkActive(link, false);
+              const isHovered = (hoveredFlow && hoveredFlow.id === link.id) || active === true;
+              const opacity = active === false ? 0.14 : isHovered ? 1 : 0.88;
+              return (
+                <path
+                  key={link.id}
+                  d={makeRibbonPath(475, link.y1_0, link.y1_1, 708, link.y2_0, link.y2_1)}
+                  fill={link.gradient}
+                  stroke={isHovered ? '#751838' : 'rgba(255,255,255,0.75)'}
+                  strokeWidth={isHovered ? 1.5 : 0.6}
+                  opacity={opacity}
                   className="transition-all duration-200 cursor-pointer"
                   onMouseEnter={() =>
                     setHoveredFlow({
@@ -565,11 +615,19 @@ export default function BookingJourneySankey({ onNavigateWithFilter }) {
           </svg>
 
           {/* =========================================================
-              STAGE 1: TOTAL BOOKINGS HERO BLOCK
-              Fixed: left: 8px, top: 76px, width: 148px, height: 148px
+              LAYER 1 (IN FRONT OF SVG): Nodes with Solid Backgrounds
+              The rounded borders naturally mask the tucked ribbon edges!
              ========================================================= */}
+
+          {/* STAGE 1: TOTAL BOOKINGS HERO BLOCK */}
           <div
-            className="absolute left-[8px] top-[76px] w-[148px] h-[148px] rounded-2xl bg-gradient-to-br from-[#751838] via-[#55132D] to-[#3D0A1E] text-white p-3 flex flex-col items-center justify-center shadow-lg border border-[#E2BC6B]/40 select-none transition-transform hover:scale-102 cursor-pointer"
+            className={`absolute left-[8px] top-[76px] w-[148px] h-[148px] rounded-2xl bg-gradient-to-br from-[#751838] via-[#55132D] to-[#3D0A1E] text-white p-3 flex flex-col items-center justify-center shadow-lg border border-[#E2BC6B]/40 select-none transition-all z-10 cursor-pointer ${
+              hoveredCard && hoveredCard.type === 'total'
+                ? 'scale-105 ring-2 ring-[#E2BC6B] shadow-xl'
+                : 'hover:scale-102'
+            }`}
+            onMouseEnter={() => setHoveredCard({ type: 'total' })}
+            onMouseLeave={() => setHoveredCard(null)}
             onClick={() => onNavigateWithFilter && onNavigateWithFilter({ category: 'All', status: 'All' })}
             title="Click to view all 3,750 bookings in Bookings table"
           >
@@ -584,66 +642,116 @@ export default function BookingJourneySankey({ onNavigateWithFilter }) {
             </div>
           </div>
 
-          {/* =========================================================
-              STAGE 2: SERVICE CATEGORIES PILLS (3 ITEMS)
-              Fixed: left: 290px, width: 195px, height: 56px each
-             ========================================================= */}
-          <div className="absolute left-[290px] top-0 w-[195px] h-full pointer-events-auto">
-            {categories.map((cat) => (
-              <button
-                key={cat.id}
-                type="button"
-                onClick={() => handleClickCategory(cat.label)}
-                className={`absolute ${cat.top} left-0 w-full h-[56px] px-3.5 rounded-2xl ${cat.bg} ${cat.border} border shadow-xs flex items-center gap-2.5 transition-all hover:scale-102 cursor-pointer text-left focus:outline-none`}
-                title={`Click to filter Bookings for ${cat.label}`}
-              >
-                <div className={`w-8 h-8 rounded-xl ${cat.iconBg} flex items-center justify-center shrink-0 border border-black/5`}>
-                  {cat.icon}
-                </div>
-                <div>
-                  <div className="text-xs font-bold text-stone-900 font-sans leading-tight">
-                    {cat.label}
+          {/* STAGE 2: SERVICE CATEGORIES PILLS (3 ITEMS) */}
+          <div className="absolute left-[290px] top-0 w-[195px] h-full pointer-events-auto z-10">
+            {categories.map((cat) => {
+              const isCardHovered = hoveredCard && hoveredCard.type === 'category' && hoveredCard.id === cat.id;
+              const isConnected = hoveredCard && hoveredCard.type === 'total';
+              return (
+                <button
+                  key={cat.id}
+                  type="button"
+                  onMouseEnter={() =>
+                    setHoveredCard({
+                      type: 'category',
+                      id: cat.id,
+                      label: cat.label,
+                      count: cat.count,
+                      percent: cat.percent,
+                      summary: cat.summary,
+                    })
+                  }
+                  onMouseLeave={() => setHoveredCard(null)}
+                  onClick={() => handleClickCategory(cat.label)}
+                  className={`absolute ${cat.top} left-0 w-full h-[56px] px-3.5 rounded-2xl ${cat.bg} ${cat.border} border shadow-xs flex items-center gap-2.5 transition-all cursor-pointer text-left focus:outline-none ${
+                    isCardHovered
+                      ? 'scale-105 ring-2 ring-[#751838] shadow-md'
+                      : isConnected
+                      ? 'ring-1.5 ring-[#751838]/40'
+                      : 'hover:scale-102'
+                  }`}
+                  title={`Click to filter Bookings for ${cat.label}`}
+                >
+                  <div className={`w-8 h-8 rounded-xl ${cat.iconBg} flex items-center justify-center shrink-0 border border-black/5`}>
+                    {cat.icon}
                   </div>
-                  <div className={`text-xs font-bold ${cat.textColor} font-sans mt-0.5`}>
-                    {cat.count.toLocaleString()} <span className="font-normal opacity-90">({cat.percent})</span>
+                  <div>
+                    <div className="text-xs font-bold text-stone-900 font-sans leading-tight">
+                      {cat.label}
+                    </div>
+                    <div className={`text-xs font-bold ${cat.textColor} font-sans mt-0.5`}>
+                      {cat.count.toLocaleString()} <span className="font-normal opacity-90">({cat.percent})</span>
+                    </div>
                   </div>
-                </div>
-              </button>
-            ))}
+                </button>
+              );
+            })}
           </div>
 
-          {/* =========================================================
-              STAGE 3: BOOKING OUTCOMES PILLS (4 ITEMS)
-              Fixed: left: 690px, width: 262px, height: 44px each
-             ========================================================= */}
-          <div className="absolute left-[690px] top-0 w-[262px] h-full pointer-events-auto">
-            {outcomes.map((out) => (
-              <button
-                key={out.id}
-                type="button"
-                onClick={() => handleClickOutcome(out.label)}
-                className={`absolute ${out.top} left-0 w-full h-[44px] px-3.5 rounded-2xl ${out.bg} ${out.border} border shadow-xs flex items-center justify-between transition-all hover:scale-102 cursor-pointer text-left focus:outline-none`}
-                title={`Click to filter Bookings with outcome "${out.label}"`}
-              >
-                <div className="flex items-center gap-2.5">
-                  <div className="shrink-0">{out.icon}</div>
-                  <span className="text-xs font-bold text-stone-900 font-sans">
-                    {out.label}
-                  </span>
-                </div>
+          {/* STAGE 3: BOOKING OUTCOMES PILLS (4 ITEMS) */}
+          <div className="absolute left-[690px] top-0 w-[262px] h-full pointer-events-auto z-10">
+            {outcomes.map((out) => {
+              const isCardHovered = hoveredCard && hoveredCard.type === 'outcome' && hoveredCard.id === out.id;
+              return (
+                <button
+                  key={out.id}
+                  type="button"
+                  onMouseEnter={() =>
+                    setHoveredCard({
+                      type: 'outcome',
+                      id: out.id,
+                      label: out.label,
+                      count: out.count,
+                      percent: out.percent,
+                      summary: out.summary,
+                    })
+                  }
+                  onMouseLeave={() => setHoveredCard(null)}
+                  onClick={() => handleClickOutcome(out.label)}
+                  className={`absolute ${out.top} left-0 w-full h-[44px] px-3.5 rounded-2xl ${out.bg} ${out.border} border shadow-xs flex items-center justify-between transition-all cursor-pointer text-left focus:outline-none ${
+                    isCardHovered
+                      ? 'scale-105 ring-2 ring-[#751838] shadow-md'
+                      : 'hover:scale-102'
+                  }`}
+                  title={`Click to filter Bookings with outcome "${out.label}"`}
+                >
+                  <div className="flex items-center gap-2.5">
+                    <div className="shrink-0">{out.icon}</div>
+                    <span className="text-xs font-bold text-stone-900 font-sans">
+                      {out.label}
+                    </span>
+                  </div>
 
-                <span className={`text-xs font-bold ${out.badgeColor} font-sans`}>
-                  {out.count.toLocaleString()} <span className="font-semibold text-stone-500 text-[11px]">({out.percent})</span>
-                </span>
-              </button>
-            ))}
+                  <span className={`text-xs font-bold ${out.badgeColor} font-sans`}>
+                    {out.count.toLocaleString()} <span className="font-semibold text-stone-500 text-[11px]">({out.percent})</span>
+                  </span>
+                </button>
+              );
+            })}
           </div>
         </div>
       </div>
 
-      {/* 3. Interactive Ribbon Hover Telemetry Footer */}
+      {/* 3. Interactive Ribbon & Node Hover Telemetry Footer */}
       <div className="mt-3 pt-2.5 border-t border-[#EFE5D5]/80 flex items-center justify-between text-xs min-h-[24px]">
-        {hoveredFlow ? (
+        {hoveredCard ? (
+          <div className="flex items-center gap-2 text-stone-800 animate-in fade-in">
+            <span className="font-bold text-[#751838] bg-[#751838]/10 px-2 py-0.5 rounded-md">
+              {hoveredCard.type === 'total' ? 'Total Intake' : hoveredCard.label}
+            </span>
+            <span className="text-stone-400">•</span>
+            {hoveredCard.type === 'total' ? (
+              <span>
+                <strong>3,750 devotees</strong> active across Darshan (2,480), Pooja & Seva (980), and Other Services (290)
+              </span>
+            ) : (
+              <span>
+                <strong>{hoveredCard.count.toLocaleString()} devotees</strong> ({hoveredCard.percent}):{' '}
+                <span className="text-stone-600">{hoveredCard.summary}</span>
+              </span>
+            )}
+          </div>
+        ) : hoveredFlow ? (
           <div className="flex items-center gap-2 text-stone-700 animate-in fade-in">
             <span className="font-bold text-[#751838]">{hoveredFlow.from}</span>
             <span className="text-stone-400">➔</span>
@@ -654,7 +762,7 @@ export default function BookingJourneySankey({ onNavigateWithFilter }) {
         ) : (
           <div className="text-[11.5px] text-stone-400 italic flex items-center gap-1.5">
             <Info className="w-3.5 h-3.5 text-stone-400" />
-            <span>Hover on any flow ribbon to inspect category-to-outcome breakdown; click nodes to filter bookings.</span>
+            <span>Hover on any card or flow ribbon to highlight its connected paths; click to filter bookings.</span>
           </div>
         )}
       </div>
