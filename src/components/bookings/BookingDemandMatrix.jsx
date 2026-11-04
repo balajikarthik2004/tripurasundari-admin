@@ -355,20 +355,20 @@ export default function BookingDemandMatrix({ onCellClick }) {
       </div>
 
       {/* 2. Main Content: Grid of Matrix Table + Dual-Column Side Panel */}
-      <div className="flex flex-col xl:flex-row items-start gap-4">
+      <div className="flex flex-col xl:flex-row items-stretch gap-4">
         {/* Left: 6-Slot Demand Matrix Table (Fluid and responsive, no horizontal scroll) */}
-        <div className="flex-1 w-full overflow-x-auto custom-scrollbar">
+        <div className="flex-1 w-full overflow-x-auto custom-scrollbar flex flex-col justify-between">
           <table className="w-full table-fixed border-collapse">
             <thead>
               <tr>
                 {/* Offering Title Header */}
-                <th className="w-[15%] pb-2.5 text-left text-[11px] font-bold text-stone-500 uppercase tracking-wider pl-1">
+                <th className="w-[17.5%] pb-2.5 text-left text-[11px] font-bold text-stone-500 uppercase tracking-wider pl-1">
                   Offering
                 </th>
 
                 {/* 6 Time Slot Columns */}
                 {timeSlotColumns.map((slot) => (
-                  <th key={slot.id} className="w-[14.16%] pb-2.5 px-0.5 text-center">
+                  <th key={slot.id} className="w-[13.75%] pb-2.5 px-0.5 text-center">
                     <div
                       className={`mx-auto w-full max-w-[94px] py-1.5 px-1 rounded-xl bg-[#FFFDF7] border border-[#FDE68A]/70 border-t-2 ${slot.border} shadow-2xs flex flex-col items-center justify-center`}
                     >
@@ -387,13 +387,13 @@ export default function BookingDemandMatrix({ onCellClick }) {
             <tbody>
               {visibleRows.map((row) => (
                 <tr key={row.id} className="hover:bg-[#FFF9F2]/50 transition-colors">
-                  {/* Row Service Header */}
-                  <td className="py-2 pl-1 pr-2 whitespace-nowrap align-middle">
+                  {/* Row Service Header: Allowed to wrap cleanly without ellipsis truncation */}
+                  <td className="py-2.5 pl-1 pr-2 align-middle">
                     <div className="flex items-center gap-2 font-bold text-stone-900 font-sans text-xs">
                       <div className="w-6 h-6 rounded-lg bg-[#FAF5EE] border border-[#EFE5D5] flex items-center justify-center shrink-0">
                         {row.icon}
                       </div>
-                      <span className="truncate">{row.name}</span>
+                      <span className="leading-tight text-stone-900">{row.name}</span>
                     </div>
                   </td>
 
@@ -442,19 +442,19 @@ export default function BookingDemandMatrix({ onCellClick }) {
           </table>
         </div>
 
-        {/* Right Side: Dual-Column Summary & Utilization Card (Directly matches Reference Image) */}
-        <div className="w-full xl:w-[325px] 2xl:w-[340px] shrink-0 bg-white rounded-2xl border border-[#EFE5D5] p-3 shadow-2xs">
-          <div className="grid grid-cols-2 gap-3 divide-x divide-stone-150">
+        {/* Right Side: Dual-Column Summary & Utilization Card (Aligned to match bottom of left matrix) */}
+        <div className="w-full xl:w-[336px] 2xl:w-[350px] shrink-0 bg-white rounded-2xl border border-[#EFE5D5] p-3.5 shadow-2xs flex flex-col justify-between">
+          <div className="grid grid-cols-2 gap-3.5 divide-x divide-stone-150 h-full">
             {/* Column 1: Summary */}
-            <div className="space-y-2">
-              <div className="flex items-center gap-1.5 pb-1 border-b border-stone-150">
+            <div className="flex flex-col justify-between pr-1">
+              <div className="flex items-center gap-1.5 pb-2 border-b border-stone-150">
                 <span className="text-[#55132D] text-xs">📊</span>
                 <h3 className="font-bold text-[#55132D] font-serif text-xs">
                   {summary.title}
                 </h3>
               </div>
 
-              <div className="space-y-1.5 text-[11px]">
+              <div className="space-y-2.5 text-[11px] py-1">
                 <div>
                   <div className="text-stone-500 text-[10px]">Total Bookings</div>
                   <div className="font-bold text-stone-900 font-sans text-xs">
@@ -483,30 +483,30 @@ export default function BookingDemandMatrix({ onCellClick }) {
             </div>
 
             {/* Column 2: Utilization Legend */}
-            <div className="pl-3 space-y-2">
-              <h3 className="font-bold text-stone-900 text-[11px] tracking-wider uppercase pb-1 border-b border-stone-150">
+            <div className="pl-3.5 flex flex-col justify-between">
+              <h3 className="font-bold text-stone-900 text-[11px] tracking-wider uppercase pb-2 border-b border-stone-150">
                 Utilization
               </h3>
 
-              <div className="space-y-2 text-[10.5px]">
+              <div className="space-y-3 text-[11px] py-1">
                 <div className="flex items-center gap-1.5">
                   <span className="w-3 h-3 rounded-full bg-[#751838] shrink-0" />
-                  <span className="font-bold text-stone-800">≥ 90%</span>
+                  <span className="font-bold text-stone-800 whitespace-nowrap">≥ 90%</span>
                   <span className="text-stone-500 text-[10px] ml-auto">(High)</span>
                 </div>
                 <div className="flex items-center gap-1.5">
                   <span className="w-3 h-3 rounded-full bg-[#EA580C] shrink-0" />
-                  <span className="font-bold text-stone-800">75%–89%</span>
+                  <span className="font-bold text-stone-800 whitespace-nowrap">75%–89%</span>
                   <span className="text-stone-500 text-[10px] ml-auto">(Busy)</span>
                 </div>
                 <div className="flex items-center gap-1.5">
                   <span className="w-3 h-3 rounded-full bg-[#FACC15] border border-[#CA8A04] shrink-0" />
-                  <span className="font-bold text-stone-800">50%–74%</span>
+                  <span className="font-bold text-stone-800 whitespace-nowrap">50%–74%</span>
                   <span className="text-stone-500 text-[10px] ml-auto">(Moderate)</span>
                 </div>
                 <div className="flex items-center gap-1.5">
                   <span className="w-3 h-3 rounded-full bg-[#FEF9C3] border border-[#FDE047] shrink-0" />
-                  <span className="font-bold text-stone-800">&lt; 50%</span>
+                  <span className="font-bold text-stone-800 whitespace-nowrap">&lt; 50%</span>
                   <span className="text-stone-500 text-[10px] ml-auto">(Low)</span>
                 </div>
               </div>
