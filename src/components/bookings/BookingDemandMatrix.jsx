@@ -1,9 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import {
   Calendar,
-  Sun,
-  Sunset,
-  Moon,
   Landmark,
   Bell,
   Flame,
@@ -20,18 +17,18 @@ function WhiskerLotusMotif({ className = 'w-32 h-6' }) {
       <path
         d="M 60 2 C 57 6, 57 14, 60 18 C 63 14, 63 6, 60 2 Z"
         stroke="#C88728"
-        strokeWidth="1"
-        fill="#FEF3C7"
-        fillOpacity="0.5"
+        strokeWidth="1.2"
+        fill="#C88728"
+        fillOpacity="0.25"
       />
       <path
-        d="M 58 7 C 52 6, 48 9, 50 14 C 54 15, 57 14, 58 11"
+        d="M 52 7 C 49 10, 52 14, 60 17 C 55 13, 53 9, 52 7 Z"
         stroke="#C88728"
         strokeWidth="0.9"
         fill="none"
       />
       <path
-        d="M 62 7 C 68 6, 72 9, 70 14 C 66 15, 63 14, 62 11"
+        d="M 68 7 C 71 10, 68 14, 60 17 C 65 13, 67 9, 68 7 Z"
         stroke="#C88728"
         strokeWidth="0.9"
         fill="none"
@@ -42,24 +39,51 @@ function WhiskerLotusMotif({ className = 'w-32 h-6' }) {
   );
 }
 
-// Kalash Sacred Pot Icon
+// Kalash Vessel SVG for Abhishekam
 function KalashIcon({ className = 'w-4 h-4' }) {
   return (
-    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">
-      <path d="M12 2L15 6H9L12 2Z" fill="currentColor" fillOpacity="0.2" />
-      <path d="M7 8H17L19 14C19 18 16 21 12 21C8 21 5 18 5 14L7 8Z" />
-      <circle cx="12" cy="14" r="2" />
+    <svg className={className} viewBox="0 0 24 24" fill="none">
+      <path
+        d="M12 2L14 5H10L12 2Z"
+        fill="#8C3220"
+        stroke="#8C3220"
+        strokeWidth="1.2"
+      />
+      <ellipse cx="12" cy="7" rx="3" ry="1.5" fill="#8C3220" />
+      <path
+        d="M8 8.5C6 11 6 15 8 18C10 20 14 20 16 18C18 15 18 11 16 8.5H8Z"
+        stroke="#8C3220"
+        strokeWidth="1.5"
+        fill="#8C3220"
+        fillOpacity="0.15"
+      />
+      <path d="M9 19.5H15" stroke="#8C3220" strokeWidth="1.5" strokeLinecap="round" />
     </svg>
   );
 }
 
-// Sacred Lotus Flower Icon
+// Sacred Flower SVG for Special Pooja
 function LotusFlowerIcon({ className = 'w-4 h-4' }) {
   return (
-    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">
-      <path d="M12 4C10.5 8 10.5 13 12 17C13.5 13 13.5 8 12 4Z" fill="currentColor" fillOpacity="0.2" />
-      <path d="M11 9C7 8.5 4 11 5 15C8 16 11 15 11 13" />
-      <path d="M13 9C17 8.5 20 11 19 15C16 16 13 15 13 13" />
+    <svg className={className} viewBox="0 0 24 24" fill="none">
+      <path
+        d="M12 4C10.5 7.5 10.5 12 12 15C13.5 12 13.5 7.5 12 4Z"
+        stroke="#8C3220"
+        strokeWidth="1.5"
+        fill="#8C3220"
+        fillOpacity="0.2"
+      />
+      <path
+        d="M8 9C6.5 11.5 7.5 14 12 15C10 13 8.5 11 8 9Z"
+        stroke="#8C3220"
+        strokeWidth="1.3"
+      />
+      <path
+        d="M16 9C17.5 11.5 16.5 14 12 15C14 13 15.5 11 16 9Z"
+        stroke="#8C3220"
+        strokeWidth="1.3"
+      />
+      <path d="M6 18C10 20 14 20 18 18" stroke="#8C3220" strokeWidth="1.4" strokeLinecap="round" />
     </svg>
   );
 }
@@ -69,55 +93,54 @@ export default function BookingDemandMatrix({ onCellClick }) {
   const [serviceFilter, setServiceFilter] = useState('All Services');
   const [hoveredCell, setHoveredCell] = useState(null);
 
-  // Exact 6 Time Slot Columns from Reference Image
+  // Exact 6 Time Slot Columns matching Reference Image
   const timeSlotColumns = [
     {
-      id: 'ts1',
+      id: 'slot-1',
       time: '05–07 AM',
       period: 'Early Morning',
-      icon: <Sun className="w-3.5 h-3.5 text-[#D97706]" />,
-      border: 'border-t-[#D97706]',
+      icon: <span className="text-amber-500 text-xs">🌅</span>,
+      border: 'border-t-amber-400',
     },
     {
-      id: 'ts2',
+      id: 'slot-2',
       time: '07–10 AM',
       period: 'Morning',
-      icon: <Sun className="w-3.5 h-3.5 text-[#EA580C]" />,
-      border: 'border-t-[#EA580C]',
+      icon: <span className="text-amber-500 text-xs">☀️</span>,
+      border: 'border-t-amber-500',
     },
     {
-      id: 'ts3',
+      id: 'slot-3',
       time: '10–01 PM',
       period: 'Forenoon',
-      icon: <Landmark className="w-3.5 h-3.5 text-[#55132D]" />,
-      border: 'border-t-[#55132D]',
+      icon: <span className="text-[#8C3220] text-xs">🛕</span>,
+      border: 'border-t-[#8C3220]',
     },
     {
-      id: 'ts4',
+      id: 'slot-4',
       time: '01–04 PM',
       period: 'Afternoon',
-      icon: <Sun className="w-3.5 h-3.5 text-[#D97706]" />,
-      border: 'border-t-[#D97706]',
+      icon: <span className="text-amber-600 text-xs">🌤️</span>,
+      border: 'border-t-amber-600',
     },
     {
-      id: 'ts5',
+      id: 'slot-5',
       time: '04–06 PM',
       period: 'Evening',
-      icon: <Sunset className="w-3.5 h-3.5 text-[#EA580C]" />,
-      border: 'border-t-[#EA580C]',
+      icon: <span className="text-orange-600 text-xs">🌇</span>,
+      border: 'border-t-orange-600',
     },
     {
-      id: 'ts6',
+      id: 'slot-6',
       time: '06–09 PM',
       period: 'Night',
-      icon: <Moon className="w-3.5 h-3.5 text-[#4A0B22]" />,
-      border: 'border-t-[#4A0B22]',
+      icon: <span className="text-indigo-900 text-xs">🌙</span>,
+      border: 'border-t-indigo-900',
     },
   ];
 
-  // Configured Capacities (per slot for 7 days; scale for Today / 30 Days)
-  // Ensures exact utilization mathematically matches tiers in the image:
-  // >=90% (High Maroon), 75-89% (Busy Orange), 50-74% (Moderate Yellow), <50% (Low Mint/Pale)
+  // Configured Capacities and Booking Counts across 5 offerings
+  // Sum for 7 Days: 24,169 + 5,447 + 4,117 + 2,212 + 2,949 = 38,894 bookings.
   const serviceRowsData = [
     {
       id: 'darshan',
@@ -189,9 +212,8 @@ export default function BookingDemandMatrix({ onCellClick }) {
     return processedRows.filter((r) => r.name.toLowerCase() === serviceFilter.toLowerCase());
   }, [processedRows, serviceFilter]);
 
-  // DYNAMIC SUMMARY: Strictly equals the sum of displayed matrix cells!
+  // DYNAMIC SUMMARY: Strictly equals the sum of displayed matrix cells
   const summary = useMemo(() => {
-    // 1. Total bookings = sum of all visible cells
     let total = 0;
     const colTotals = [0, 0, 0, 0, 0, 0];
     const rowTotals = {};
@@ -206,10 +228,8 @@ export default function BookingDemandMatrix({ onCellClick }) {
       rowTotals[row.name] = rowSum;
     });
 
-    // 2. Average daily bookings
     const avgDaily = Math.round(total / numDays);
 
-    // 3. Peak slot
     let maxColVal = -1;
     let peakColIdx = 2; // Default to Forenoon 10-01 PM
     colTotals.forEach((val, idx) => {
@@ -220,7 +240,6 @@ export default function BookingDemandMatrix({ onCellClick }) {
     });
     const peakSlotName = timeSlotColumns[peakColIdx]?.time || '10–01 PM';
 
-    // 4. Peak Service
     let peakServiceName = visibleRows[0]?.name || 'Darshan';
     let maxRowVal = -1;
     Object.entries(rowTotals).forEach(([name, sum]) => {
@@ -230,7 +249,6 @@ export default function BookingDemandMatrix({ onCellClick }) {
       }
     });
 
-    // Date range label
     const dateRangeLabel =
       selectedPeriod === 'Today'
         ? 'Today: 31 Oct 2026'
@@ -253,30 +271,30 @@ export default function BookingDemandMatrix({ onCellClick }) {
       peakSlot: peakSlotName,
       peakService: peakServiceName,
     };
-  }, [visibleRows, numDays, selectedPeriod, timeSlotColumns]);
+  }, [visibleRows, selectedPeriod, numDays]);
 
-  // Capsule Styling based on Utilization Tier:
-  // Tier 1: >= 90% (High) -> Maroon gradient
-  // Tier 2: 75%–89% (Busy) -> Orange gradient
-  // Tier 3: 50%–74% (Moderate) -> Warm Yellow pill
-  // Tier 4: < 50% (Low) -> Light Mint/Pale Cream pill
+  // Precise Utilization Styling:
+  // >=90%: High (Deep Burgundy #751838)
+  // 75-89%: Busy (Vibrant Orange #EA580C)
+  // 50-74%: Moderate (Amber #FACC15)
+  // <50%: Low (Pale Cream #FEF9C3)
   const getCapsuleStyle = (utilization) => {
     if (utilization >= 90) {
-      return 'bg-gradient-to-r from-[#751838] to-[#55132D] text-white shadow-xs font-bold';
+      return 'bg-[#751838] text-white font-bold shadow-xs';
     }
     if (utilization >= 75) {
-      return 'bg-gradient-to-r from-[#EA580C] to-[#C2410C] text-white shadow-xs font-bold';
+      return 'bg-[#EA580C] text-white font-bold shadow-xs';
     }
     if (utilization >= 50) {
-      return 'bg-[#FDE047] text-[#78350F] font-bold shadow-2xs';
+      return 'bg-[#FACC15] text-stone-900 font-bold border border-[#CA8A04]/60 shadow-2xs';
     }
-    return 'bg-[#FEF9C3] text-[#78350F] font-semibold';
+    return 'bg-[#FEF9C3] text-stone-800 font-medium border border-[#FDE047]/60 shadow-2xs';
   };
 
   return (
-    <div className="bg-[#FFFDF9] rounded-2xl sm:rounded-3xl border border-[#EFE5D5] shadow-xs p-4 sm:p-5 relative overflow-hidden">
-      {/* 1. Header with Title & Controls */}
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 pb-3.5 border-b border-[#EFE5D5]">
+    <div className="bg-[#FFFDF9] rounded-2xl sm:rounded-3xl border border-[#EFE5D5] shadow-xs p-4 sm:p-5 relative">
+      {/* 1. Header with Controls and Filter Buttons */}
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 mb-4 pb-3 border-b border-[#EFE5D5]/80">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-xl bg-[#FEF3C7] border border-[#FDE68A] flex items-center justify-center text-[#B45309] shrink-0">
             <Calendar className="w-4 h-4" />
@@ -286,44 +304,43 @@ export default function BookingDemandMatrix({ onCellClick }) {
               Booking Demand Matrix
             </h2>
             <p className="text-[11.5px] text-stone-500 font-sans">
-              Service-wise demand across time slots{' '}
-              <strong className="text-stone-700 font-semibold">({summary.title})</strong>
+              Service-wise demand across time slots <span className="font-semibold text-stone-700">({summary.title})</span>
             </p>
           </div>
         </div>
 
-        {/* Right Filter Controls (Responsive, no wrap breaking) */}
-        <div className="flex flex-wrap items-center gap-2 self-start lg:self-auto">
-          {/* Date Range Badge Pill */}
-          <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-[#FDF2F4] border border-[#FCE7F3] text-xs font-semibold text-[#881337]">
-            <Calendar className="w-3.5 h-3.5 text-[#881337]" />
+        {/* Right Toolbar: Period Badge + Toggle Buttons + Service Dropdown */}
+        <div className="flex flex-wrap items-center gap-2.5">
+          {/* Explicit Demand Reporting Period Badge */}
+          <div className="px-2.5 py-1 rounded-xl bg-[#FFF1F2] border border-[#FECDD3] text-[#9F1239] text-xs font-semibold flex items-center gap-1.5 shadow-2xs">
+            <Calendar className="w-3.5 h-3.5 text-[#E11D48]" />
             <span>{summary.dateRangeLabel}</span>
           </div>
 
-          {/* Segmented Control */}
-          <div className="flex items-center p-0.5 bg-white border border-stone-200 rounded-xl text-xs font-semibold shadow-2xs">
-            {['Today', '7 Days', '30 Days'].map((p) => (
+          {/* Date Period Filter Toggle */}
+          <div className="inline-flex rounded-xl bg-[#F5EBE1] p-0.5 border border-[#EFE5D5]">
+            {['Today', '7 Days', '30 Days'].map((period) => (
               <button
-                key={p}
+                key={period}
                 type="button"
-                onClick={() => setSelectedPeriod(p)}
-                className={`px-3 py-1 rounded-lg transition-all cursor-pointer ${
-                  selectedPeriod === p
-                    ? 'bg-[#55132D] text-white shadow-xs font-bold'
-                    : 'text-stone-600 hover:text-stone-900'
+                onClick={() => setSelectedPeriod(period)}
+                className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+                  selectedPeriod === period
+                    ? 'bg-[#751838] text-white shadow-xs'
+                    : 'text-stone-700 hover:text-stone-900 hover:bg-white/50'
                 }`}
               >
-                {p}
+                {period}
               </button>
             ))}
           </div>
 
-          {/* Service Dropdown */}
-          <div className="relative">
+          {/* Service Filter Dropdown */}
+          <div className="relative inline-block">
             <select
               value={serviceFilter}
               onChange={(e) => setServiceFilter(e.target.value)}
-              className="appearance-none bg-white border border-stone-200 rounded-xl px-2.5 py-1 pr-7 text-xs font-medium text-stone-700 focus:outline-none cursor-pointer shadow-2xs"
+              className="appearance-none bg-white border border-[#EFE5D5] rounded-xl pl-3 pr-8 py-1 text-xs font-semibold text-stone-700 shadow-2xs cursor-pointer focus:outline-none focus:border-[#751838]"
             >
               <option value="All Services">All Services</option>
               <option value="Darshan">Darshan</option>
@@ -332,29 +349,34 @@ export default function BookingDemandMatrix({ onCellClick }) {
               <option value="Havan">Havan</option>
               <option value="Special Pooja">Special Pooja</option>
             </select>
-            <ChevronDown className="w-3.5 h-3.5 text-stone-400 absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none" />
+            <ChevronDown className="w-3.5 h-3.5 text-stone-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
           </div>
         </div>
       </div>
 
-      {/* 2. Main Matrix Layout: Fluid Grid without horizontal overflow on 14" desktop */}
-      <div className="mt-3.5 flex flex-col lg:flex-row gap-4 items-start">
-        {/* Table Container: Fits cleanly into width */}
-        <div className="w-full flex-1 overflow-visible">
-          <table className="w-full table-fixed border-separate border-spacing-y-2 text-xs">
+      {/* 2. Main Content: Grid of Matrix Table + Dual-Column Side Panel */}
+      <div className="flex flex-col xl:flex-row items-start gap-4">
+        {/* Left: 6-Slot Demand Matrix Table (Fluid and responsive, no horizontal scroll) */}
+        <div className="flex-1 w-full overflow-x-auto custom-scrollbar">
+          <table className="w-full table-fixed border-collapse">
             <thead>
               <tr>
-                <th className="w-[105px] sm:w-[115px] p-1 text-left"></th>
+                {/* Offering Title Header */}
+                <th className="w-[15%] pb-2.5 text-left text-[11px] font-bold text-stone-500 uppercase tracking-wider pl-1">
+                  Offering
+                </th>
+
+                {/* 6 Time Slot Columns */}
                 {timeSlotColumns.map((slot) => (
-                  <th key={slot.id} className="p-1 text-center">
+                  <th key={slot.id} className="w-[14.16%] pb-2.5 px-0.5 text-center">
                     <div
-                      className={`mx-auto w-full max-w-[90px] py-1.5 px-0.5 rounded-xl bg-[#FFFBF0] border border-[#FDE68A]/80 border-t-2 ${slot.border} shadow-2xs flex flex-col items-center justify-center`}
+                      className={`mx-auto w-full max-w-[94px] py-1.5 px-1 rounded-xl bg-[#FFFDF7] border border-[#FDE68A]/70 border-t-2 ${slot.border} shadow-2xs flex flex-col items-center justify-center`}
                     >
-                      <div className="flex items-center gap-1 text-[10.5px] font-bold text-stone-900 leading-tight">
+                      <div className="flex items-center gap-1 text-[11px] font-bold text-stone-900 leading-tight">
                         {slot.icon}
                         <span className="whitespace-nowrap">{slot.time}</span>
                       </div>
-                      <div className="text-[9.5px] text-stone-500 font-normal mt-0.5 truncate">
+                      <div className="text-[10px] text-stone-500 font-medium mt-0.5 truncate">
                         {slot.period}
                       </div>
                     </div>
@@ -364,11 +386,11 @@ export default function BookingDemandMatrix({ onCellClick }) {
             </thead>
             <tbody>
               {visibleRows.map((row) => (
-                <tr key={row.id} className="group">
+                <tr key={row.id} className="hover:bg-[#FFF9F2]/50 transition-colors">
                   {/* Row Service Header */}
-                  <td className="p-1 whitespace-nowrap align-middle">
-                    <div className="flex items-center gap-1.5 font-bold text-stone-900 font-sans text-xs">
-                      <div className="w-5 h-5 rounded-md bg-[#FAF5EE] border border-[#EFE5D5] flex items-center justify-center shrink-0">
+                  <td className="py-2 pl-1 pr-2 whitespace-nowrap align-middle">
+                    <div className="flex items-center gap-2 font-bold text-stone-900 font-sans text-xs">
+                      <div className="w-6 h-6 rounded-lg bg-[#FAF5EE] border border-[#EFE5D5] flex items-center justify-center shrink-0">
                         {row.icon}
                       </div>
                       <span className="truncate">{row.name}</span>
@@ -383,7 +405,7 @@ export default function BookingDemandMatrix({ onCellClick }) {
                     const capsuleStyle = getCapsuleStyle(utilization);
 
                     return (
-                      <td key={col.id} className="p-1 text-center align-middle">
+                      <td key={col.id} className="py-1.5 px-0.5 text-center align-middle">
                         <button
                           type="button"
                           onMouseEnter={() =>
@@ -406,7 +428,7 @@ export default function BookingDemandMatrix({ onCellClick }) {
                               datePeriod: selectedPeriod,
                             })
                           }
-                          className={`mx-auto w-[56px] sm:w-[62px] h-[30px] rounded-full flex items-center justify-center text-[11px] sm:text-xs tracking-tight transition-transform hover:scale-105 cursor-pointer focus:outline-none ${capsuleStyle}`}
+                          className={`mx-auto w-[62px] sm:w-[68px] h-[32px] rounded-full flex items-center justify-center text-xs tracking-tight transition-transform hover:scale-105 cursor-pointer focus:outline-none ${capsuleStyle}`}
                           title={`${row.name} at ${col.time}: ${count.toLocaleString()} bookings (${utilization}% capacity utilization)`}
                         >
                           {count.toLocaleString()}
@@ -420,82 +442,84 @@ export default function BookingDemandMatrix({ onCellClick }) {
           </table>
         </div>
 
-        {/* Right Side Panels: Summary & Utilization Legend (230px, compact) */}
-        <div className="w-full lg:w-[225px] shrink-0 flex flex-col sm:flex-row lg:flex-col gap-3">
-          {/* Summary Card */}
-          <div className="flex-1 bg-white rounded-2xl border border-[#EFE5D5] p-3.5 shadow-2xs space-y-2">
-            <div className="flex items-center gap-1.5 pb-1.5 border-b border-stone-150">
-              <span className="text-[#55132D] text-xs font-bold">📊</span>
-              <h3 className="font-bold text-[#55132D] font-serif text-xs">
-                {summary.title}
+        {/* Right Side: Dual-Column Summary & Utilization Card (Directly matches Reference Image) */}
+        <div className="w-full xl:w-[325px] 2xl:w-[340px] shrink-0 bg-white rounded-2xl border border-[#EFE5D5] p-3 shadow-2xs">
+          <div className="grid grid-cols-2 gap-3 divide-x divide-stone-150">
+            {/* Column 1: Summary */}
+            <div className="space-y-2">
+              <div className="flex items-center gap-1.5 pb-1 border-b border-stone-150">
+                <span className="text-[#55132D] text-xs">📊</span>
+                <h3 className="font-bold text-[#55132D] font-serif text-xs">
+                  {summary.title}
+                </h3>
+              </div>
+
+              <div className="space-y-1.5 text-[11px]">
+                <div>
+                  <div className="text-stone-500 text-[10px]">Total Bookings</div>
+                  <div className="font-bold text-stone-900 font-sans text-xs">
+                    {summary.totalBookings}
+                  </div>
+                </div>
+                <div>
+                  <div className="text-stone-500 text-[10px]">Avg. Daily Bookings</div>
+                  <div className="font-bold text-stone-900 font-sans text-xs">
+                    {summary.avgDaily}
+                  </div>
+                </div>
+                <div>
+                  <div className="text-stone-500 text-[10px]">Peak Slot</div>
+                  <div className="font-bold text-stone-900 font-sans text-xs">
+                    {summary.peakSlot}
+                  </div>
+                </div>
+                <div>
+                  <div className="text-stone-500 text-[10px]">Peak Service</div>
+                  <div className="font-bold text-stone-900 font-sans text-xs">
+                    {summary.peakService}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Column 2: Utilization Legend */}
+            <div className="pl-3 space-y-2">
+              <h3 className="font-bold text-stone-900 text-[11px] tracking-wider uppercase pb-1 border-b border-stone-150">
+                Utilization
               </h3>
-            </div>
 
-            <div className="space-y-1.5 text-[11.5px]">
-              <div className="flex items-center justify-between">
-                <span className="text-stone-500 font-normal">Total Bookings</span>
-                <span className="font-bold text-stone-900 font-sans">
-                  {summary.totalBookings}
-                </span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-stone-500 font-normal">Avg. Daily Bookings</span>
-                <span className="font-bold text-stone-900 font-sans">
-                  {summary.avgDaily}
-                </span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-stone-500 font-normal">Peak Slot</span>
-                <span className="font-bold text-stone-900 font-sans">
-                  {summary.peakSlot}
-                </span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-stone-500 font-normal">Peak Service</span>
-                <span className="font-bold text-stone-900 font-sans">
-                  {summary.peakService}
-                </span>
-              </div>
-            </div>
-          </div>
-
-          {/* Utilization Legend Card */}
-          <div className="flex-1 bg-white rounded-2xl border border-[#EFE5D5] p-3.5 shadow-2xs space-y-2">
-            <h3 className="font-bold text-stone-900 text-[11px] tracking-wider uppercase">
-              Utilization
-            </h3>
-
-            <div className="space-y-1.5 text-[11px]">
-              <div className="flex items-center gap-2">
-                <span className="w-3 h-3 rounded-full bg-[#55132D] shrink-0" />
-                <span className="font-semibold text-stone-800">≥ 90%</span>
-                <span className="text-stone-500 font-normal ml-auto">(High)</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="w-3 h-3 rounded-full bg-[#EA580C] shrink-0" />
-                <span className="font-semibold text-stone-800">75% – 89%</span>
-                <span className="text-stone-500 font-normal ml-auto">(Busy)</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="w-3 h-3 rounded-full bg-[#FDE047] border border-[#CA8A04] shrink-0" />
-                <span className="font-semibold text-stone-800">50% – 74%</span>
-                <span className="text-stone-500 font-normal ml-auto">(Moderate)</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="w-3 h-3 rounded-full bg-[#FEF9C3] border border-[#FDE047] shrink-0" />
-                <span className="font-semibold text-stone-800">&lt; 50%</span>
-                <span className="text-stone-500 font-normal ml-auto">(Low)</span>
+              <div className="space-y-2 text-[10.5px]">
+                <div className="flex items-center gap-1.5">
+                  <span className="w-3 h-3 rounded-full bg-[#751838] shrink-0" />
+                  <span className="font-bold text-stone-800">≥ 90%</span>
+                  <span className="text-stone-500 text-[10px] ml-auto">(High)</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <span className="w-3 h-3 rounded-full bg-[#EA580C] shrink-0" />
+                  <span className="font-bold text-stone-800">75%–89%</span>
+                  <span className="text-stone-500 text-[10px] ml-auto">(Busy)</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <span className="w-3 h-3 rounded-full bg-[#FACC15] border border-[#CA8A04] shrink-0" />
+                  <span className="font-bold text-stone-800">50%–74%</span>
+                  <span className="text-stone-500 text-[10px] ml-auto">(Moderate)</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <span className="w-3 h-3 rounded-full bg-[#FEF9C3] border border-[#FDE047] shrink-0" />
+                  <span className="font-bold text-stone-800">&lt; 50%</span>
+                  <span className="text-stone-500 text-[10px] ml-auto">(Low)</span>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* 3. Dynamic Cell Tooltip Bar when hovering over any cell */}
-      <div className="mt-3 pt-2 border-t border-[#EFE5D5]/80 flex flex-wrap items-center justify-between text-xs min-h-[26px]">
+      {/* 3. Dynamic Cell Hover Telemetry & Whisker Lotus Motif */}
+      <div className="mt-3 pt-2.5 border-t border-[#EFE5D5]/80 flex flex-wrap items-center justify-between text-xs min-h-[26px]">
         {hoveredCell ? (
           <div className="flex flex-wrap items-center gap-2 text-stone-700 animate-in fade-in">
-            <span className="font-bold text-[#55132D]">{hoveredCell.service}</span>
+            <span className="font-bold text-[#751838]">{hoveredCell.service}</span>
             <span className="text-stone-300">•</span>
             <span className="font-semibold text-stone-800">{hoveredCell.time} ({hoveredCell.period})</span>
             <span className="text-stone-300">•</span>
@@ -508,12 +532,12 @@ export default function BookingDemandMatrix({ onCellClick }) {
             </span>
             <span className="text-stone-300">•</span>
             <span>
-              Utilization: <strong className="text-[#55132D]">{hoveredCell.utilization}%</strong>
+              Utilization: <strong className="text-[#751838]">{hoveredCell.utilization}%</strong>
             </span>
           </div>
         ) : (
           <div className="text-[11px] text-stone-400 italic flex items-center gap-1">
-            <Info className="w-3 h-3 text-stone-400" />
+            <Info className="w-3.5 h-3.5 text-stone-400" />
             <span>Hover on any cell for detailed capacity analysis; click to open filtered bookings.</span>
           </div>
         )}
