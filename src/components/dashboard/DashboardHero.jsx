@@ -18,17 +18,12 @@ export default function DashboardHero() {
               className="w-full h-full object-cover rounded-lg"
             />
           </div>
-          <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-emerald-400 border-2 border-[#55132D]" title="Sanctum Active" />
         </div>
 
         <div className="flex flex-wrap items-center gap-2.5">
           <h2 className="text-lg sm:text-xl font-bold text-white tracking-tight leading-tight font-serif">
             Good Morning, Administrator
           </h2>
-          <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-400/30">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-            Sanctum Active
-          </span>
         </div>
       </div>
 

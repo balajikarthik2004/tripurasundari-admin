@@ -36,8 +36,7 @@ export default function PilgrimWelfareCard() {
               Nitya Annadanam Seva
             </span>
           </div>
-          <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100/80 text-amber-900 border border-amber-300/60">
-            <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
+          <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100/80 text-amber-900 border border-amber-300/60">
             {mealStatus}
           </span>
         </div>
