@@ -574,3 +574,4 @@ export default function ServicesManagementTab({ initialView = 'catalogue' }) {
     </div>
   );
 }
+

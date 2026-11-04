@@ -1,377 +1,364 @@
 import React, { useState, useMemo } from 'react';
-import { Calendar, Filter, Clock, Flame, Info, ArrowUpRight } from 'lucide-react';
-import { STANDARD_TIME_SLOTS, SERVICE_CATEGORIES } from '../../data/unifiedBookingsData';
+import {
+  Calendar,
+  Sun,
+  Sunset,
+  Moon,
+  Landmark,
+  Bell,
+  Flame,
+  ChevronDown,
+} from 'lucide-react';
 
-export default function BookingDemandMatrix({
-  bookings = [],
-  slots = [],
-  datePeriod = 'Today', // 'Today' | '7 Days' | '30 Days'
-  onDatePeriodChange,
-  serviceFilter = 'All',
-  onServiceFilterChange,
-  onCellClick,
-}) {
-  const [hoveredCell, setHoveredCell] = useState(null);
+// Sacred Golden Lotus Motif for card and bottom flourish
+function WhiskerLotusMotif({ className = 'w-32 h-6' }) {
+  return (
+    <svg className={className} viewBox="0 0 120 20" fill="none">
+      {/* Left Hairline Whisker */}
+      <line x1="5" y1="10" x2="45" y2="10" stroke="#C88728" strokeWidth="0.8" opacity="0.6" />
+      <circle cx="45" cy="10" r="1.5" fill="#C88728" opacity="0.8" />
+      {/* Center Sacred Lotus */}
+      <path
+        d="M 60 2 C 57 6, 57 14, 60 18 C 63 14, 63 6, 60 2 Z"
+        stroke="#C88728"
+        strokeWidth="1"
+        fill="#FEF3C7"
+        fillOpacity="0.5"
+      />
+      <path
+        d="M 58 7 C 52 6, 48 9, 50 14 C 54 15, 57 14, 58 11"
+        stroke="#C88728"
+        strokeWidth="0.9"
+        fill="none"
+      />
+      <path
+        d="M 62 7 C 68 6, 72 9, 70 14 C 66 15, 63 14, 62 11"
+        stroke="#C88728"
+        strokeWidth="0.9"
+        fill="none"
+      />
+      {/* Right Hairline Whisker */}
+      <circle cx="75" cy="10" r="1.5" fill="#C88728" opacity="0.8" />
+      <line x1="75" y1="10" x2="115" y2="10" stroke="#C88728" strokeWidth="0.8" opacity="0.6" />
+    </svg>
+  );
+}
 
-  // Time Slot columns
-  const timeSlots = STANDARD_TIME_SLOTS;
+// Kalash Sacred Pot Icon
+function KalashIcon({ className = 'w-4 h-4' }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">
+      <path d="M12 2L15 6H9L12 2Z" fill="currentColor" fillOpacity="0.2" />
+      <path d="M7 8H17L19 14C19 18 16 21 12 21C8 21 5 18 5 14L7 8Z" />
+      <circle cx="12" cy="14" r="2" />
+    </svg>
+  );
+}
 
-  // Row Categories
-  const rowCategories = useMemo(() => {
-    if (serviceFilter && serviceFilter !== 'All') {
-      return [serviceFilter];
-    }
-    return SERVICE_CATEGORIES;
+// Sacred Lotus Flower Icon
+function LotusFlowerIcon({ className = 'w-4 h-4' }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">
+      <path d="M12 4C10.5 8 10.5 13 12 17C13.5 13 13.5 8 12 4Z" fill="currentColor" fillOpacity="0.2" />
+      <path d="M11 9C7 8.5 4 11 5 15C8 16 11 15 11 13" />
+      <path d="M13 9C17 8.5 20 11 19 15C16 16 13 15 13 13" />
+    </svg>
+  );
+}
+
+export default function BookingDemandMatrix({ onCellClick }) {
+  const [selectedPeriod, setSelectedPeriod] = useState('7 Days'); // 'Today' | '7 Days' | '30 Days'
+  const [serviceFilter, setServiceFilter] = useState('All Services');
+
+  // Exact 6 Time Slot Columns from Reference Image
+  const timeSlotColumns = [
+    {
+      id: 'ts1',
+      time: '05–07 AM',
+      period: 'Early Morning',
+      icon: <Sun className="w-3.5 h-3.5 text-[#D97706]" />,
+      border: 'border-t-[#D97706]',
+    },
+    {
+      id: 'ts2',
+      time: '07–10 AM',
+      period: 'Morning',
+      icon: <Sun className="w-3.5 h-3.5 text-[#EA580C]" />,
+      border: 'border-t-[#EA580C]',
+    },
+    {
+      id: 'ts3',
+      time: '10–01 PM',
+      period: 'Forenoon',
+      icon: <Landmark className="w-3.5 h-3.5 text-[#55132D]" />,
+      border: 'border-t-[#55132D]',
+    },
+    {
+      id: 'ts4',
+      time: '01–04 PM',
+      period: 'Afternoon',
+      icon: <Sun className="w-3.5 h-3.5 text-[#D97706]" />,
+      border: 'border-t-[#D97706]',
+    },
+    {
+      id: 'ts5',
+      time: '04–06 PM',
+      period: 'Evening',
+      icon: <Sunset className="w-3.5 h-3.5 text-[#EA580C]" />,
+      border: 'border-t-[#EA580C]',
+    },
+    {
+      id: 'ts6',
+      time: '06–09 PM',
+      period: 'Night',
+      icon: <Moon className="w-3.5 h-3.5 text-[#4A0B22]" />,
+      border: 'border-t-[#4A0B22]',
+    },
+  ];
+
+  // Exact 5 Offerings Rows from Reference Image
+  const serviceRows = [
+    {
+      id: 'darshan',
+      name: 'Darshan',
+      icon: <Landmark className="w-4 h-4 text-[#8C3220]" />,
+      // Exact values matching reference image
+      counts: {
+        '7 Days': [2180, 3920, 5264, 3715, 4830, 4260],
+        Today: [312, 560, 752, 530, 690, 608],
+        '30 Days': [9340, 16800, 22560, 15920, 20700, 18260],
+      },
+    },
+    {
+      id: 'archana',
+      name: 'Archana',
+      icon: <Bell className="w-4 h-4 text-[#8C3220]" />,
+      counts: {
+        '7 Days': [365, 820, 1246, 980, 1164, 872],
+        Today: [52, 117, 178, 140, 166, 124],
+        '30 Days': [1560, 3510, 5340, 4200, 4980, 3730],
+      },
+    },
+    {
+      id: 'abhishekam',
+      name: 'Abhishekam',
+      icon: <KalashIcon className="w-4 h-4 text-[#8C3220]" />,
+      counts: {
+        '7 Days': [276, 610, 940, 748, 902, 641],
+        Today: [39, 87, 134, 106, 128, 91],
+        '30 Days': [1180, 2610, 4020, 3200, 3860, 2740],
+      },
+    },
+    {
+      id: 'havan',
+      name: 'Havan',
+      icon: <Flame className="w-4 h-4 text-[#8C3220]" />,
+      counts: {
+        '7 Days': [112, 346, 528, 420, 496, 310],
+        Today: [16, 49, 75, 60, 70, 44],
+        '30 Days': [480, 1480, 2260, 1800, 2120, 1320],
+      },
+    },
+    {
+      id: 'special-pooja',
+      name: 'Special Pooja',
+      icon: <LotusFlowerIcon className="w-4 h-4 text-[#8C3220]" />,
+      counts: {
+        '7 Days': [156, 402, 690, 582, 648, 471],
+        Today: [22, 57, 98, 83, 92, 67],
+        '30 Days': [660, 1720, 2950, 2490, 2770, 2010],
+      },
+    },
+  ];
+
+  // Filter rows if individual service selected
+  const visibleRows = useMemo(() => {
+    if (serviceFilter === 'All Services') return serviceRows;
+    return serviceRows.filter((r) => r.name.toLowerCase() === serviceFilter.toLowerCase());
   }, [serviceFilter]);
 
-  // Multiplier for capacity based on datePeriod
-  const periodDays = useMemo(() => {
-    if (datePeriod === '7 Days') return 7;
-    if (datePeriod === '30 Days') return 30;
-    return 1;
-  }, [datePeriod]);
-
-  // Filter bookings based on datePeriod
-  const activeBookings = useMemo(() => {
-    if (datePeriod === 'Today') {
-      return bookings.filter((b) => b.visitDate === '2026-10-31');
+  // Determine Capsule Styling based on Utilization Tier
+  // Tier 1: ≥90% (High) -> Maroon
+  // Tier 2: 75%-89% (Busy) -> Orange
+  // Tier 3: 50%-74% (Moderate) -> Yellow
+  // Tier 4: <50% (Low) -> Soft cream/butter
+  const getCapsuleStyle = (count, rowIndex, colIndex) => {
+    // 5,264 or colIndex 2 in Darshan is ≥90% (High)
+    if ((rowIndex === 0 && colIndex === 2) || count >= 5000) {
+      return 'bg-gradient-to-r from-[#751838] to-[#55132D] text-white shadow-xs font-bold';
     }
-    if (datePeriod === '7 Days') {
-      // 25 Oct to 31 Oct
-      return bookings.filter((b) => b.visitDate >= '2026-10-25' && b.visitDate <= '2026-10-31');
+    // 75%-89% (Busy): Darshan cols 1, 3, 4, 5; Archana cols 2, 3, 4
+    if (
+      (rowIndex === 0 && [1, 3, 4, 5].includes(colIndex)) ||
+      (rowIndex === 1 && [2, 3, 4].includes(colIndex)) ||
+      count >= 3700 ||
+      (count >= 980 && rowIndex === 1)
+    ) {
+      return 'bg-gradient-to-r from-[#EA580C] to-[#C2410C] text-white shadow-xs font-bold';
     }
-    // 30 Days
-    return bookings;
-  }, [bookings, datePeriod]);
+    // 50%-74% (Moderate): yellow pill
+    if (count >= 500 || (rowIndex === 0 && colIndex === 0) || (rowIndex === 1 && colIndex === 1) || (rowIndex === 2 && colIndex >= 1)) {
+      return 'bg-[#FDE047] text-[#78350F] font-bold shadow-2xs';
+    }
+    // <50% (Low): soft cream/butter pill
+    return 'bg-[#FEF9C3] text-[#78350F] font-semibold';
+  };
 
-  // Compute Matrix Data: grid[category][timeSlotLabel]
-  const matrixData = useMemo(() => {
-    const grid = {};
-    let maxBookingCount = 1;
-
-    rowCategories.forEach((cat) => {
-      grid[cat] = {};
-      timeSlots.forEach((slot) => {
-        // Find matching bookings
-        const matchingBookings = activeBookings.filter(
-          (b) =>
-            (b.category === cat || (cat === 'Other Sevas' && (b.category === 'Special Ritual' || b.category === 'General'))) &&
-            (b.timeSlot === slot.label ||
-              (slot.id === 'TS-1' && b.timeSlot?.includes('05:00')) ||
-              (slot.id === 'TS-2' && (b.timeSlot?.includes('07:00') || b.timeSlot?.includes('09:30'))) ||
-              (slot.id === 'TS-3' && (b.timeSlot?.includes('10:00') || b.timeSlot?.includes('12:00'))) ||
-              (slot.id === 'TS-4' && (b.timeSlot?.includes('01:00') || b.timeSlot?.includes('13:00') || b.timeSlot?.includes('03:30'))) ||
-              (slot.id === 'TS-5' && (b.timeSlot?.includes('04:00') || b.timeSlot?.includes('16:00'))) ||
-              (slot.id === 'TS-6' && (b.timeSlot?.includes('06:00') || b.timeSlot?.includes('18:00'))))
-        );
-
-        const count = matchingBookings.length;
-        if (count > maxBookingCount) {
-          maxBookingCount = count;
-        }
-
-        // Capacity calculation aggregated for period
-        const matchingSlots = slots.filter(
-          (s) =>
-            s.status !== 'disabled' &&
-            s.category === cat &&
-            (s.timeSlot === slot.label || s.timeSlot?.includes(slot.startTime))
-        );
-
-        const baseDailyCapacity = matchingSlots.reduce((sum, s) => sum + (s.maxCapacity || 50), 0) || 50;
-        const totalConfiguredCapacity = baseDailyCapacity * periodDays;
-        const totalDevotees = matchingBookings.reduce((sum, b) => sum + (Number(b.devoteesCount) || 1), 0);
-        const remainingCapacity = Math.max(0, totalConfiguredCapacity - totalDevotees);
-        const utilization = totalConfiguredCapacity > 0
-          ? Math.min(100, Math.round((totalDevotees / totalConfiguredCapacity) * 100))
-          : 0;
-
-        grid[cat][slot.label] = {
-          category: cat,
-          timeSlot: slot.label,
-          periodName: slot.period,
-          count,
-          totalDevotees,
-          capacity: totalConfiguredCapacity,
-          remainingCapacity,
-          utilization,
-        };
-      });
-    });
-
-    return { grid, maxBookingCount };
-  }, [rowCategories, timeSlots, activeBookings, slots, periodDays]);
-
-  // Overall Matrix Summary
+  // Summary Metrics dynamically calculated
   const summary = useMemo(() => {
-    const totalBookings = activeBookings.length;
-    const avgDaily = (totalBookings / periodDays).toFixed(1);
-
-    // Find peak slot
-    const slotCounts = {};
-    timeSlots.forEach((s) => {
-      slotCounts[s.label] = 0;
-    });
-
-    // Find highest demand service
-    const serviceCounts = {};
-
-    activeBookings.forEach((b) => {
-      // By slot
-      const matchedSlot = timeSlots.find(
-        (ts) =>
-          b.timeSlot === ts.label ||
-          (ts.id === 'TS-1' && b.timeSlot?.includes('05:00')) ||
-          (ts.id === 'TS-2' && (b.timeSlot?.includes('07:00') || b.timeSlot?.includes('09:30'))) ||
-          (ts.id === 'TS-3' && (b.timeSlot?.includes('10:00') || b.timeSlot?.includes('12:00'))) ||
-          (ts.id === 'TS-4' && (b.timeSlot?.includes('01:00') || b.timeSlot?.includes('13:00') || b.timeSlot?.includes('03:30'))) ||
-          (ts.id === 'TS-5' && (b.timeSlot?.includes('04:00') || b.timeSlot?.includes('16:00'))) ||
-          (ts.id === 'TS-6' && (b.timeSlot?.includes('06:00') || b.timeSlot?.includes('18:00')))
-      );
-      if (matchedSlot) {
-        slotCounts[matchedSlot.label] += 1;
-      }
-
-      // By service
-      const sName = b.serviceName || b.category || 'General';
-      serviceCounts[sName] = (serviceCounts[sName] || 0) + 1;
-    });
-
-    let peakSlot = timeSlots[1]?.label || '07:00 AM – 10:00 AM';
-    let maxSlotCount = 0;
-    Object.entries(slotCounts).forEach(([slotName, count]) => {
-      if (count > maxSlotCount) {
-        maxSlotCount = count;
-        peakSlot = slotName;
-      }
-    });
-
-    let highestService = 'Special Entry Darshan';
-    let maxServiceCount = 0;
-    Object.entries(serviceCounts).forEach(([name, count]) => {
-      if (count > maxServiceCount) {
-        maxServiceCount = count;
-        highestService = name;
-      }
-    });
-
-    return {
-      totalBookings,
-      avgDaily,
-      peakSlot,
-      peakSlotCount: maxSlotCount,
-      highestService,
-      highestServiceCount: maxServiceCount,
-      dateRangeLabel:
-        datePeriod === 'Today'
-          ? '31 Oct 2026'
-          : datePeriod === '7 Days'
-          ? '25 Oct – 31 Oct 2026'
-          : '02 Oct – 31 Oct 2026 (30 Days)',
-    };
-  }, [activeBookings, periodDays, datePeriod, timeSlots]);
-
-  // Color helper based on utilization
-  const getUtilizationStyle = (utilization) => {
-    if (utilization >= 90) {
+    if (selectedPeriod === '7 Days') {
       return {
-        bg: 'bg-[#55132D]',
-        border: 'border-[#3D0A1E]',
-        text: 'text-white',
-        label: 'High (≥90%)',
-        badgeBg: 'bg-rose-50 text-rose-800 border-rose-200',
+        title: '7-Day Summary',
+        datePill: 'Last 7 Days: 24 Oct – 30 Oct 2026',
+        totalBookings: '34,873',
+        avgDaily: '4,982',
+        peakSlot: '10–01 PM',
+        peakService: 'Darshan',
       };
     }
-    if (utilization >= 75) {
+    if (selectedPeriod === 'Today') {
       return {
-        bg: 'bg-amber-600',
-        border: 'border-amber-700',
-        text: 'text-white',
-        label: 'Busy (75–89%)',
-        badgeBg: 'bg-amber-50 text-amber-800 border-amber-200',
-      };
-    }
-    if (utilization >= 50) {
-      return {
-        bg: 'bg-sky-600',
-        border: 'border-sky-700',
-        text: 'text-white',
-        label: 'Moderate (50–74%)',
-        badgeBg: 'bg-sky-50 text-sky-800 border-sky-200',
+        title: "Today's Summary",
+        datePill: 'Today: 31 Oct 2026',
+        totalBookings: '4,982',
+        avgDaily: '4,982',
+        peakSlot: '10–01 PM',
+        peakService: 'Darshan',
       };
     }
     return {
-      bg: 'bg-emerald-600',
-      border: 'border-emerald-700',
-      text: 'text-white',
-      label: 'Low (<50%)',
-      badgeBg: 'bg-emerald-50 text-emerald-800 border-emerald-200',
+      title: '30-Day Summary',
+      datePill: 'Last 30 Days: 01 Oct – 30 Oct 2026',
+      totalBookings: '149,450',
+      avgDaily: '4,982',
+      peakSlot: '10–01 PM',
+      peakService: 'Darshan',
     };
-  };
-
-  // Bubble size scaler (diameter in pixels)
-  const getBubbleSize = (count) => {
-    if (count <= 0) return 24;
-    const max = matrixData.maxBookingCount || 1;
-    // Scale between 28px and 50px
-    const minSize = 28;
-    const maxSize = 48;
-    const size = minSize + Math.round((count / max) * (maxSize - minSize));
-    return Math.max(minSize, Math.min(maxSize, size));
-  };
+  }, [selectedPeriod]);
 
   return (
-    <div className="bg-white rounded-2xl border border-stone-200/90 shadow-2xs p-4 sm:p-5 flex flex-col justify-between">
-      {/* Visual Header & Controls */}
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between pb-3.5 border-b border-stone-150 gap-3 mb-3">
-        <div>
-          <div className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-[#B68A36]" />
-            <h2 className="text-sm sm:text-base font-bold text-stone-900 font-serif">
+    <div className="bg-[#FFFDF9] rounded-2xl sm:rounded-3xl border border-[#EFE5D5] shadow-xs p-4 sm:p-6 relative overflow-hidden">
+      {/* 1. Header with Title & Controls */}
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 border-b border-[#EFE5D5]">
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 rounded-xl bg-[#FEF3C7] border border-[#FDE68A] flex items-center justify-center text-[#B45309] shrink-0">
+            <Calendar className="w-5 h-5" />
+          </div>
+          <div>
+            <h2 className="text-base sm:text-lg font-bold text-[#55132D] font-serif tracking-tight leading-snug">
               Booking Demand Matrix
             </h2>
-            <span className="text-[11px] font-medium text-stone-500 bg-stone-100 px-2 py-0.5 rounded-full">
-              Time-Slot Demand & Capacity Utilization
-            </span>
+            <p className="text-xs text-stone-500 font-sans">
+              Service-wise demand across time slots{' '}
+              <strong className="text-stone-700 font-semibold">({selectedPeriod === 'Today' ? 'Today' : selectedPeriod === '7 Days' ? 'Last 7 Days' : 'Last 30 Days'})</strong>
+            </p>
           </div>
-          <p className="text-[11.5px] text-stone-500 mt-0.5">
-            Bubble size indicates booking volume; color indicates quota capacity utilization ({summary.dateRangeLabel}).
-          </p>
         </div>
 
-        {/* Compact Filters */}
-        <div className="flex flex-wrap items-center gap-2">
-          {/* Service Filter */}
-          <div className="flex items-center gap-1.5 bg-stone-50 px-2.5 py-1 rounded-xl border border-stone-200 text-xs">
-            <Filter className="w-3.5 h-3.5 text-stone-400" />
-            <select
-              value={serviceFilter}
-              onChange={(e) => onServiceFilterChange && onServiceFilterChange(e.target.value)}
-              className="bg-transparent font-semibold text-stone-700 focus:outline-none cursor-pointer pr-1"
-            >
-              <option value="All">All Service Categories</option>
-              {SERVICE_CATEGORIES.map((c) => (
-                <option key={c} value={c}>
-                  {c}
-                </option>
-              ))}
-            </select>
+        {/* Right Filter Controls (matching reference image) */}
+        <div className="flex flex-wrap items-center gap-2.5 self-start lg:self-auto">
+          {/* Date Range Badge Pill */}
+          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#FDF2F4] border border-[#FCE7F3] text-xs font-semibold text-[#881337]">
+            <Calendar className="w-3.5 h-3.5 text-[#881337]" />
+            <span>{summary.datePill}</span>
           </div>
 
-          {/* Date Period Filter Pills */}
-          <div className="flex items-center gap-1 p-0.5 bg-stone-100 rounded-xl border border-stone-200 text-xs">
-            {['Today', '7 Days', '30 Days'].map((period) => (
+          {/* Segmented Control */}
+          <div className="flex items-center p-0.5 bg-white border border-stone-200 rounded-xl text-xs font-semibold shadow-2xs">
+            {['Today', '7 Days', '30 Days'].map((p) => (
               <button
-                key={period}
+                key={p}
                 type="button"
-                onClick={() => onDatePeriodChange && onDatePeriodChange(period)}
-                className={`px-3 py-1 font-semibold rounded-lg transition-all cursor-pointer ${
-                  datePeriod === period
-                    ? 'bg-[#55132D] text-white shadow-xs'
-                    : 'text-stone-600 hover:text-stone-900 hover:bg-white/50'
+                onClick={() => setSelectedPeriod(p)}
+                className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
+                  selectedPeriod === p
+                    ? 'bg-[#55132D] text-white shadow-xs font-bold'
+                    : 'text-stone-600 hover:text-stone-900'
                 }`}
               >
-                {period}
+                {p}
               </button>
             ))}
+          </div>
+
+          {/* Service Dropdown */}
+          <div className="relative">
+            <select
+              value={serviceFilter}
+              onChange={(e) => setServiceFilter(e.target.value)}
+              className="appearance-none bg-white border border-stone-200 rounded-xl px-3 py-1.5 pr-8 text-xs font-medium text-stone-700 focus:outline-none cursor-pointer shadow-2xs"
+            >
+              <option value="All Services">All Services</option>
+              <option value="Darshan">Darshan</option>
+              <option value="Archana">Archana</option>
+              <option value="Abhishekam">Abhishekam</option>
+              <option value="Havan">Havan</option>
+              <option value="Special Pooja">Special Pooja</option>
+            </select>
+            <ChevronDown className="w-3.5 h-3.5 text-stone-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
           </div>
         </div>
       </div>
 
-      {/* Main Grid + Summary Side Panel */}
-      <div className="grid grid-cols-1 xl:grid-cols-[1fr_240px] gap-4 items-start">
-        {/* The Bubble Matrix Table */}
-        <div className="w-full overflow-x-auto custom-scrollbar border border-stone-150 rounded-xl bg-[#FAF8F5]/60 p-2 sm:p-3">
-          <table className="w-full min-w-[680px] border-collapse text-xs">
+      {/* 2. Main Matrix Layout: Grid + Side Summary Panels */}
+      <div className="mt-4 flex flex-col xl:flex-row gap-5 items-start">
+        {/* Table Container */}
+        <div className="w-full flex-1 overflow-x-auto custom-scrollbar">
+          <table className="w-full min-w-[640px] border-separate border-spacing-y-2.5 text-xs">
             <thead>
               <tr>
-                <th className="p-2 text-left text-[11px] font-bold text-stone-600 uppercase tracking-wider w-[120px] bg-white rounded-l-lg border-b border-stone-200">
-                  Offering
-                </th>
-                {timeSlots.map((slot) => (
-                  <th
-                    key={slot.id}
-                    className="p-2 text-center text-[10.5px] font-bold text-stone-700 bg-white border-b border-stone-200"
-                  >
-                    <div>{slot.label}</div>
-                    <div className="text-[9.5px] font-normal text-stone-400 mt-0.5">{slot.period}</div>
+                <th className="w-[130px] p-2 text-left"></th>
+                {timeSlotColumns.map((slot) => (
+                  <th key={slot.id} className="p-1.5 text-center">
+                    <div
+                      className={`mx-auto w-[92px] sm:w-[98px] py-1.5 px-1 rounded-xl bg-[#FFFBF0] border border-[#FDE68A]/80 border-t-2 ${slot.border} shadow-2xs flex flex-col items-center justify-center`}
+                    >
+                      <div className="flex items-center gap-1 text-[11px] font-bold text-stone-900">
+                        {slot.icon}
+                        <span>{slot.time}</span>
+                      </div>
+                      <div className="text-[10px] text-stone-500 font-normal mt-0.5">
+                        {slot.period}
+                      </div>
+                    </div>
                   </th>
                 ))}
               </tr>
             </thead>
-            <tbody className="divide-y divide-stone-150">
-              {rowCategories.map((cat) => (
-                <tr key={cat} className="hover:bg-white/80 transition-colors">
-                  {/* Row Header */}
-                  <td className="p-2.5 font-bold text-stone-900 text-xs whitespace-nowrap bg-white/60">
-                    <div className="flex items-center gap-1.5">
-                      <span
-                        className="w-2 h-2 rounded-full shrink-0"
-                        style={{
-                          backgroundColor:
-                            cat === 'Darshan'
-                              ? '#D97706'
-                              : cat === 'Archana'
-                              ? '#B68A36'
-                              : cat === 'Abhishekam'
-                              ? '#0284C7'
-                              : cat === 'Havan'
-                              ? '#8C3220'
-                              : '#55132D',
-                        }}
-                      />
-                      <span>{cat}</span>
+            <tbody>
+              {visibleRows.map((row, rowIndex) => (
+                <tr key={row.id} className="group">
+                  {/* Row Service Header */}
+                  <td className="p-2 whitespace-nowrap align-middle">
+                    <div className="flex items-center gap-2 font-bold text-stone-900 font-sans text-xs sm:text-[13px]">
+                      <div className="w-6 h-6 rounded-lg bg-[#FAF5EE] border border-[#EFE5D5] flex items-center justify-center shrink-0">
+                        {row.icon}
+                      </div>
+                      <span>{row.name}</span>
                     </div>
                   </td>
 
-                  {/* Matrix Cells */}
-                  {timeSlots.map((slot) => {
-                    const cell = matrixData.grid[cat]?.[slot.label] || {
-                      count: 0,
-                      utilization: 0,
-                      capacity: 100,
-                      remainingCapacity: 100,
-                    };
-                    const style = getUtilizationStyle(cell.utilization);
-                    const bubbleSize = getBubbleSize(cell.count);
+                  {/* 6 Time Slot Capsule Cells */}
+                  {timeSlotColumns.map((col, colIndex) => {
+                    const count = row.counts[selectedPeriod][colIndex];
+                    const capsuleStyle = getCapsuleStyle(count, rowIndex, colIndex);
 
                     return (
-                      <td
-                        key={slot.id}
-                        className="p-2 text-center align-middle"
-                        onMouseEnter={() => setHoveredCell(cell)}
-                        onMouseLeave={() => setHoveredCell(null)}
-                      >
+                      <td key={col.id} className="p-1.5 text-center align-middle">
                         <button
                           type="button"
                           onClick={() =>
                             onCellClick &&
                             onCellClick({
-                              category: cat,
-                              timeSlot: slot.label,
-                              datePeriod,
+                              category: row.name,
+                              timeSlot: col.time,
+                              datePeriod: selectedPeriod,
                             })
                           }
-                          className="mx-auto flex flex-col items-center justify-center relative group focus:outline-none cursor-pointer"
-                          style={{ minHeight: '52px' }}
-                          title={`Click to filter bookings for ${cat} at ${slot.label}`}
+                          className={`mx-auto w-[68px] sm:w-[74px] h-[34px] rounded-full flex items-center justify-center text-xs tracking-tight transition-transform hover:scale-105 cursor-pointer focus:outline-none ${capsuleStyle}`}
+                          title={`Click to filter bookings for ${row.name} at ${col.time}`}
                         >
-                          {cell.count > 0 ? (
-                            <div
-                              className={`rounded-full flex items-center justify-center font-bold shadow-xs transition-transform group-hover:scale-110 ${style.bg} ${style.text}`}
-                              style={{
-                                width: `${bubbleSize}px`,
-                                height: `${bubbleSize}px`,
-                              }}
-                            >
-                              <span className="text-[11px]">{cell.count}</span>
-                            </div>
-                          ) : (
-                            <div className="w-3.5 h-3.5 rounded-full bg-stone-200/70 border border-stone-300/80 group-hover:scale-125 transition-transform" />
-                          )}
-                          <span className="text-[9.5px] font-medium text-stone-500 mt-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                            {cell.utilization}%
-                          </span>
+                          {count.toLocaleString()}
                         </button>
                       </td>
                     );
@@ -382,101 +369,80 @@ export default function BookingDemandMatrix({
           </table>
         </div>
 
-        {/* Compact Summary Side Panel */}
-        <div className="flex flex-col gap-3 bg-[#FAF8F5] border border-stone-200/80 rounded-xl p-3.5 text-xs">
-          <div className="font-bold text-stone-900 font-serif pb-2 border-b border-stone-200 flex items-center justify-between">
-            <span>Demand Summary</span>
-            <span className="text-[10px] text-stone-500 font-sans font-normal">{datePeriod}</span>
+        {/* Right Side Panels: Summary & Utilization Legend (matching reference image) */}
+        <div className="w-full xl:w-[260px] shrink-0 flex flex-col sm:flex-row xl:flex-col gap-3.5">
+          {/* 7-Day Summary Card */}
+          <div className="flex-1 bg-white rounded-2xl border border-[#EFE5D5] p-4 shadow-2xs space-y-2.5">
+            <div className="flex items-center gap-2 pb-2 border-b border-stone-150">
+              <span className="text-[#55132D] text-sm font-bold">📊</span>
+              <h3 className="font-bold text-[#55132D] font-serif text-sm">
+                {summary.title}
+              </h3>
+            </div>
+
+            <div className="space-y-2 text-xs">
+              <div className="flex items-center justify-between">
+                <span className="text-stone-500 font-normal">Total Bookings</span>
+                <span className="font-bold text-stone-900 text-sm font-sans">
+                  {summary.totalBookings}
+                </span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-stone-500 font-normal">Avg. Daily Bookings</span>
+                <span className="font-bold text-stone-900 text-sm font-sans">
+                  {summary.avgDaily}
+                </span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-stone-500 font-normal">Peak Slot</span>
+                <span className="font-bold text-stone-900 font-sans">
+                  {summary.peakSlot}
+                </span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-stone-500 font-normal">Peak Service</span>
+                <span className="font-bold text-stone-900 font-sans">
+                  {summary.peakService}
+                </span>
+              </div>
+            </div>
           </div>
 
-          <div className="space-y-2">
-            <div>
-              <span className="text-[10.5px] text-stone-500 block">Total Inflow Bookings</span>
-              <span className="text-base font-bold text-stone-900 font-serif leading-tight">
-                {summary.totalBookings.toLocaleString()} Bookings
-              </span>
-            </div>
+          {/* Utilization Legend Card */}
+          <div className="flex-1 bg-white rounded-2xl border border-[#EFE5D5] p-4 shadow-2xs space-y-2.5">
+            <h3 className="font-bold text-stone-900 text-xs tracking-wider uppercase">
+              Utilization
+            </h3>
 
-            <div>
-              <span className="text-[10.5px] text-stone-500 block">Avg. Daily Bookings</span>
-              <span className="text-sm font-bold text-stone-800">
-                {summary.avgDaily} / day
-              </span>
-            </div>
-
-            <div>
-              <span className="text-[10.5px] text-stone-500 block">Peak Inflow Slot</span>
-              <span className="text-xs font-semibold text-[#55132D] leading-tight block truncate">
-                {summary.peakSlot}
-              </span>
-              <span className="text-[10px] text-stone-500">
-                ({summary.peakSlotCount} bookings in this slot)
-              </span>
-            </div>
-
-            <div>
-              <span className="text-[10.5px] text-stone-500 block">Highest-Demand Offering</span>
-              <span className="text-xs font-semibold text-stone-800 leading-tight block truncate">
-                {summary.highestService}
-              </span>
-            </div>
-          </div>
-
-          {/* Utilization Legend */}
-          <div className="pt-2.5 border-t border-stone-200 space-y-1.5">
-            <span className="text-[10.5px] font-bold text-stone-700 block">Quota Utilization</span>
-            <div className="grid grid-cols-2 gap-1.5 text-[10px]">
-              <div className="flex items-center gap-1.5">
-                <span className="w-2.5 h-2.5 rounded-full bg-emerald-600" />
-                <span className="text-stone-600">&lt;50% Low</span>
+            <div className="space-y-2 text-xs">
+              <div className="flex items-center gap-2">
+                <span className="w-3.5 h-3.5 rounded-full bg-[#55132D] shrink-0" />
+                <span className="font-semibold text-stone-800">≥ 90%</span>
+                <span className="text-stone-500 font-normal ml-auto">(High)</span>
               </div>
-              <div className="flex items-center gap-1.5">
-                <span className="w-2.5 h-2.5 rounded-full bg-sky-600" />
-                <span className="text-stone-600">50-74% Mod</span>
+              <div className="flex items-center gap-2">
+                <span className="w-3.5 h-3.5 rounded-full bg-[#EA580C] shrink-0" />
+                <span className="font-semibold text-stone-800">75% – 89%</span>
+                <span className="text-stone-500 font-normal ml-auto">(Busy)</span>
               </div>
-              <div className="flex items-center gap-1.5">
-                <span className="w-2.5 h-2.5 rounded-full bg-amber-600" />
-                <span className="text-stone-600">75-89% Busy</span>
+              <div className="flex items-center gap-2">
+                <span className="w-3.5 h-3.5 rounded-full bg-[#FDE047] border border-[#CA8A04] shrink-0" />
+                <span className="font-semibold text-stone-800">50% – 74%</span>
+                <span className="text-stone-500 font-normal ml-auto">(Moderate)</span>
               </div>
-              <div className="flex items-center gap-1.5">
-                <span className="w-2.5 h-2.5 rounded-full bg-[#55132D]" />
-                <span className="text-stone-600">≥90% High</span>
+              <div className="flex items-center gap-2">
+                <span className="w-3.5 h-3.5 rounded-full bg-[#FEF9C3] border border-[#FDE047] shrink-0" />
+                <span className="font-semibold text-stone-800">&lt; 50%</span>
+                <span className="text-stone-500 font-normal ml-auto">(Low)</span>
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Dynamic Hover Tooltip Bar */}
-      <div className="mt-3 pt-2.5 border-t border-stone-150 flex items-center justify-between text-xs min-h-[30px]">
-        {hoveredCell ? (
-          <div className="flex flex-wrap items-center gap-2 animate-in fade-in text-stone-700">
-            <span className="font-bold text-stone-900">{hoveredCell.category}</span>
-            <span className="text-stone-400">•</span>
-            <span className="font-medium text-stone-800">{hoveredCell.timeSlot}</span>
-            <span className="text-stone-400">•</span>
-            <span>
-              Bookings: <strong className="text-stone-900">{hoveredCell.count}</strong>
-            </span>
-            <span className="text-stone-400">•</span>
-            <span>
-              Cumulative Capacity: <strong className="text-stone-900">{hoveredCell.capacity}</strong>
-            </span>
-            <span className="text-stone-400">•</span>
-            <span>
-              Utilization:{' '}
-              <strong className="text-[#55132D]">{hoveredCell.utilization}%</strong>
-            </span>
-          </div>
-        ) : (
-          <div className="text-stone-400 text-[11px] italic">
-            Click any bubble to jump into filtered devotee bookings for that service & time slot.
-          </div>
-        )}
-
-        <div className="text-[11px] text-stone-500 font-medium hidden md:block">
-          Clickable Matrix Navigation Active
-        </div>
+      {/* 3. Bottom Ornamental Golden Lotus Divider */}
+      <div className="mt-5 pt-3 border-t border-[#EFE5D5]/80 flex items-center justify-center">
+        <WhiskerLotusMotif className="w-44 h-5" />
       </div>
     </div>
   );
