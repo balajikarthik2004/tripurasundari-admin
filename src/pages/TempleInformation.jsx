@@ -370,7 +370,7 @@ export default function TempleInformation() {
       item: {
         title: '',
         category: 'Main Temple',
-        imageUrl: '/matabari-premises-1.jpg',
+        imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/b/be/Tripura_Sundari_Temple%2C_Udaipur.jpg',
         description: '',
         status: 'Published',
       },
@@ -908,6 +908,11 @@ export default function TempleInformation() {
                     <img
                       src={item.imageUrl}
                       alt={item.title}
+                      loading="lazy"
+                      onError={(e) => {
+                        e.currentTarget.onerror = null;
+                        e.currentTarget.src = '/matabari-premises-1.jpg';
+                      }}
                       className="w-full h-full object-cover group-hover:scale-103 transition-transform duration-300"
                     />
                     <div className="absolute top-2 left-2 bg-black/60 backdrop-blur-xs text-white text-[9.5px] font-bold px-2 py-0.5 rounded-md">
@@ -1555,24 +1560,63 @@ export default function TempleInformation() {
                 </div>
                 <div>
                   <label className="block font-semibold text-stone-700 mb-1">
-                    Image File / Preset
+                    Image URL or Photo Link
                   </label>
-                  <select
-                    value={galleryModal.item?.imageUrl || '/matabari-premises-1.jpg'}
+                  <input
+                    type="url"
+                    value={galleryModal.item?.imageUrl || ''}
                     onChange={(e) =>
                       setGalleryModal({
                         ...galleryModal,
                         item: { ...galleryModal.item, imageUrl: e.target.value },
                       })
                     }
+                    placeholder="https://... or choose preset below"
                     className="w-full px-3 py-2 border border-stone-300 rounded-xl bg-stone-50 focus:outline-none focus:border-[#55132D]"
-                  >
-                    <option value="/matabari-premises-1.jpg">Temple Courtyard Archways</option>
-                    <option value="/matabari-premises-2.jpg">Outer Sanctum Corridors</option>
-                    <option value="/matabari-temple-main.png">Historic Sanctum Dome</option>
-                  </select>
+                  />
+                  <div className="mt-1.5 flex items-center gap-1.5 text-[11px] text-stone-500">
+                    <span className="font-medium text-stone-600">Preset:</span>
+                    <select
+                      onChange={(e) => {
+                        if (e.target.value) {
+                          setGalleryModal({
+                            ...galleryModal,
+                            item: { ...galleryModal.item, imageUrl: e.target.value },
+                          });
+                        }
+                      }}
+                      className="text-[11px] border border-stone-200 rounded-lg px-2 py-0.5 bg-white text-stone-700 focus:outline-none"
+                    >
+                      <option value="">-- Quick Choose Preset --</option>
+                      <option value="https://upload.wikimedia.org/wikipedia/commons/b/be/Tripura_Sundari_Temple%2C_Udaipur.jpg">Sanctum Dome at Sunrise</option>
+                      <option value="https://upload.wikimedia.org/wikipedia/commons/e/e2/Kalyan_Sagar.JPG">Sacred Kalyan Sagar Lake</option>
+                      <option value="https://upload.wikimedia.org/wikipedia/commons/4/4d/Goddess_Tripureswari.jpg">Deity Idol Vigraha</option>
+                      <option value="https://upload.wikimedia.org/wikipedia/commons/1/1d/Matabari_Mela.jpg">Matabari Diwali Mela</option>
+                      <option value="https://images.unsplash.com/photo-1609766857041-ed402ea8069a?auto=format&fit=crop&w=1200&q=80">Aarti Deepas & Lamps</option>
+                      <option value="/matabari-premises-1.jpg">Local Courtyard Premises</option>
+                      <option value="/matabari-main.jpg">Temple Main Entrance</option>
+                    </select>
+                  </div>
                 </div>
               </div>
+
+              {/* Live Preview in Modal */}
+              {galleryModal.item?.imageUrl && (
+                <div className="relative aspect-[16/8] w-full rounded-xl overflow-hidden border border-stone-200 bg-stone-100">
+                  <img
+                    src={galleryModal.item.imageUrl}
+                    alt="Preview"
+                    onError={(e) => {
+                      e.currentTarget.onerror = null;
+                      e.currentTarget.src = '/matabari-premises-1.jpg';
+                    }}
+                    className="w-full h-full object-cover"
+                  />
+                  <span className="absolute bottom-1.5 right-2 bg-black/60 text-white text-[9.5px] px-2 py-0.5 rounded font-medium">
+                    Live Photo Preview
+                  </span>
+                </div>
+              )}
 
               <div>
                 <label className="block font-semibold text-stone-700 mb-1">
