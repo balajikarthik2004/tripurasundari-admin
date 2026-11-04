@@ -9,7 +9,18 @@ export default function CrowdStatusCard() {
   // Circular gauge geometry in 200x200 viewBox: radius 58 -> circumference ≈ 364.42
   const radius = 58;
   const circumference = 2 * Math.PI * radius;
-  const strokeDashoffset = circumference - (occupancyPercent / 100) * circumference;
+
+  // Smooth loading animation from top (0%) to target capacity (56%)
+  const [progressPercent, setProgressPercent] = React.useState(0);
+
+  React.useEffect(() => {
+    const timer = setTimeout(() => {
+      setProgressPercent(occupancyPercent);
+    }, 150);
+    return () => clearTimeout(timer);
+  }, [occupancyPercent]);
+
+  const strokeDashoffset = circumference - (progressPercent / 100) * circumference;
 
   return (
     <div className="bg-white rounded-2xl border border-[#E8E2D8] shadow-xs p-4 sm:p-5 flex flex-col justify-between h-full overflow-hidden">
@@ -92,7 +103,7 @@ export default function CrowdStatusCard() {
                 fill="none"
               />
 
-              {/* Bold Amber-to-Saffron Capacity Progress Arc (56%) */}
+              {/* Animated Amber-to-Saffron Capacity Progress Arc (Starts from top to 56%) */}
               <circle
                 cx="100"
                 cy="100"
@@ -103,6 +114,9 @@ export default function CrowdStatusCard() {
                 strokeDashoffset={strokeDashoffset}
                 strokeLinecap="round"
                 fill="none"
+                style={{
+                  transition: 'stroke-dashoffset 1.4s cubic-bezier(0.16, 1, 0.3, 1)',
+                }}
               />
             </g>
 
