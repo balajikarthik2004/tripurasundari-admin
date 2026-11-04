@@ -47,7 +47,7 @@ function WhiskerGoldenLotus({ className = 'w-9 h-2.5' }) {
 export default function CrowdStatusCard() {
   const { currentInside, maxCapacity, occupancyPercent, status, entrances } = DEVOTEE_FLOW_DATA;
 
-  // Prominent circular gauge geometry: increased radius 68 in 200x200 viewBox (outer ring at r=74.5)
+  // Prominent circular gauge geometry: radius 68 in 200x200 viewBox (outer ring at r=74.5)
   // Circumference = 2 * Math.PI * 68 ≈ 427.26
   const radius = 68;
   const circumference = 2 * Math.PI * radius;
@@ -78,10 +78,10 @@ export default function CrowdStatusCard() {
         </div>
       </div>
 
-      {/* 2. Top Section: 2-Column CSS Grid - Larger Gauge + Compact Hugging Petals */}
-      <div className="grid grid-cols-[165px_minmax(0,1fr)] sm:grid-cols-[170px_minmax(0,1fr)] gap-2 sm:gap-2.5 items-center py-1">
-        {/* Left Column: Enlarged Capacity Gauge with Compact Floral Petal Collar */}
-        <div className="relative w-[165px] h-[165px] sm:w-[170px] sm:h-[170px] shrink-0 flex items-center justify-center">
+      {/* 2. Top Section: 2-Column CSS Grid - Perfectly Balanced Proportions */}
+      <div className="grid grid-cols-[144px_1fr] sm:grid-cols-[148px_1fr] gap-3 sm:gap-4 items-center py-1">
+        {/* Left Column: Capacity Gauge with Compact Floral Petal Collar */}
+        <div className="relative w-[144px] h-[144px] sm:w-[148px] sm:h-[148px] shrink-0 flex items-center justify-center">
           <svg className="w-full h-full overflow-visible" viewBox="0 0 200 200">
             <defs>
               {/* Vibrant Amber-to-Saffron Capacity Arc Gradient */}
@@ -187,20 +187,20 @@ export default function CrowdStatusCard() {
 
           {/* LAYER 4: 56% / Capacity / Whisker Lotus in Spacious Ivory Centre */}
           <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-            <span className="text-[28px] sm:text-[30px] font-bold font-number text-[#55132D] tracking-tight leading-none">
+            <span className="text-[26px] sm:text-[28px] font-bold font-number text-[#55132D] tracking-tight leading-none">
               <AnimatedCounter value={`${occupancyPercent}%`} />
             </span>
-            <span className="text-[11px] sm:text-[11.5px] font-serif font-medium text-stone-700 tracking-tight mt-0.5">
+            <span className="text-[11px] font-serif font-medium text-stone-700 tracking-tight mt-0.5">
               Capacity
             </span>
-            <div className="mt-1">
-              <WhiskerGoldenLotus className="w-9 h-2.5" />
+            <div className="mt-0.5">
+              <WhiskerGoldenLotus className="w-8 h-2.5" />
             </div>
           </div>
         </div>
 
-        {/* Right Column: Clean Occupancy Numbers & Status (Properly padded, no overflow) */}
-        <div className="min-w-0 flex flex-col justify-center space-y-2 pl-2.5 sm:pl-3 border-l border-[#E8E2D8]">
+        {/* Right Column: Centered, Balanced Occupancy Numbers & Status */}
+        <div className="min-w-0 flex flex-col justify-center space-y-2 pl-3 sm:pl-4 border-l border-[#E8E2D8]">
           {/* Metric Count: Tabular numbers on single line */}
           <div>
             <div className="text-[25px] sm:text-[27px] font-bold font-number text-[#55132D] leading-none whitespace-nowrap flex items-baseline">
