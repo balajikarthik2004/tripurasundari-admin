@@ -6,7 +6,6 @@ import {
   Ticket,
   Plus,
   CalendarCheck,
-  CheckCircle2,
 } from 'lucide-react';
 import { DarshanBookingProvider, useDarshanBookings } from '../context/DarshanBookingContext';
 import BookingOverviewTab from '../components/bookings/BookingOverviewTab';
@@ -52,37 +51,43 @@ function SacredServicesContent() {
 
   return (
     <div className="space-y-5 pb-12">
-      {/* Top Page Header */}
-      <div className="bg-white rounded-2xl border border-stone-200/90 p-4 sm:p-5 shadow-2xs flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-[#55132D]/10 text-[#55132D] flex items-center justify-center shrink-0">
-              <CalendarCheck className="w-4 h-4" />
-            </div>
-            <h1 className="text-xl sm:text-2xl font-bold text-stone-900 tracking-tight font-serif">
+      {/* ========================================================
+          TOP STICKY NAVIGATION BAR (Prominent, Fixed & Accessible)
+         ======================================================== */}
+      <header className="sticky top-0 z-30 bg-[#F8F5EF]/95 backdrop-blur-md py-2.5 -mt-2 -mx-4 px-4 sm:-mx-5 sm:px-5 lg:-mx-6 lg:px-6 border-b border-stone-200/80 shadow-2xs flex flex-col md:flex-row md:items-center justify-between gap-3 transition-all">
+        {/* Left: Module Title & Context */}
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 rounded-xl bg-[#55132D] text-white flex items-center justify-center shadow-xs shrink-0">
+            <CalendarCheck className="w-5 h-5 text-[#E2BC6B]" />
+          </div>
+          <div>
+            <h1 className="text-base sm:text-lg font-bold text-stone-900 font-serif leading-tight">
               Bookings & Sacred Services
             </h1>
+            <p className="text-[11px] text-stone-500 font-sans hidden sm:block">
+              Administrative booking governance & live devotee demand analytics
+            </p>
           </div>
-          <p className="text-xs text-stone-500 mt-1 ml-10">
-            Administrative booking governance, seva catalogue, slot quotas, and live devotee demand analytics.
-          </p>
         </div>
 
-        {/* Right Section: Primary 3 Navigation Tabs + Action Button */}
-        <div className="flex flex-wrap items-center gap-2.5 shrink-0 self-start md:self-auto">
-          {/* Strictly 3 Primary Tabs: Overview, Services, Bookings */}
-          <div className="flex items-center gap-1 p-1 bg-stone-100 rounded-xl border border-stone-200/80 text-xs">
+        {/* Center / Right: Primary Navigation Pill Bar (Overview | Services | Bookings) */}
+        <div className="flex items-center gap-3 self-start md:self-auto">
+          {/* Exactly matches user reference image pill container */}
+          <nav
+            aria-label="Bookings module primary navigation"
+            className="inline-flex items-center gap-1 p-1 bg-white/90 backdrop-blur-xs rounded-2xl sm:rounded-full border border-stone-200/90 shadow-2xs text-xs sm:text-sm"
+          >
             {/* TAB 1: OVERVIEW */}
             <button
               type="button"
               onClick={() => handleTabChange('overview')}
-              className={`px-3.5 sm:px-4 py-2 font-bold rounded-lg transition-all flex items-center gap-2 whitespace-nowrap cursor-pointer ${
+              className={`px-4 py-2 font-bold rounded-xl sm:rounded-full transition-all flex items-center gap-2 whitespace-nowrap cursor-pointer select-none ${
                 activeTab === 'overview'
                   ? 'bg-[#55132D] text-white shadow-xs'
-                  : 'text-stone-600 hover:text-stone-900'
+                  : 'text-stone-700 hover:text-stone-900 hover:bg-stone-100/70'
               }`}
             >
-              <BarChart3 className="w-3.5 h-3.5 text-[#E2BC6B]" />
+              <BarChart3 className={`w-4 h-4 ${activeTab === 'overview' ? 'text-[#E2BC6B]' : 'text-[#C88728]'}`} />
               <span>Overview</span>
             </button>
 
@@ -90,13 +95,13 @@ function SacredServicesContent() {
             <button
               type="button"
               onClick={() => handleTabChange('services')}
-              className={`px-3.5 sm:px-4 py-2 font-bold rounded-lg transition-all flex items-center gap-2 whitespace-nowrap cursor-pointer ${
+              className={`px-4 py-2 font-bold rounded-xl sm:rounded-full transition-all flex items-center gap-2 whitespace-nowrap cursor-pointer select-none ${
                 activeTab === 'services'
                   ? 'bg-[#55132D] text-white shadow-xs'
-                  : 'text-stone-600 hover:text-stone-900'
+                  : 'text-stone-700 hover:text-stone-900 hover:bg-stone-100/70'
               }`}
             >
-              <Layers className="w-3.5 h-3.5 text-[#E2BC6B]" />
+              <Layers className={`w-4 h-4 ${activeTab === 'services' ? 'text-[#E2BC6B]' : 'text-[#C88728]'}`} />
               <span>Services</span>
             </button>
 
@@ -104,31 +109,37 @@ function SacredServicesContent() {
             <button
               type="button"
               onClick={() => handleTabChange('bookings')}
-              className={`px-3.5 sm:px-4 py-2 font-bold rounded-lg transition-all flex items-center gap-2 whitespace-nowrap cursor-pointer ${
+              className={`px-4 py-2 font-bold rounded-xl sm:rounded-full transition-all flex items-center gap-2 whitespace-nowrap cursor-pointer select-none ${
                 activeTab === 'bookings'
                   ? 'bg-[#55132D] text-white shadow-xs'
-                  : 'text-stone-600 hover:text-stone-900'
+                  : 'text-stone-700 hover:text-stone-900 hover:bg-stone-100/70'
               }`}
             >
-              <Ticket className="w-3.5 h-3.5 text-[#E2BC6B]" />
+              <Ticket className={`w-4 h-4 ${activeTab === 'bookings' ? 'text-[#E2BC6B]' : 'text-[#C88728]'}`} />
               <span>Bookings</span>
-              <span className="text-[10px] bg-white/20 px-1.5 py-0.2 rounded-full font-sans font-bold">
+              <span
+                className={`text-[11px] px-2 py-0.5 rounded-full font-bold font-sans ml-0.5 ${
+                  activeTab === 'bookings'
+                    ? 'bg-white/20 text-white'
+                    : 'bg-stone-100 text-stone-800'
+                }`}
+              >
                 {bookings.length}
               </span>
             </button>
-          </div>
+          </nav>
 
           {/* Quick Create Booking Button */}
           <button
             type="button"
             onClick={() => setIsCreateOpen(true)}
-            className="px-3.5 py-2 bg-[#55132D] hover:bg-[#681B37] text-white text-xs font-bold rounded-xl shadow-xs flex items-center gap-1.5 transition-colors cursor-pointer"
+            className="px-3.5 py-2 bg-[#55132D] hover:bg-[#681B37] text-white text-xs font-bold rounded-xl sm:rounded-full shadow-xs flex items-center gap-1.5 transition-colors cursor-pointer shrink-0"
           >
             <Plus className="w-3.5 h-3.5 text-[#E2BC6B]" />
-            <span>New Booking</span>
+            <span className="hidden sm:inline">New Booking</span>
           </button>
         </div>
-      </div>
+      </header>
 
       {/* ========================================================
           SECTION 1: OVERVIEW — Booking Analytics
