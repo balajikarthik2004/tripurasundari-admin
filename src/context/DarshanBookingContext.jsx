@@ -1,18 +1,41 @@
 import React, { createContext, useContext, useState, useMemo } from 'react';
-import { INITIAL_DARSHAN_BOOKINGS } from '../data/darshanBookings';
-import { INITIAL_DARSHAN_SERVICES } from '../data/darshanServices';
-import { INITIAL_DARSHAN_SLOTS } from '../data/darshanSlots';
+import {
+  INITIAL_UNIFIED_BOOKINGS,
+  INITIAL_UNIFIED_SERVICES,
+  INITIAL_UNIFIED_SLOTS,
+  STANDARD_TIME_SLOTS,
+  SERVICE_CATEGORIES,
+} from '../data/unifiedBookingsData';
 import { INITIAL_CANCELLATIONS } from '../data/cancellationRequests';
 
 const DarshanBookingContext = createContext(null);
 
 export function DarshanBookingProvider({ children }) {
-  const [bookings, setBookings] = useState(INITIAL_DARSHAN_BOOKINGS);
-  const [services, setServices] = useState(INITIAL_DARSHAN_SERVICES);
-  const [slots, setSlots] = useState(INITIAL_DARSHAN_SLOTS);
+  const [bookings, setBookings] = useState(INITIAL_UNIFIED_BOOKINGS);
+  const [services, setServices] = useState(INITIAL_UNIFIED_SERVICES);
+  const [slots, setSlots] = useState(INITIAL_UNIFIED_SLOTS);
   const [cancellations, setCancellations] = useState(INITIAL_CANCELLATIONS);
   const [selectedDate, setSelectedDate] = useState('2026-10-31');
   const [toast, setToast] = useState(null);
+
+  // Drilldown Filter for seamless navigation from Overview (Sankey / Demand Matrix) to Bookings
+  const [drilldownFilter, setDrilldownFilter] = useState({
+    category: 'All',
+    service: 'All',
+    status: 'All',
+    timeSlot: 'All',
+    dateRange: 'Today',
+  });
+
+  const resetDrilldownFilter = () => {
+    setDrilldownFilter({
+      category: 'All',
+      service: 'All',
+      status: 'All',
+      timeSlot: 'All',
+      dateRange: 'Today',
+    });
+  };
 
   // Show temporary toast notification
   const showToast = (message, type = 'success') => {
@@ -24,33 +47,32 @@ export function DarshanBookingProvider({ children }) {
 
   // Helper to calculate dynamic slot occupancy
   const getSlotOccupancy = (slotId, date = selectedDate) => {
-    const slot = slots.find((s) => s.id === slotId);
+    const slot = slots.find((s) => s.id === slotId || s.timeSlot === slotId);
     if (!slot) return { maxCapacity: 0, bookedDevotees: 0, availableCapacity: 0, isFull: false, percentage: 0 };
 
     const bookingDelta = bookings
       .filter(
         (b) =>
-          b.slotId === slotId &&
-          b.visitDate === date &&
+          (b.slotId === slot.id || b.timeSlot === slot.timeSlot) &&
+          (date === 'All' || !date || b.visitDate === date) &&
           b.status !== 'Cancelled' &&
           b.status !== 'Rejected'
       )
       .reduce((sum, b) => sum + (Number(b.devoteesCount) || 1), 0);
 
-    const base = Number(slot.baseBooked) || 0;
-    const bookedDevotees = Math.min(slot.maxCapacity, base + bookingDelta);
-
-    const availableCapacity = Math.max(0, slot.maxCapacity - bookedDevotees);
+    const maxCapacity = slot.maxCapacity || 100;
+    const bookedDevotees = Math.min(maxCapacity, bookingDelta);
+    const availableCapacity = Math.max(0, maxCapacity - bookedDevotees);
     const isFull = availableCapacity === 0 || slot.status === 'disabled';
-    const percentage = slot.maxCapacity > 0 ? Math.min(100, Math.round((bookedDevotees / slot.maxCapacity) * 100)) : 0;
+    const percentage = maxCapacity > 0 ? Math.min(100, Math.round((bookedDevotees / maxCapacity) * 100)) : 0;
 
     return {
-      maxCapacity: slot.maxCapacity,
+      maxCapacity,
       bookedDevotees,
       availableCapacity,
       isFull,
       percentage,
-      status: slot.status,
+      status: slot.status || 'active',
     };
   };
 
@@ -488,6 +510,9 @@ export function DarshanBookingProvider({ children }) {
         addSlot,
         updateSlot,
         toggleSlotActive,
+        drilldownFilter,
+        setDrilldownFilter,
+        resetDrilldownFilter,
         toast,
         showToast,
       }}
@@ -522,4 +547,8 @@ export function useDarshanBookings() {
   }
   return context;
 }
+
+// Unified alias for the redesigned module
+export const useBookingsServices = useDarshanBookings;
+
 

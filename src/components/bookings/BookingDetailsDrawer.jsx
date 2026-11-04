@@ -28,6 +28,8 @@ export default function BookingDetailsDrawer({ booking, isOpen, onClose, onEdit 
     rejectCancellation,
     cancelBooking,
     completeBooking,
+    confirmBooking,
+    rejectBooking,
   } = useDarshanBookings();
   const [modalAction, setModalAction] = useState(null); // 'approve_cancellation' | 'reject_cancellation' | 'cancel'
 
@@ -148,6 +150,12 @@ export default function BookingDetailsDrawer({ booking, isOpen, onClose, onEdit 
                     <span className="text-temple-text-secondary">Mobile Number:</span>
                     <span className="font-mono text-temple-text-primary">{booking.mobile}</span>
                   </div>
+                  {booking.gotra && (
+                    <div className="flex items-center justify-between py-1 border-b border-slate-100">
+                      <span className="text-temple-text-secondary">Family Gotra:</span>
+                      <span className="font-semibold text-temple-text-primary">{booking.gotra}</span>
+                    </div>
+                  )}
                   {booking.email && (
                     <div className="flex items-center justify-between py-1 border-b border-slate-100">
                       <span className="text-temple-text-secondary">Email Address:</span>
@@ -165,17 +173,27 @@ export default function BookingDetailsDrawer({ booking, isOpen, onClose, onEdit 
               <div className="p-3.5 rounded-xl bg-white border border-[#E8E2D8] shadow-subtle space-y-2">
                 <h3 className="text-xs font-bold uppercase tracking-wider text-temple-burgundy flex items-center gap-1.5">
                   <Calendar className="w-3.5 h-3.5 text-temple-gold" />
-                  <span>Darshan Visit & Slot Allocation</span>
+                  <span>Service & Slot Allocation</span>
                 </h3>
 
                 <div className="space-y-1.5 text-xs">
+                  <div className="flex items-center justify-between py-1 border-b border-slate-100">
+                    <span className="text-temple-text-secondary">Service Offering:</span>
+                    <span className="font-bold text-temple-text-primary">{booking.serviceName}</span>
+                  </div>
+                  {booking.category && (
+                    <div className="flex items-center justify-between py-1 border-b border-slate-100">
+                      <span className="text-temple-text-secondary">Category:</span>
+                      <span className="font-medium text-temple-burgundy">{booking.category}</span>
+                    </div>
+                  )}
                   <div className="flex items-center justify-between py-1 border-b border-slate-100">
                     <span className="text-temple-text-secondary">Visit Date:</span>
                     <span className="font-bold text-temple-text-primary">{booking.visitDate}</span>
                   </div>
                   <div className="flex items-center justify-between py-1 border-b border-slate-100">
                     <span className="text-temple-text-secondary">Time Slot:</span>
-                    <span className="font-semibold text-temple-burgundy">{booking.slotLabel}</span>
+                    <span className="font-semibold text-temple-burgundy">{booking.timeSlot || booking.slotLabel}</span>
                   </div>
                   <div className="flex items-center justify-between py-1 border-b border-slate-100">
                     <span className="text-temple-text-secondary">Devotees Count:</span>
@@ -184,8 +202,10 @@ export default function BookingDetailsDrawer({ booking, isOpen, onClose, onEdit 
                     </span>
                   </div>
                   <div className="flex items-center justify-between py-1">
-                    <span className="text-temple-text-secondary">Designated Gate:</span>
-                    <span className="font-medium text-temple-text-primary">{booking.gate || 'East Gopuram Gate 2'}</span>
+                    <span className="text-temple-text-secondary">Payment Method:</span>
+                    <span className="font-medium text-temple-text-primary">
+                      {booking.paymentMethod || 'Online (UPI / Card)'}
+                    </span>
                   </div>
                 </div>
               </div>
@@ -255,6 +275,32 @@ export default function BookingDetailsDrawer({ booking, isOpen, onClose, onEdit 
               </div>
 
               <div className="flex items-center gap-2">
+                {booking.status === 'Pending' && (
+                  <>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        rejectBooking(booking.id, 'Administrative capacity limit');
+                        onClose();
+                      }}
+                      className="px-3 py-1.5 rounded-lg bg-rose-50 border border-rose-200 hover:bg-rose-100 text-xs font-bold text-rose-800 transition-colors"
+                    >
+                      Reject Booking
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        confirmBooking(booking.id);
+                        onClose();
+                      }}
+                      className="px-3.5 py-1.5 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-xs font-bold text-white flex items-center gap-1 transition-colors shadow-xs"
+                    >
+                      <Check className="w-3.5 h-3.5" />
+                      <span>Confirm Booking</span>
+                    </button>
+                  </>
+                )}
+
                 {booking.status === 'Cancellation Requested' && (
                   <>
                     <button
@@ -277,7 +323,7 @@ export default function BookingDetailsDrawer({ booking, isOpen, onClose, onEdit 
                   </>
                 )}
 
-                {booking.status === 'Confirmed' && (
+                {(booking.status === 'Confirmed' || booking.status === 'Active') && (
                   <>
                     <button
                       type="button"
@@ -288,7 +334,10 @@ export default function BookingDetailsDrawer({ booking, isOpen, onClose, onEdit 
                     </button>
                     <button
                       type="button"
-                      onClick={() => completeBooking(booking.id)}
+                      onClick={() => {
+                        completeBooking(booking.id);
+                        onClose();
+                      }}
                       className="px-3.5 py-1.5 rounded-lg bg-temple-burgundy hover:bg-temple-maroon text-xs font-semibold text-white flex items-center gap-1 transition-colors shadow-xs"
                     >
                       <CheckCircle2 className="w-3.5 h-3.5 text-[#E2BC6B]" />
