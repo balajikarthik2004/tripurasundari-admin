@@ -24,15 +24,14 @@ export function useSidebar() {
 
   const [isMobileOpen, setIsMobileOpen] = useState(false);
 
-  // Automatically expand ONLY the active group for the current route
+  // Default to ALL categories/groups OPEN on first page load
   const [expandedGroups, setExpandedGroups] = useState(() => {
-    const active = findActiveGroupId(location.pathname);
     return {
-      overview: active === 'overview',
-      'devotee-services': active === 'devotee-services',
-      'temple-operations': active === 'temple-operations',
-      'content-management': active === 'content-management',
-      'insights-admin': active === 'insights-admin',
+      overview: true,
+      'devotee-services': true,
+      'temple-operations': true,
+      'content-management': true,
+      'insights-admin': true,
     };
   });
 
