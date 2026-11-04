@@ -89,7 +89,7 @@ export default function BookingJourneySankey({ onNavigateWithFilter }) {
       textColor: 'text-[#8C3220]',
       icon: <TempleDomeIcon className="w-5 h-5 text-[#B45309]" />,
       iconBg: 'bg-[#FEEAD9]',
-      top: 'top-[14px]',
+      top: 'top-[18px]',
     },
     {
       id: 'pooja',
@@ -101,7 +101,7 @@ export default function BookingJourneySankey({ onNavigateWithFilter }) {
       textColor: 'text-[#92400E]',
       icon: <LotusIcon className="w-5 h-5 text-[#D97706]" />,
       iconBg: 'bg-[#FEF3C7]',
-      top: 'top-[85px]',
+      top: 'top-[122px]',
     },
     {
       id: 'other',
@@ -113,7 +113,7 @@ export default function BookingJourneySankey({ onNavigateWithFilter }) {
       textColor: 'text-[#6B21A8]',
       icon: <Sparkles className="w-5 h-5 text-[#7E22CE]" />,
       iconBg: 'bg-[#F3E8FF]',
-      top: 'top-[156px]',
+      top: 'top-[226px]',
     },
   ];
 
@@ -127,7 +127,7 @@ export default function BookingJourneySankey({ onNavigateWithFilter }) {
       border: 'border-[#BBF7D0]',
       badgeColor: 'text-[#15803D]',
       icon: <CheckCircle2 className="w-4 h-4 text-[#16A34A]" />,
-      top: 'top-[12px]',
+      top: 'top-[14px]',
     },
     {
       id: 'confirmed',
@@ -138,7 +138,7 @@ export default function BookingJourneySankey({ onNavigateWithFilter }) {
       border: 'border-[#BFDBFE]',
       badgeColor: 'text-[#1D4ED8]',
       icon: <Calendar className="w-4 h-4 text-[#2563EB]" />,
-      top: 'top-[66px]',
+      top: 'top-[88px]',
     },
     {
       id: 'pending',
@@ -149,7 +149,7 @@ export default function BookingJourneySankey({ onNavigateWithFilter }) {
       border: 'border-[#FDE68A]',
       badgeColor: 'text-[#B45309]',
       icon: <Clock className="w-4 h-4 text-[#D97706]" />,
-      top: 'top-[120px]',
+      top: 'top-[162px]',
     },
     {
       id: 'cancelled',
@@ -160,11 +160,10 @@ export default function BookingJourneySankey({ onNavigateWithFilter }) {
       border: 'border-[#FECDD3]',
       badgeColor: 'text-[#BE123C]',
       icon: <XCircle className="w-4 h-4 text-[#E11D48]" />,
-      top: 'top-[174px]',
+      top: 'top-[236px]',
     },
   ];
 
-  // Helper for drill-down navigation
   const handleClickCategory = (catLabel) => {
     if (onNavigateWithFilter) {
       onNavigateWithFilter({ category: catLabel, status: 'All' });
@@ -184,13 +183,13 @@ export default function BookingJourneySankey({ onNavigateWithFilter }) {
   };
 
   // =========================================================================
-  // EXACT SANKEY GEOMETRY CALCULATION (Canvas: 960px x 224px)
-  // Stage 1 Source: [8, 148] (w=140, h=132, centered at y=112)
-  // Stage 2 Categories: [284, 479] (w=195, h=54 each)
-  // Stage 3 Outcomes: [686, 952] (w=266, h=42 each)
+  // SPACIOUS 300px HIGH CANVAS GEOMETRY
+  // Stage 1 Source: [8, 156] (w=148, h=146, centered at y=150)
+  // Stage 2 Categories: [290, 485] (w=195, h=56 each, 48px gap between cards)
+  // Stage 3 Outcomes: [690, 952] (w=262, h=44 each, 30px gap between cards)
   // =========================================================================
 
-  // Stage 1 -> Stage 2 (3 Links)
+  // Stage 1 -> Stage 2 (3 Continuous Flow Ribbons)
   const stage1Links = [
     {
       id: 's1-darshan',
@@ -198,10 +197,10 @@ export default function BookingJourneySankey({ onNavigateWithFilter }) {
       to: 'Darshan',
       count: 2480,
       percent: '66.1%',
-      y1_0: 52,
-      y1_1: 126,
-      y2_0: 18,
-      y2_1: 60,
+      y1_0: 86,
+      y1_1: 170.6,
+      y2_0: 26,
+      y2_1: 66,
       gradient: 'url(#ribbonToDarshan)',
     },
     {
@@ -210,10 +209,10 @@ export default function BookingJourneySankey({ onNavigateWithFilter }) {
       to: 'Pooja & Seva',
       count: 980,
       percent: '26.1%',
-      y1_0: 126,
-      y1_1: 158,
-      y2_0: 96,
-      y2_1: 128,
+      y1_0: 170.6,
+      y1_1: 204.1,
+      y2_0: 134,
+      y2_1: 166,
       gradient: 'url(#ribbonToPooja)',
     },
     {
@@ -222,28 +221,28 @@ export default function BookingJourneySankey({ onNavigateWithFilter }) {
       to: 'Other Bookable Services',
       count: 290,
       percent: '7.8%',
-      y1_0: 158,
-      y1_1: 170,
-      y2_0: 171,
-      y2_1: 195,
+      y1_0: 204.1,
+      y1_1: 214,
+      y2_0: 238,
+      y2_1: 270,
       gradient: 'url(#ribbonToOther)',
     },
   ];
 
-  // Stage 2 -> Stage 3: Exactly 12 Data-Driven Non-Zero Sankey Links
-  // x1 = 479 (right edge of Stage 2), x2 = 686 (left edge of Stage 3)
+  // Stage 2 -> Stage 3 (12 Individual, Cleanly Separated Ribbons)
+  // x1 = 485, x2 = 690, deltaX = 205
   const stage2Links = [
-    // --- FROM DARSHAN (2,480 total: y span 18 -> 60) ---
+    // --- FROM DARSHAN (2,480 total: y span 26 -> 66) ---
     {
       id: 'flow-darshan-completed',
       from: 'Darshan',
       to: 'Completed',
       count: 1766,
       percent: '71.2%',
-      y1_0: 18,
-      y1_1: 47.91,
-      y2_0: 16,
-      y2_1: 38.49,
+      y1_0: 26,
+      y1_1: 54.48,
+      y2_0: 20,
+      y2_1: 41.17,
       gradient: 'url(#gradDarshanCompleted)',
     },
     {
@@ -252,10 +251,10 @@ export default function BookingJourneySankey({ onNavigateWithFilter }) {
       to: 'Confirmed / Active',
       count: 450,
       percent: '18.1%',
-      y1_0: 47.91,
-      y1_1: 55.53,
-      y2_0: 72,
-      y2_1: 91.85,
+      y1_0: 54.48,
+      y1_1: 61.74,
+      y2_0: 94,
+      y2_1: 115.18,
       gradient: 'url(#gradDarshanConfirmed)',
     },
     {
@@ -264,10 +263,10 @@ export default function BookingJourneySankey({ onNavigateWithFilter }) {
       to: 'Pending',
       count: 192,
       percent: '7.7%',
-      y1_0: 55.53,
-      y1_1: 58.78,
-      y2_0: 128,
-      y2_1: 145.21,
+      y1_0: 61.74,
+      y1_1: 64.84,
+      y2_0: 168,
+      y2_1: 189.19,
       gradient: 'url(#gradDarshanPending)',
     },
     {
@@ -276,24 +275,24 @@ export default function BookingJourneySankey({ onNavigateWithFilter }) {
       to: 'Cancelled',
       count: 72,
       percent: '2.9%',
-      y1_0: 58.78,
-      y1_1: 60,
-      y2_0: 184,
-      y2_1: 198.40,
+      y1_0: 64.84,
+      y1_1: 66,
+      y2_0: 242,
+      y2_1: 262.95,
       gradient: 'url(#gradDarshanCancelled)',
     },
 
-    // --- FROM POOJA & SEVA (980 total: y span 96 -> 128) ---
+    // --- FROM POOJA & SEVA (980 total: y span 134 -> 166) ---
     {
       id: 'flow-pooja-completed',
       from: 'Pooja & Seva',
       to: 'Completed',
       count: 698,
       percent: '71.2%',
-      y1_0: 96,
-      y1_1: 118.79,
-      y2_0: 38.49,
-      y2_1: 47.38,
+      y1_0: 134,
+      y1_1: 156.79,
+      y2_0: 41.17,
+      y2_1: 49.53,
       gradient: 'url(#gradPoojaCompleted)',
     },
     {
@@ -302,10 +301,10 @@ export default function BookingJourneySankey({ onNavigateWithFilter }) {
       to: 'Confirmed / Active',
       count: 178,
       percent: '18.2%',
-      y1_0: 118.79,
-      y1_1: 124.60,
-      y2_0: 91.85,
-      y2_1: 99.70,
+      y1_0: 156.79,
+      y1_1: 162.6,
+      y2_0: 115.18,
+      y2_1: 123.55,
       gradient: 'url(#gradPoojaConfirmed)',
     },
     {
@@ -314,10 +313,10 @@ export default function BookingJourneySankey({ onNavigateWithFilter }) {
       to: 'Pending',
       count: 76,
       percent: '7.8%',
-      y1_0: 124.60,
-      y1_1: 127.08,
-      y2_0: 145.21,
-      y2_1: 152.02,
+      y1_0: 162.6,
+      y1_1: 165.09,
+      y2_0: 189.19,
+      y2_1: 197.57,
       gradient: 'url(#gradPoojaPending)',
     },
     {
@@ -326,24 +325,24 @@ export default function BookingJourneySankey({ onNavigateWithFilter }) {
       to: 'Cancelled',
       count: 28,
       percent: '2.9%',
-      y1_0: 127.08,
-      y1_1: 128,
-      y2_0: 198.40,
-      y2_1: 204.00,
+      y1_0: 165.09,
+      y1_1: 166,
+      y2_0: 262.95,
+      y2_1: 271.09,
       gradient: 'url(#gradPoojaCancelled)',
     },
 
-    // --- FROM OTHER SERVICES (290 total: y span 171 -> 195) ---
+    // --- FROM OTHER SERVICES (290 total: y span 238 -> 270) ---
     {
       id: 'flow-other-completed',
       from: 'Other Bookable Services',
       to: 'Completed',
       count: 206,
       percent: '71.0%',
-      y1_0: 171,
-      y1_1: 188.05,
-      y2_0: 47.38,
-      y2_1: 50,
+      y1_0: 238,
+      y1_1: 260.73,
+      y2_0: 49.53,
+      y2_1: 52,
       gradient: 'url(#gradOtherCompleted)',
     },
     {
@@ -352,10 +351,10 @@ export default function BookingJourneySankey({ onNavigateWithFilter }) {
       to: 'Confirmed / Active',
       count: 52,
       percent: '17.9%',
-      y1_0: 188.05,
-      y1_1: 192.35,
-      y2_0: 99.70,
-      y2_1: 102,
+      y1_0: 260.73,
+      y1_1: 266.47,
+      y2_0: 123.55,
+      y2_1: 126,
       gradient: 'url(#gradOtherConfirmed)',
     },
     {
@@ -364,10 +363,10 @@ export default function BookingJourneySankey({ onNavigateWithFilter }) {
       to: 'Pending',
       count: 22,
       percent: '7.6%',
-      y1_0: 192.35,
-      y1_1: 194.17,
-      y2_0: 152.02,
-      y2_1: 154,
+      y1_0: 266.47,
+      y1_1: 268.9,
+      y2_0: 197.57,
+      y2_1: 200,
       gradient: 'url(#gradOtherPending)',
     },
     {
@@ -376,10 +375,10 @@ export default function BookingJourneySankey({ onNavigateWithFilter }) {
       to: 'Cancelled',
       count: 10,
       percent: '3.4%',
-      y1_0: 194.17,
-      y1_1: 195,
-      y2_0: 204.00,
-      y2_1: 206,
+      y1_0: 268.9,
+      y1_1: 270,
+      y2_0: 271.09,
+      y2_1: 274,
       gradient: 'url(#gradOtherCancelled)',
     },
   ];
@@ -393,7 +392,7 @@ export default function BookingJourneySankey({ onNavigateWithFilter }) {
   return (
     <div className="bg-[#FFFDF9] rounded-2xl sm:rounded-3xl border border-[#EFE5D5] shadow-xs p-4 sm:p-5 relative overflow-hidden">
       {/* 1. Header with explicit reporting-period badge */}
-      <div className="flex flex-wrap items-center justify-between gap-3 mb-3">
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-xl bg-[#FEF3C7] border border-[#FDE68A] flex items-center justify-center text-[#B45309] shrink-0">
             <Sun className="w-4 h-4" />
@@ -415,110 +414,112 @@ export default function BookingJourneySankey({ onNavigateWithFilter }) {
         </div>
       </div>
 
-      {/* 2. Coordinated Canvas: EXACT 960px width with Zero-Gap Flowing Sankey Ribbons */}
+      {/* 2. Spacious 300px High Coordinated Canvas: EXACT 960px width with High-Clarity Flowing Ribbons */}
       <div className="w-full overflow-x-auto custom-scrollbar pb-1">
-        <div className="relative w-[960px] h-[224px] mx-auto select-none">
+        <div className="relative w-[960px] h-[300px] mx-auto select-none">
           {/* Continuous Bézier Ribbons SVG Canvas: Touches nodes at the exact pixel */}
           <svg
-            className="absolute inset-0 w-[960px] h-[224px]"
-            viewBox="0 0 960 224"
+            className="absolute inset-0 w-[960px] h-[300px]"
+            viewBox="0 0 960 300"
             fill="none"
           >
             <defs>
               {/* Stage 1 -> Stage 2 Gradients */}
               <linearGradient id="ribbonToDarshan" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stopColor="#751838" stopOpacity="0.55" />
-                <stop offset="50%" stopColor="#D97706" stopOpacity="0.45" />
-                <stop offset="100%" stopColor="#FDBA74" stopOpacity="0.65" />
+                <stop offset="0%" stopColor="#751838" stopOpacity="0.6" />
+                <stop offset="50%" stopColor="#D97706" stopOpacity="0.5" />
+                <stop offset="100%" stopColor="#FDBA74" stopOpacity="0.75" />
               </linearGradient>
               <linearGradient id="ribbonToPooja" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stopColor="#751838" stopOpacity="0.5" />
-                <stop offset="50%" stopColor="#D97706" stopOpacity="0.4" />
-                <stop offset="100%" stopColor="#FDE047" stopOpacity="0.6" />
+                <stop offset="0%" stopColor="#751838" stopOpacity="0.55" />
+                <stop offset="50%" stopColor="#D97706" stopOpacity="0.45" />
+                <stop offset="100%" stopColor="#FDE047" stopOpacity="0.7" />
               </linearGradient>
               <linearGradient id="ribbonToOther" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stopColor="#751838" stopOpacity="0.45" />
-                <stop offset="50%" stopColor="#9333EA" stopOpacity="0.35" />
-                <stop offset="100%" stopColor="#D8B4FE" stopOpacity="0.6" />
+                <stop offset="0%" stopColor="#751838" stopOpacity="0.5" />
+                <stop offset="50%" stopColor="#9333EA" stopOpacity="0.4" />
+                <stop offset="100%" stopColor="#D8B4FE" stopOpacity="0.7" />
               </linearGradient>
 
-              {/* Stage 2 -> Stage 3 (12 Unique Gradients) */}
+              {/* Stage 2 -> Stage 3 (12 High-Clarity Unique Gradients) */}
               {/* From Darshan */}
               <linearGradient id="gradDarshanCompleted" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stopColor="#FB923C" stopOpacity="0.55" />
-                <stop offset="50%" stopColor="#34D399" stopOpacity="0.5" />
-                <stop offset="100%" stopColor="#10B981" stopOpacity="0.65" />
+                <stop offset="0%" stopColor="#FB923C" stopOpacity="0.65" />
+                <stop offset="50%" stopColor="#34D399" stopOpacity="0.6" />
+                <stop offset="100%" stopColor="#10B981" stopOpacity="0.8" />
               </linearGradient>
               <linearGradient id="gradDarshanConfirmed" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stopColor="#FB923C" stopOpacity="0.5" />
-                <stop offset="50%" stopColor="#60A5FA" stopOpacity="0.45" />
-                <stop offset="100%" stopColor="#3B82F6" stopOpacity="0.6" />
+                <stop offset="0%" stopColor="#FB923C" stopOpacity="0.6" />
+                <stop offset="50%" stopColor="#60A5FA" stopOpacity="0.55" />
+                <stop offset="100%" stopColor="#3B82F6" stopOpacity="0.75" />
               </linearGradient>
               <linearGradient id="gradDarshanPending" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stopColor="#FB923C" stopOpacity="0.45" />
-                <stop offset="50%" stopColor="#FBBF24" stopOpacity="0.45" />
-                <stop offset="100%" stopColor="#F59E0B" stopOpacity="0.6" />
+                <stop offset="0%" stopColor="#FB923C" stopOpacity="0.55" />
+                <stop offset="50%" stopColor="#FBBF24" stopOpacity="0.55" />
+                <stop offset="100%" stopColor="#F59E0B" stopOpacity="0.75" />
               </linearGradient>
               <linearGradient id="gradDarshanCancelled" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stopColor="#FB923C" stopOpacity="0.4" />
-                <stop offset="50%" stopColor="#FB7185" stopOpacity="0.45" />
-                <stop offset="100%" stopColor="#E11D48" stopOpacity="0.65" />
+                <stop offset="0%" stopColor="#FB923C" stopOpacity="0.5" />
+                <stop offset="50%" stopColor="#FB7185" stopOpacity="0.55" />
+                <stop offset="100%" stopColor="#E11D48" stopOpacity="0.8" />
               </linearGradient>
 
               {/* From Pooja & Seva */}
               <linearGradient id="gradPoojaCompleted" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stopColor="#FBBF24" stopOpacity="0.55" />
-                <stop offset="50%" stopColor="#34D399" stopOpacity="0.5" />
-                <stop offset="100%" stopColor="#10B981" stopOpacity="0.65" />
+                <stop offset="0%" stopColor="#FBBF24" stopOpacity="0.65" />
+                <stop offset="50%" stopColor="#34D399" stopOpacity="0.6" />
+                <stop offset="100%" stopColor="#10B981" stopOpacity="0.8" />
               </linearGradient>
               <linearGradient id="gradPoojaConfirmed" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stopColor="#FBBF24" stopOpacity="0.5" />
-                <stop offset="50%" stopColor="#60A5FA" stopOpacity="0.45" />
-                <stop offset="100%" stopColor="#3B82F6" stopOpacity="0.6" />
+                <stop offset="0%" stopColor="#FBBF24" stopOpacity="0.6" />
+                <stop offset="50%" stopColor="#60A5FA" stopOpacity="0.55" />
+                <stop offset="100%" stopColor="#3B82F6" stopOpacity="0.75" />
               </linearGradient>
               <linearGradient id="gradPoojaPending" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stopColor="#FBBF24" stopOpacity="0.45" />
-                <stop offset="100%" stopColor="#F59E0B" stopOpacity="0.6" />
+                <stop offset="0%" stopColor="#FBBF24" stopOpacity="0.55" />
+                <stop offset="100%" stopColor="#F59E0B" stopOpacity="0.75" />
               </linearGradient>
               <linearGradient id="gradPoojaCancelled" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stopColor="#FBBF24" stopOpacity="0.4" />
-                <stop offset="50%" stopColor="#FB7185" stopOpacity="0.45" />
-                <stop offset="100%" stopColor="#E11D48" stopOpacity="0.65" />
+                <stop offset="0%" stopColor="#FBBF24" stopOpacity="0.5" />
+                <stop offset="50%" stopColor="#FB7185" stopOpacity="0.55" />
+                <stop offset="100%" stopColor="#E11D48" stopOpacity="0.8" />
               </linearGradient>
 
               {/* From Other Services */}
               <linearGradient id="gradOtherCompleted" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stopColor="#C084FC" stopOpacity="0.5" />
-                <stop offset="50%" stopColor="#34D399" stopOpacity="0.5" />
-                <stop offset="100%" stopColor="#10B981" stopOpacity="0.65" />
+                <stop offset="0%" stopColor="#C084FC" stopOpacity="0.6" />
+                <stop offset="50%" stopColor="#34D399" stopOpacity="0.6" />
+                <stop offset="100%" stopColor="#10B981" stopOpacity="0.8" />
               </linearGradient>
               <linearGradient id="gradOtherConfirmed" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stopColor="#C084FC" stopOpacity="0.45" />
-                <stop offset="50%" stopColor="#60A5FA" stopOpacity="0.45" />
-                <stop offset="100%" stopColor="#3B82F6" stopOpacity="0.6" />
+                <stop offset="0%" stopColor="#C084FC" stopOpacity="0.55" />
+                <stop offset="50%" stopColor="#60A5FA" stopOpacity="0.55" />
+                <stop offset="100%" stopColor="#3B82F6" stopOpacity="0.75" />
               </linearGradient>
               <linearGradient id="gradOtherPending" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stopColor="#C084FC" stopOpacity="0.45" />
-                <stop offset="50%" stopColor="#FBBF24" stopOpacity="0.45" />
-                <stop offset="100%" stopColor="#F59E0B" stopOpacity="0.6" />
+                <stop offset="0%" stopColor="#C084FC" stopOpacity="0.55" />
+                <stop offset="50%" stopColor="#FBBF24" stopOpacity="0.55" />
+                <stop offset="100%" stopColor="#F59E0B" stopOpacity="0.75" />
               </linearGradient>
               <linearGradient id="gradOtherCancelled" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stopColor="#C084FC" stopOpacity="0.45" />
-                <stop offset="50%" stopColor="#FB7185" stopOpacity="0.45" />
-                <stop offset="100%" stopColor="#E11D48" stopOpacity="0.65" />
+                <stop offset="0%" stopColor="#C084FC" stopOpacity="0.55" />
+                <stop offset="50%" stopColor="#FB7185" stopOpacity="0.55" />
+                <stop offset="100%" stopColor="#E11D48" stopOpacity="0.8" />
               </linearGradient>
             </defs>
 
             {/* =========================================================
-                STAGE 1 -> STAGE 2 FLOW RIBBONS (x1=148 to x2=284)
+                STAGE 1 -> STAGE 2 FLOW RIBBONS (x1=156 to x2=290)
                ========================================================= */}
             {stage1Links.map((link) => (
               <path
                 key={link.id}
-                d={makeRibbonPath(148, link.y1_0, link.y1_1, 284, link.y2_0, link.y2_1)}
+                d={makeRibbonPath(156, link.y1_0, link.y1_1, 290, link.y2_0, link.y2_1)}
                 fill={link.gradient}
+                stroke="rgba(255,255,255,0.7)"
+                strokeWidth="0.8"
                 className="transition-opacity duration-200 cursor-pointer"
-                opacity={hoveredFlow && hoveredFlow.id !== link.id ? 0.35 : 1}
+                opacity={hoveredFlow && hoveredFlow.id !== link.id ? 0.3 : 1}
                 onMouseEnter={() =>
                   setHoveredFlow({
                     id: link.id,
@@ -533,8 +534,8 @@ export default function BookingJourneySankey({ onNavigateWithFilter }) {
             ))}
 
             {/* =========================================================
-                STAGE 2 -> STAGE 3 FLOW RIBBONS (x1=479 to x2=686)
-                12 Distinct, Continuous Category-to-Outcome Connections
+                STAGE 2 -> STAGE 3 FLOW RIBBONS (x1=485 to x2=690)
+                12 Distinct, Spacious Category-to-Outcome Connections
                ========================================================= */}
             {stage2Links.map((link) => {
               const isHovered = hoveredFlow && hoveredFlow.id === link.id;
@@ -542,11 +543,11 @@ export default function BookingJourneySankey({ onNavigateWithFilter }) {
               return (
                 <path
                   key={link.id}
-                  d={makeRibbonPath(479, link.y1_0, link.y1_1, 686, link.y2_0, link.y2_1)}
+                  d={makeRibbonPath(485, link.y1_0, link.y1_1, 690, link.y2_0, link.y2_1)}
                   fill={link.gradient}
-                  stroke={isHovered ? '#751838' : 'none'}
-                  strokeWidth={isHovered ? 1.2 : 0}
-                  opacity={isFaded ? 0.25 : isHovered ? 1 : 0.85}
+                  stroke={isHovered ? '#751838' : 'rgba(255,255,255,0.85)'}
+                  strokeWidth={isHovered ? 1.5 : 0.8}
+                  opacity={isFaded ? 0.18 : isHovered ? 1 : 0.88}
                   className="transition-all duration-200 cursor-pointer"
                   onMouseEnter={() =>
                     setHoveredFlow({
@@ -565,35 +566,35 @@ export default function BookingJourneySankey({ onNavigateWithFilter }) {
 
           {/* =========================================================
               STAGE 1: TOTAL BOOKINGS HERO BLOCK
-              Fixed: left: 8px, top: 46px, width: 140px, height: 132px
+              Fixed: left: 8px, top: 76px, width: 148px, height: 148px
              ========================================================= */}
           <div
-            className="absolute left-[8px] top-[46px] w-[140px] h-[132px] rounded-2xl bg-gradient-to-br from-[#751838] via-[#55132D] to-[#3D0A1E] text-white p-3 flex flex-col items-center justify-center shadow-md border border-[#E2BC6B]/40 select-none transition-transform hover:scale-102 cursor-pointer"
+            className="absolute left-[8px] top-[76px] w-[148px] h-[148px] rounded-2xl bg-gradient-to-br from-[#751838] via-[#55132D] to-[#3D0A1E] text-white p-3 flex flex-col items-center justify-center shadow-lg border border-[#E2BC6B]/40 select-none transition-transform hover:scale-102 cursor-pointer"
             onClick={() => onNavigateWithFilter && onNavigateWithFilter({ category: 'All', status: 'All' })}
             title="Click to view all 3,750 bookings in Bookings table"
           >
-            <div className="text-[#E2BC6B] mb-1">
-              <TempleDomeIcon className="w-7 h-7" />
+            <div className="text-[#E2BC6B] mb-1.5">
+              <TempleDomeIcon className="w-8 h-8" />
             </div>
-            <div className="text-2xl font-bold font-serif tracking-tight leading-none text-white">
+            <div className="text-3xl font-bold font-serif tracking-tight leading-none text-white">
               {totalBookings.toLocaleString()}
             </div>
-            <div className="text-[11.5px] font-sans font-medium text-[#F5EBE1] mt-1.5 opacity-90 tracking-wide">
+            <div className="text-xs font-sans font-medium text-[#F5EBE1] mt-2 opacity-90 tracking-wide">
               Total Bookings
             </div>
           </div>
 
           {/* =========================================================
               STAGE 2: SERVICE CATEGORIES PILLS (3 ITEMS)
-              Fixed: left: 284px, width: 195px
+              Fixed: left: 290px, width: 195px, height: 56px each
              ========================================================= */}
-          <div className="absolute left-[284px] top-0 w-[195px] h-full pointer-events-auto">
+          <div className="absolute left-[290px] top-0 w-[195px] h-full pointer-events-auto">
             {categories.map((cat) => (
               <button
                 key={cat.id}
                 type="button"
                 onClick={() => handleClickCategory(cat.label)}
-                className={`absolute ${cat.top} left-0 w-full h-[54px] px-3 rounded-2xl ${cat.bg} ${cat.border} border shadow-2xs flex items-center gap-2.5 transition-all hover:scale-102 cursor-pointer text-left focus:outline-none`}
+                className={`absolute ${cat.top} left-0 w-full h-[56px] px-3.5 rounded-2xl ${cat.bg} ${cat.border} border shadow-xs flex items-center gap-2.5 transition-all hover:scale-102 cursor-pointer text-left focus:outline-none`}
                 title={`Click to filter Bookings for ${cat.label}`}
               >
                 <div className={`w-8 h-8 rounded-xl ${cat.iconBg} flex items-center justify-center shrink-0 border border-black/5`}>
@@ -613,18 +614,18 @@ export default function BookingJourneySankey({ onNavigateWithFilter }) {
 
           {/* =========================================================
               STAGE 3: BOOKING OUTCOMES PILLS (4 ITEMS)
-              Fixed: left: 686px, width: 266px
+              Fixed: left: 690px, width: 262px, height: 44px each
              ========================================================= */}
-          <div className="absolute left-[686px] top-0 w-[266px] h-full pointer-events-auto">
+          <div className="absolute left-[690px] top-0 w-[262px] h-full pointer-events-auto">
             {outcomes.map((out) => (
               <button
                 key={out.id}
                 type="button"
                 onClick={() => handleClickOutcome(out.label)}
-                className={`absolute ${out.top} left-0 w-full h-[42px] px-3 rounded-2xl ${out.bg} ${out.border} border shadow-2xs flex items-center justify-between transition-all hover:scale-102 cursor-pointer text-left focus:outline-none`}
+                className={`absolute ${out.top} left-0 w-full h-[44px] px-3.5 rounded-2xl ${out.bg} ${out.border} border shadow-xs flex items-center justify-between transition-all hover:scale-102 cursor-pointer text-left focus:outline-none`}
                 title={`Click to filter Bookings with outcome "${out.label}"`}
               >
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2.5">
                   <div className="shrink-0">{out.icon}</div>
                   <span className="text-xs font-bold text-stone-900 font-sans">
                     {out.label}
@@ -641,17 +642,17 @@ export default function BookingJourneySankey({ onNavigateWithFilter }) {
       </div>
 
       {/* 3. Interactive Ribbon Hover Telemetry Footer */}
-      <div className="mt-2 pt-2 border-t border-[#EFE5D5]/80 flex items-center justify-between text-xs min-h-[22px]">
+      <div className="mt-3 pt-2.5 border-t border-[#EFE5D5]/80 flex items-center justify-between text-xs min-h-[24px]">
         {hoveredFlow ? (
           <div className="flex items-center gap-2 text-stone-700 animate-in fade-in">
             <span className="font-bold text-[#751838]">{hoveredFlow.from}</span>
             <span className="text-stone-400">➔</span>
             <span className="font-bold text-stone-900">{hoveredFlow.to}:</span>
-            <strong className="text-[#751838] font-sans">{hoveredFlow.count.toLocaleString()} devotees</strong>
-            <span className="text-stone-400">({hoveredFlow.percent})</span>
+            <strong className="text-[#751838] font-sans text-sm">{hoveredFlow.count.toLocaleString()} devotees</strong>
+            <span className="text-stone-500 font-medium">({hoveredFlow.percent})</span>
           </div>
         ) : (
-          <div className="text-[11px] text-stone-400 italic flex items-center gap-1.5">
+          <div className="text-[11.5px] text-stone-400 italic flex items-center gap-1.5">
             <Info className="w-3.5 h-3.5 text-stone-400" />
             <span>Hover on any flow ribbon to inspect category-to-outcome breakdown; click nodes to filter bookings.</span>
           </div>
