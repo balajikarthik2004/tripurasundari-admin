@@ -363,15 +363,15 @@ export default function BookingDemandMatrix({ onCellClick }) {
             <thead>
               <tr>
                 {/* Offering Title Header */}
-                <th className="w-[17.5%] pb-2.5 text-left text-[11px] font-bold text-stone-500 uppercase tracking-wider pl-1">
+                <th className="w-[16%] pb-2.5 text-left text-[11px] font-bold text-stone-500 uppercase tracking-wider pl-1">
                   Offering
                 </th>
 
                 {/* 6 Time Slot Columns */}
                 {timeSlotColumns.map((slot) => (
-                  <th key={slot.id} className="w-[13.75%] pb-2.5 px-0.5 text-center">
+                  <th key={slot.id} className="w-[14%] pb-2.5 px-0.5 text-center">
                     <div
-                      className={`mx-auto w-full max-w-[94px] py-1.5 px-1 rounded-xl bg-[#FFFDF7] border border-[#FDE68A]/70 border-t-2 ${slot.border} shadow-2xs flex flex-col items-center justify-center`}
+                      className={`mx-auto w-full max-w-[112px] py-1.5 px-1 rounded-xl bg-[#FFFDF7] border border-[#FDE68A]/70 border-t-2 ${slot.border} shadow-2xs flex flex-col items-center justify-center`}
                     >
                       <div className="flex items-center gap-1 text-[11px] font-bold text-stone-900 leading-tight">
                         {slot.icon}
@@ -429,7 +429,7 @@ export default function BookingDemandMatrix({ onCellClick }) {
                               datePeriod: selectedPeriod,
                             })
                           }
-                          className={`mx-auto w-[62px] sm:w-[68px] h-[32px] rounded-full flex items-center justify-center text-xs tracking-tight transition-transform hover:scale-105 cursor-pointer focus:outline-none ${capsuleStyle}`}
+                          className={`mx-auto w-[72px] sm:w-[82px] md:w-[92px] h-[33px] rounded-full flex items-center justify-center text-xs tracking-tight transition-transform hover:scale-105 cursor-pointer focus:outline-none ${capsuleStyle}`}
                           title={`${row.name} at ${col.time}: ${count.toLocaleString()} bookings (${utilization}% capacity utilization)`}
                         >
                           {count.toLocaleString()}
@@ -443,39 +443,39 @@ export default function BookingDemandMatrix({ onCellClick }) {
           </table>
         </div>
 
-        {/* Right Side: Dual-Column Summary & Utilization Card (Aligned to match bottom of left matrix) */}
-        <div className="w-full xl:w-[370px] 2xl:w-[390px] shrink-0 bg-white rounded-2xl border border-[#EFE5D5] p-3.5 sm:p-4 shadow-2xs flex flex-col justify-between">
-          <div className="grid grid-cols-2 gap-3.5 sm:gap-4 divide-x divide-stone-150 h-full">
+        {/* Right Side: Dual-Column Summary & Utilization Card (Meaningfully compacted to grant maximum width to matrix) */}
+        <div className="w-full xl:w-[280px] 2xl:w-[295px] shrink-0 bg-white rounded-2xl border border-[#EFE5D5] p-3 shadow-2xs flex flex-col justify-between">
+          <div className="grid grid-cols-2 gap-2.5 divide-x divide-stone-150 h-full">
             {/* Column 1: Summary */}
-            <div className="flex flex-col justify-between pr-2 sm:pr-3 h-full">
-              <div className="flex items-center gap-1.5 pb-2.5 border-b border-stone-150">
+            <div className="flex flex-col justify-between pr-2 h-full">
+              <div className="flex items-center gap-1.5 pb-2 border-b border-stone-150">
                 <BarChart2 className="w-3.5 h-3.5 text-[#751838]" />
-                <h3 className="font-bold text-[#751838] font-serif text-xs">
+                <h3 className="font-bold text-[#751838] font-serif text-[11.5px] truncate">
                   {summary.title}
                 </h3>
               </div>
 
-              <div className="flex flex-col justify-around flex-1 pt-2">
-                <div className="flex items-center justify-between gap-1.5 py-1 text-xs">
-                  <span className="text-stone-500 text-[11px] whitespace-nowrap">Total Bookings</span>
+              <div className="flex flex-col justify-around flex-1 pt-1.5">
+                <div className="flex items-center justify-between gap-1 py-1 text-xs">
+                  <span className="text-stone-500 text-[10px] tracking-tight whitespace-nowrap">Total Bookings</span>
                   <span className="font-bold text-stone-900 font-sans text-xs">
                     {summary.totalBookings}
                   </span>
                 </div>
-                <div className="flex items-center justify-between gap-1.5 py-1 text-xs">
-                  <span className="text-stone-500 text-[11px] whitespace-nowrap">Avg. Daily Bookings</span>
+                <div className="flex items-center justify-between gap-1 py-1 text-xs">
+                  <span className="text-stone-500 text-[10px] tracking-tight whitespace-nowrap">Avg. Daily</span>
                   <span className="font-bold text-stone-900 font-sans text-xs">
                     {summary.avgDaily}
                   </span>
                 </div>
-                <div className="flex items-center justify-between gap-1.5 py-1 text-xs">
-                  <span className="text-stone-500 text-[11px] whitespace-nowrap">Peak Slot</span>
+                <div className="flex items-center justify-between gap-1 py-1 text-xs">
+                  <span className="text-stone-500 text-[10px] tracking-tight whitespace-nowrap">Peak Slot</span>
                   <span className="font-bold text-stone-900 font-sans text-xs">
                     {summary.peakSlot}
                   </span>
                 </div>
-                <div className="flex items-center justify-between gap-1.5 py-1 text-xs">
-                  <span className="text-stone-500 text-[11px] whitespace-nowrap">Peak Service</span>
+                <div className="flex items-center justify-between gap-1 py-1 text-xs">
+                  <span className="text-stone-500 text-[10px] tracking-tight whitespace-nowrap">Peak Service</span>
                   <span className="font-bold text-stone-900 font-sans text-xs">
                     {summary.peakService}
                   </span>
@@ -484,41 +484,41 @@ export default function BookingDemandMatrix({ onCellClick }) {
             </div>
 
             {/* Column 2: Utilization Legend */}
-            <div className="pl-3.5 sm:pl-4 flex flex-col justify-between h-full">
-              <div className="flex items-center pb-2.5 border-b border-stone-150">
-                <h3 className="font-bold text-stone-900 font-serif text-xs">
+            <div className="pl-2.5 flex flex-col justify-between h-full">
+              <div className="flex items-center pb-2 border-b border-stone-150">
+                <h3 className="font-bold text-stone-900 font-serif text-[11.5px]">
                   Utilization
                 </h3>
               </div>
 
-              <div className="flex flex-col justify-around flex-1 pt-2">
-                <div className="flex items-center justify-between gap-1.5 py-1 text-xs">
+              <div className="flex flex-col justify-around flex-1 pt-1.5">
+                <div className="flex items-center justify-between gap-1 py-1 text-xs">
                   <div className="flex items-center gap-1.5">
                     <span className="w-2.5 h-2.5 rounded-full bg-[#751838] shrink-0" />
-                    <span className="font-bold text-stone-800 text-[11px] whitespace-nowrap">≥ 90%</span>
+                    <span className="font-bold text-stone-800 text-[10.5px] whitespace-nowrap">≥ 90%</span>
                   </div>
-                  <span className="text-stone-500 text-[10px] font-medium">(High)</span>
+                  <span className="text-stone-500 text-[9.5px] font-medium">(High)</span>
                 </div>
-                <div className="flex items-center justify-between gap-1.5 py-1 text-xs">
+                <div className="flex items-center justify-between gap-1 py-1 text-xs">
                   <div className="flex items-center gap-1.5">
                     <span className="w-2.5 h-2.5 rounded-full bg-[#EA580C] shrink-0" />
-                    <span className="font-bold text-stone-800 text-[11px] whitespace-nowrap">75%–89%</span>
+                    <span className="font-bold text-stone-800 text-[10.5px] whitespace-nowrap">75%–89%</span>
                   </div>
-                  <span className="text-stone-500 text-[10px] font-medium">(Busy)</span>
+                  <span className="text-stone-500 text-[9.5px] font-medium">(Busy)</span>
                 </div>
-                <div className="flex items-center justify-between gap-1.5 py-1 text-xs">
+                <div className="flex items-center justify-between gap-1 py-1 text-xs">
                   <div className="flex items-center gap-1.5">
                     <span className="w-2.5 h-2.5 rounded-full bg-[#FACC15] border border-[#CA8A04] shrink-0" />
-                    <span className="font-bold text-stone-800 text-[11px] whitespace-nowrap">50%–74%</span>
+                    <span className="font-bold text-stone-800 text-[10.5px] whitespace-nowrap">50%–74%</span>
                   </div>
-                  <span className="text-stone-500 text-[10px] font-medium">(Moderate)</span>
+                  <span className="text-stone-500 text-[9.5px] font-medium">(Moderate)</span>
                 </div>
                 <div className="flex items-center justify-between gap-1.5 py-1 text-xs">
                   <div className="flex items-center gap-1.5">
                     <span className="w-2.5 h-2.5 rounded-full bg-[#FEF9C3] border border-[#FDE047] shrink-0" />
-                    <span className="font-bold text-stone-800 text-[11px] whitespace-nowrap">&lt; 50%</span>
+                    <span className="font-bold text-stone-800 text-[10.5px] whitespace-nowrap">&lt; 50%</span>
                   </div>
-                  <span className="text-stone-500 text-[10px] font-medium">(Low)</span>
+                  <span className="text-stone-500 text-[9.5px] font-medium">(Low)</span>
                 </div>
               </div>
             </div>
