@@ -5,6 +5,8 @@ import {
   INITIAL_DUTY_ASSIGNMENTS,
   INITIAL_FESTIVALS,
   INITIAL_CALENDAR_TASKS,
+  INITIAL_NOVEMBER_DUTY_OFFICERS,
+  AVAILABLE_DUTY_OFFICERS,
 } from '../data/operations/calendarData';
 import { INITIAL_STAFF } from '../data/operations/staffData';
 import { INITIAL_RITUAL_SCHEDULE } from '../data/operations/ritualsData';
@@ -14,9 +16,10 @@ const TempleCalendarContext = createContext(null);
 export function TempleCalendarProvider({ children }) {
   // Calendar View & Navigation State
   // Default to November 2026 where the rich demonstration festival and shift data exists
-  const [currentDate, setCurrentDate] = useState(() => new Date(2026, 10, 1));
+  // Day 4 is Today in the calendar
+  const [currentDate, setCurrentDate] = useState(() => new Date(2026, 10, 4));
   const [view, setView] = useState('month'); // 'month' | 'week' | 'day' | 'agenda'
-  const [selectedDate, setSelectedDate] = useState('2026-11-01');
+  const [selectedDate, setSelectedDate] = useState('2026-11-04');
 
   // Filter States
   const [categoryFilter, setCategoryFilter] = useState('ALL'); // 'ALL' | 'SHIFTS' | 'RITUALS' | 'FESTIVALS' | 'TASKS'
@@ -26,6 +29,7 @@ export function TempleCalendarProvider({ children }) {
 
   // Primary Data Collections
   const [dutyAssignments, setDutyAssignments] = useState(INITIAL_DUTY_ASSIGNMENTS);
+  const [dutyOfficersMap, setDutyOfficersMap] = useState(INITIAL_NOVEMBER_DUTY_OFFICERS);
   const [festivals, setFestivals] = useState(INITIAL_FESTIVALS);
   const [tasks, setTasks] = useState(INITIAL_CALENDAR_TASKS);
   const [staffList, setStaffList] = useState(INITIAL_STAFF);
@@ -45,12 +49,20 @@ export function TempleCalendarProvider({ children }) {
     setTimeout(() => setCalendarToast(null), 3500);
   }, []);
 
+  const assignDutyOfficer = useCallback((dayNum, officer) => {
+    setDutyOfficersMap((prev) => ({
+      ...prev,
+      [dayNum]: officer,
+    }));
+    showToast(`Assigned ${officer.name} as Duty Officer for Nov ${dayNum}.`);
+  }, [showToast]);
+
   // --- NAVIGATION METHODS ---
   const goToToday = useCallback(() => {
-    // Navigate to November 1, 2026 (the active demo epoch)
-    const baseDate = new Date(2026, 10, 1);
+    // Navigate to November 4, 2026 (the active demo epoch)
+    const baseDate = new Date(2026, 10, 4);
     setCurrentDate(baseDate);
-    setSelectedDate('2026-11-01');
+    setSelectedDate('2026-11-04');
   }, []);
 
   const goToPrev = useCallback(() => {
@@ -325,6 +337,9 @@ export function TempleCalendarProvider({ children }) {
     searchQuery,
     setSearchQuery,
     dutyAssignments,
+    dutyOfficersMap,
+    assignDutyOfficer,
+    availableDutyOfficers: AVAILABLE_DUTY_OFFICERS,
     festivals,
     tasks,
     staffList,

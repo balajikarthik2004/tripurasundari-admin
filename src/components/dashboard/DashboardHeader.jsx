@@ -11,7 +11,7 @@ import {
   ExternalLink,
   Menu,
 } from 'lucide-react';
-import { CURRENT_ADMIN_USER, NOTIFICATIONS_LIST, SYSTEM_BADGE } from '../../data/dashboardData';
+import { CURRENT_ADMIN_USER, NOTIFICATIONS_LIST } from '../../data/dashboardData';
 import { TEMPLE_INFO } from '../../utils/constants';
 
 export default function DashboardHeader({ onToggleMobileSidebar }) {
@@ -62,39 +62,25 @@ export default function DashboardHeader({ onToggleMobileSidebar }) {
   );
 
   return (
-    <header className="sticky top-0 z-30 bg-[#F8F5EF] border-b border-[#E8E2D8] shadow-2xs px-4 sm:px-6 lg:px-8 py-2.5 transition-all">
-      <div className="flex items-center justify-between gap-3 sm:gap-4 max-w-[1780px] mx-auto">
-        {/* Left: Branding & Mobile Hamburger */}
-        <div className="flex items-center gap-3 min-w-0">
+    <header className="sticky top-0 z-30 bg-[#F8F5EF] border-b border-[#E8E2D8] shadow-2xs px-4 sm:px-5 lg:px-6 py-2.5 transition-all">
+      <div className="flex items-center justify-between gap-3 sm:gap-6 max-w-[1780px] mx-auto">
+        {/* Left Section: Mobile Hamburger & Search Bar */}
+        <div className="flex items-center gap-3 flex-1 max-w-xl">
           {onToggleMobileSidebar && (
             <button
               type="button"
               onClick={onToggleMobileSidebar}
-              className="p-1.5 rounded-lg text-temple-burgundy hover:bg-temple-burgundy/10 lg:hidden focus:outline-none flex-shrink-0"
+              className="p-1.5 rounded-lg text-temple-burgundy hover:bg-temple-burgundy/10 lg:hidden focus:outline-none flex-shrink-0 cursor-pointer"
               aria-label="Toggle Navigation"
             >
               <Menu className="w-5 h-5" />
             </button>
           )}
 
-          <div className="flex items-center gap-2.5 min-w-0">
-            <div className="min-w-0">
-              <h1 className="font-heading text-base sm:text-lg font-bold text-temple-burgundy tracking-tight leading-tight truncate">
-                {TEMPLE_INFO.name}
-              </h1>
-              <p className="text-xs text-temple-text-secondary leading-none truncate mt-1">
-                {TEMPLE_INFO.subtitle} <span className="hidden md:inline">• One of 51 Shakti Peethas</span>
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* Center / Right Section */}
-        <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
           {/* Global Search Bar */}
-          <div className="relative hidden xl:block" ref={searchRef}>
+          <div className="relative w-full max-w-md" ref={searchRef}>
             <div className="relative flex items-center">
-              <Search className="w-4 h-4 text-temple-text-secondary absolute left-3 pointer-events-none" />
+              <Search className="w-4 h-4 text-stone-400 absolute left-3.5 pointer-events-none" />
               <input
                 type="text"
                 value={searchQuery}
@@ -103,15 +89,20 @@ export default function DashboardHeader({ onToggleMobileSidebar }) {
                   setIsSearchOpen(true);
                 }}
                 onFocus={() => setIsSearchOpen(true)}
-                placeholder="Search bookings, devotees, passes..."
-                className="w-72 pl-9 pr-3 py-2 text-sm rounded-lg bg-white border border-[#E8E2D8] text-temple-text-primary placeholder:text-temple-text-secondary/70 focus:outline-none focus:ring-1 focus:ring-temple-gold focus:border-temple-gold shadow-2xs"
+                placeholder="Search bookings, devotees, passes, services..."
+                className="w-full pl-10 pr-12 py-2 text-xs sm:text-sm rounded-xl bg-white border border-[#E8E2D8] text-stone-900 placeholder:text-stone-400 focus:outline-none focus:ring-1.5 focus:ring-[#55132D] focus:border-[#55132D] shadow-2xs transition-all"
               />
+              <div className="absolute right-3 hidden sm:flex items-center pointer-events-none">
+                <kbd className="px-1.5 py-0.5 text-[10px] font-mono text-stone-400 bg-stone-100 border border-stone-200 rounded">
+                  Ctrl K
+                </kbd>
+              </div>
             </div>
 
             {/* Quick Search Dropdown */}
             {isSearchOpen && (
-              <div className="absolute right-0 mt-1.5 w-80 bg-white rounded-xl border border-[#E8E2D8] shadow-card py-2 z-50 animate-in fade-in zoom-in-95">
-                <div className="px-3 py-1 text-xs font-bold text-temple-text-muted uppercase tracking-wider">
+              <div className="absolute left-0 mt-1.5 w-full bg-white rounded-xl border border-[#E8E2D8] shadow-card py-2 z-50 animate-in fade-in zoom-in-95">
+                <div className="px-3.5 py-1 text-[11px] font-bold text-stone-400 uppercase tracking-wider">
                   Quick Navigation Results
                 </div>
                 <div className="max-h-60 overflow-y-auto">
@@ -123,26 +114,29 @@ export default function DashboardHeader({ onToggleMobileSidebar }) {
                         setIsSearchOpen(false);
                         navigate(result.path);
                       }}
-                      className="w-full text-left px-3 py-2 text-xs hover:bg-[#F8F5EF] flex items-center justify-between group transition-colors"
+                      className="w-full text-left px-3.5 py-2 text-xs hover:bg-[#F8F5EF] flex items-center justify-between group transition-colors cursor-pointer"
                     >
                       <div>
-                        <div className="font-medium text-temple-text-primary group-hover:text-temple-burgundy">
+                        <div className="font-semibold text-stone-800 group-hover:text-[#55132D]">
                           {result.title}
                         </div>
-                        <div className="text-xs text-stone-500">
+                        <div className="text-[11px] text-stone-500">
                           {result.category}
                         </div>
                       </div>
-                      <ExternalLink className="w-3.5 h-3.5 text-temple-text-muted group-hover:text-temple-burgundy" />
+                      <ExternalLink className="w-3.5 h-3.5 text-stone-400 group-hover:text-[#55132D]" />
                     </button>
                   ))}
                 </div>
               </div>
             )}
           </div>
+        </div>
 
+        {/* Right Section: Live Time, Notifications & Admin Profile */}
+        <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
           {/* Current Date & Time */}
-          <div className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/70 border border-[#E8E2D8] text-xs text-temple-text-secondary shadow-2xs">
+          <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white border border-[#E8E2D8] text-xs text-stone-600 shadow-2xs">
             <Clock className="w-3.5 h-3.5 text-stone-400" />
             <span className="font-medium font-mono text-xs">Thu, 31 Oct • 10:28 AM</span>
           </div>
@@ -152,12 +146,12 @@ export default function DashboardHeader({ onToggleMobileSidebar }) {
             <button
               type="button"
               onClick={() => setIsNotifOpen((prev) => !prev)}
-              className="relative p-2 rounded-lg bg-white border border-[#E8E2D8] text-temple-text-secondary hover:text-temple-burgundy hover:bg-[#F8F5EF] transition-colors shadow-2xs focus:outline-none"
+              className="relative p-2 rounded-xl bg-white border border-[#E8E2D8] text-stone-600 hover:text-[#55132D] hover:bg-stone-50 transition-colors shadow-2xs focus:outline-none cursor-pointer"
               aria-label="View notifications"
             >
               <Bell className="w-4 h-4" />
               {unreadCount > 0 && (
-                <span className="absolute -top-1 -right-1 w-4 h-4 bg-rose-600 text-white rounded-full text-[10px] font-bold flex items-center justify-center ring-2 ring-[#F8F5EF]">
+                <span className="absolute -top-1 -right-1 min-w-4 h-4 px-1 bg-rose-600 text-white rounded-full text-[10px] font-bold flex items-center justify-center ring-2 ring-white shadow-2xs">
                   {unreadCount}
                 </span>
               )}
@@ -222,20 +216,20 @@ export default function DashboardHeader({ onToggleMobileSidebar }) {
             <button
               type="button"
               onClick={() => setIsProfileOpen((prev) => !prev)}
-              className="flex items-center gap-2 p-1 sm:px-2.5 sm:py-1 rounded-lg bg-white border border-[#E8E2D8] hover:bg-[#F8F5EF] transition-colors shadow-2xs focus:outline-none"
+              className="flex items-center gap-2.5 p-1 sm:px-2.5 sm:py-1 rounded-xl bg-white border border-[#E8E2D8] hover:bg-stone-50 transition-colors shadow-2xs focus:outline-none cursor-pointer"
             >
-              <div className="w-7 h-7 rounded-full bg-[#55132D] text-[#E2BC6B] flex items-center justify-center font-bold text-xs">
+              <div className="w-7 h-7 rounded-full bg-[#55132D] text-[#E2BC6B] flex items-center justify-center font-bold text-xs shadow-2xs">
                 {CURRENT_ADMIN_USER.avatarInitials}
               </div>
               <div className="hidden sm:block text-left">
-                <div className="text-xs font-semibold text-temple-text-primary leading-tight">
+                <div className="text-xs font-bold text-stone-900 leading-tight">
                   {CURRENT_ADMIN_USER.name}
                 </div>
-                <div className="text-[10px] text-temple-text-muted leading-tight">
+                <div className="text-[10px] text-stone-500 leading-tight">
                   {CURRENT_ADMIN_USER.role}
                 </div>
               </div>
-              <ChevronDown className="w-3.5 h-3.5 text-temple-text-secondary hidden sm:inline" />
+              <ChevronDown className="w-3.5 h-3.5 text-stone-400 hidden sm:inline" />
             </button>
 
             {isProfileOpen && (

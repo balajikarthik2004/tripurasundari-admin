@@ -42,7 +42,7 @@ import OperationsPageHeader from '../components/temple-operations/shared/Operati
 import OperationsTabs from '../components/temple-operations/shared/OperationsTabs';
 import OperationsMetricCard from '../components/temple-operations/shared/OperationsMetricCard';
 
-export default function GateManagement() {
+export default function GateManagement({ isEmbedded = false }) {
   const { entryPoints } = useTempleOperations();
   const { darshanBookings: contextBookings } = useDevoteeServices();
 
@@ -52,6 +52,7 @@ export default function GateManagement() {
   }, [contextBookings]);
 
   const [activeTab, setActiveTab] = useState('verification');
+  const [gateSubView, setGateSubView] = useState('metrics');
   const [scanQuery, setScanQuery] = useState('DRSN-2026-1001');
   const [isScanningActive, setIsScanningActive] = useState(true);
   const [selectedGateLane, setSelectedGateLane] = useState('GATE-01-LANE-2');
@@ -310,8 +311,7 @@ export default function GateManagement() {
 
   const tabsConfig = [
     { id: 'verification', label: 'Ticket Verification Station', icon: ScanLine },
-    { id: 'overview', label: 'Overview & Turnstile Metrics', icon: ShieldCheck },
-    { id: 'gates', label: 'Configured Entry Points', icon: Layers, badge: entryPoints.length },
+    { id: 'overview_gates', label: 'Overview & Entry Gates', icon: ShieldCheck },
     { id: 'records', label: 'Entry Audit Records', icon: CheckCircle2, badge: entryRecords.length },
   ];
 
@@ -338,14 +338,15 @@ export default function GateManagement() {
         }
       `}</style>
 
-      {/* Header */}
-      <OperationsPageHeader
-        title="Gate & Ticket Verification Administration"
-        subtitle="Manage physical entrance access points, optical barcode validation, turnstile admissions and pass security"
-        primaryActionLabel="Live Verification Station"
-        onPrimaryAction={() => setActiveTab('verification')}
-        primaryActionIcon={ScanLine}
-      />
+      {/* Header (Hidden when embedded) */}
+      {!isEmbedded && (
+        <OperationsPageHeader
+          title="Gate & Ticket Verification Administration"
+          primaryActionLabel="Live Verification Station"
+          onPrimaryAction={() => setActiveTab('verification')}
+          primaryActionIcon={ScanLine}
+        />
+      )}
 
       {/* Tabs */}
       <OperationsTabs tabs={tabsConfig} activeTab={activeTab} onChangeTab={setActiveTab} />
@@ -724,18 +725,42 @@ export default function GateManagement() {
         </div>
       )}
 
-      {/* TAB 2: OVERVIEW & TURNSTILE METRICS */}
-      {activeTab === 'overview' && (
-        <div className="space-y-5">
+      {/* TAB 2: OVERVIEW & ENTRY GATES (Segmented Sub-switch) */}
+      {activeTab === 'overview_gates' && (
+        <div className="space-y-4">
+          <div className="flex items-center gap-1.5 p-1 bg-stone-100 rounded-lg w-fit border border-stone-200">
+            <button
+              onClick={() => setGateSubView('metrics')}
+              className={`px-4 py-1.5 text-xs font-semibold rounded-md transition-all ${
+                gateSubView === 'metrics'
+                  ? 'bg-white text-[#55132D] shadow-xs font-bold'
+                  : 'text-stone-600 hover:text-stone-900'
+              }`}
+            >
+              Turnstile Throughput & Metrics
+            </button>
+            <button
+              onClick={() => setGateSubView('gates')}
+              className={`px-4 py-1.5 text-xs font-semibold rounded-md transition-all ${
+                gateSubView === 'gates'
+                  ? 'bg-white text-[#55132D] shadow-xs font-bold'
+                  : 'text-stone-600 hover:text-stone-900'
+              }`}
+            >
+              Configured Entry Checkpoints ({entryPoints.length})
+            </button>
+          </div>
+
+          {gateSubView === 'metrics' && (
+            <div className="space-y-5">
           {/* 4 Operations KPI Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
             <OperationsMetricCard
               label="Active Checkpoint Portals"
               value={entryPoints.length}
-              subtitle="Across all campus approaches"
               icon={Layers}
               iconBg="bg-[#55132D]/10 text-[#55132D]"
-              onClick={() => setActiveTab('gates')}
+              onClick={() => { setActiveTab('overview_gates'); setGateSubView('gates'); }}
             />
             <OperationsMetricCard
               label="Today's Verified Admissions"
@@ -747,14 +772,12 @@ export default function GateManagement() {
             <OperationsMetricCard
               label="Intercepted Scan Attempts"
               value="28"
-              subtitle="Duplicate or expired QR"
               icon={AlertTriangle}
               iconBg="bg-amber-50 text-amber-700"
             />
             <OperationsMetricCard
               label="Optical Scanner Network"
               value="10 / 10 Active"
-              subtitle="100% telemetry online"
               icon={ScanLine}
               iconBg="bg-blue-50 text-blue-700"
             />
@@ -852,9 +875,8 @@ export default function GateManagement() {
         </div>
       )}
 
-      {/* TAB 3: CONFIGURED ENTRY POINTS */}
-      {activeTab === 'gates' && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {gateSubView === 'gates' && (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {entryPoints.map((gate) => {
             const isEmergencyOpen = !!emergencyUnlockedGates[gate.id];
 
@@ -930,6 +952,8 @@ export default function GateManagement() {
               </div>
             );
           })}
+        </div>
+      )}
         </div>
       )}
 

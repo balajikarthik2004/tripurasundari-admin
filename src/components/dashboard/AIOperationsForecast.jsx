@@ -5,87 +5,103 @@ import {
   UserCheck,
   Car,
   CalendarCheck,
+  Shield,
+  Clock,
   ArrowRight,
 } from 'lucide-react';
+import { AI_FORECAST_DATA } from '../../data/dashboardData';
+import AnimatedCounter from '../common/AnimatedCounter';
 
-const FORECAST_CARDS = [
-  {
-    title: 'Crowd Forecast',
-    icon: Users,
-    value: '4,450 Devotees',
-    supporting: 'Peak at 6:30 PM Aarti • Current: 2,655',
-    path: '/crowd-control',
-  },
-  {
-    title: 'Staff Requirement',
-    icon: UserCheck,
-    value: '+14 Volunteers',
-    supporting: '47 on duty • Projected need: 61',
-    path: '/staff-management',
-  },
-  {
-    title: 'Parking Demand',
-    icon: Car,
-    value: '94% Occupancy',
-    supporting: 'Current: 64% • ~78 vehicles / hr',
-    path: '/parking',
-  },
-  {
-    title: 'Darshan Bookings',
-    icon: CalendarCheck,
-    value: '+34% Demand',
-    supporting: 'Evening VIP & Aarti at 92% capacity',
-    path: '/bookings',
-  },
-];
+const ICON_MAP = {
+  Users,
+  UserCheck,
+  Car,
+  CalendarCheck,
+};
 
 export default function AIOperationsForecast() {
   const navigate = useNavigate();
 
   return (
-    <div className="bg-white rounded-xl border border-[#E8E2D8] shadow-subtle p-4 sm:p-5 flex flex-col gap-3.5">
-      {/* Section Header */}
-      <div className="pb-2.5 border-b border-[#E8E2D8]">
-        <h2 className="font-heading text-sm sm:text-base font-bold text-temple-burgundy tracking-wide uppercase">
-          AI Operations Forecast
-        </h2>
+    <div className="bg-white rounded-2xl border border-[#E8E2D8] shadow-xs p-5 flex flex-col justify-between h-full min-h-[380px]">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-2 flex-shrink-0">
+        <div className="flex items-center gap-2.5">
+          <div className="w-8 h-8 rounded-lg bg-[#55132D] text-white flex items-center justify-center flex-shrink-0 shadow-2xs">
+            <svg className="w-4 h-4 text-white" viewBox="0 0 24 24" fill="none">
+              <path
+                d="M4 2L4.8 3.8L6.6 4.6L4.8 5.4L4 7.2L3.2 5.4L1.4 4.6L3.2 3.8L4 2Z"
+                fill="#E2BC6B"
+              />
+              <rect x="7" y="13" width="3" height="8" rx="1" fill="currentColor" />
+              <rect x="12" y="9" width="3" height="12" rx="1" fill="currentColor" />
+              <rect x="17" y="5" width="3" height="16" rx="1" fill="currentColor" />
+            </svg>
+          </div>
+          <div className="flex items-center gap-2">
+            <h3 className="text-base sm:text-lg font-bold text-stone-900 font-serif">
+              AI Insights & Forecast
+            </h3>
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-800 border border-amber-200">
+              <Shield className="w-3 h-3 text-amber-700" />
+              <span>94% confidence</span>
+            </span>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-1.5 text-xs text-stone-400 font-medium shrink-0">
+          <Clock className="w-3.5 h-3.5" />
+          <span>Next 4–8 hrs</span>
+        </div>
       </div>
 
-      {/* Four Equal-Width Minimal Prediction Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-3.5 items-stretch">
-        {FORECAST_CARDS.map((item, idx) => {
-          const IconComponent = item.icon;
+      {/* 2 Column x 2 Row Grid: Clean, Spacious & Uncongested */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 my-3 flex-1">
+        {AI_FORECAST_DATA.map((item) => {
+          const IconComponent = ICON_MAP[item.icon] || Users;
           return (
             <div
-              key={idx}
+              key={item.id}
               onClick={() => navigate(item.path)}
-              className="bg-[#FAF8F5] rounded-xl border border-[#E8E2D8] p-3.5 sm:p-4 flex flex-col justify-between hover:bg-white hover:border-temple-burgundy/40 hover:shadow-card transition-all duration-200 cursor-pointer group min-h-[118px]"
+              className="p-4 rounded-xl bg-stone-50/70 hover:bg-white border border-stone-200/80 hover:border-[#55132D]/40 transition-all flex flex-col justify-between cursor-pointer group shadow-2xs"
             >
-              {/* Header: Icon & Category Title */}
               <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-lg bg-white border border-[#E8E2D8] text-stone-700 flex items-center justify-center group-hover:bg-temple-burgundy group-hover:text-white group-hover:border-temple-burgundy transition-colors flex-shrink-0 shadow-2xs">
-                  <IconComponent className="w-4 h-4 text-current" />
+                <div className={`w-8 h-8 rounded-lg ${item.iconBg} flex items-center justify-center shrink-0`}>
+                  <IconComponent className={`w-4 h-4 ${item.iconColor}`} />
                 </div>
-                <h3 className="font-heading text-xs font-bold text-stone-600 uppercase tracking-wider group-hover:text-temple-burgundy transition-colors truncate">
+                <span className="text-xs sm:text-[13px] font-bold text-stone-800 group-hover:text-[#55132D] transition-colors whitespace-nowrap">
                   {item.title}
-                </h3>
+                </span>
               </div>
 
-              {/* Main Prediction Value */}
-              <div className="my-1.5">
-                <div className="text-xl sm:text-2xl font-number font-bold text-temple-burgundy tracking-tight leading-tight">
-                  {item.value}
+              <div className="my-2.5">
+                <div className="text-2xl sm:text-[26px] font-bold font-number text-[#55132D] tracking-tight leading-none">
+                  <AnimatedCounter value={item.value} />
+                </div>
+                <div className="text-xs text-stone-500 mt-1.5 leading-snug">
+                  {item.caption}
                 </div>
               </div>
 
-              {/* Supporting Telemetry & Hover Arrow Indicator */}
-              <div className="pt-2 border-t border-[#E8E2D8]/70 flex items-center justify-between text-[11px] text-stone-500 font-medium">
-                <span className="truncate">{item.supporting}</span>
-                <ArrowRight className="w-3.5 h-3.5 text-temple-burgundy opacity-0 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all flex-shrink-0 ml-1.5" />
-              </div>
+              <div className={`h-1 w-full rounded-full ${item.accentColor}`} />
             </div>
           );
         })}
+      </div>
+
+      {/* Footer */}
+      <div className="pt-3 border-t border-[#E8E2D8] flex items-center justify-between text-xs flex-shrink-0">
+        <span className="text-[11px] text-stone-400">
+          Refreshed automatically via queue & sensor telemetry
+        </span>
+        <button
+          type="button"
+          onClick={() => navigate('/crowd-control')}
+          className="font-bold text-[#55132D] hover:underline flex items-center gap-1 cursor-pointer transition-colors"
+        >
+          <span>View full forecast</span>
+          <ArrowRight className="w-3.5 h-3.5" />
+        </button>
       </div>
     </div>
   );

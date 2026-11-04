@@ -194,7 +194,10 @@ export default function BookingOverviewTab({ onOpenDetails, onSwitchTab, onOpenC
       {/* 5 KPI Metric Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3.5">
         {/* Metric 1 */}
-        <div className="bg-white rounded-xl p-4 border border-stone-200/80 shadow-xs flex flex-col justify-between hover:border-[#B68A36]/40 transition-colors">
+        <div
+          onClick={() => onSwitchTab('all')}
+          className="bg-white rounded-xl p-4 border border-stone-200/80 shadow-xs flex flex-col justify-between hover:border-[#B68A36]/40 cursor-pointer transition-colors"
+        >
           <div className="flex items-center justify-between text-sm text-stone-600 mb-2">
             <span className="font-semibold text-stone-700">Today's Bookings</span>
             <span className="p-1.5 rounded-lg bg-[#55132D]/10 text-[#55132D]">
@@ -213,7 +216,10 @@ export default function BookingOverviewTab({ onOpenDetails, onSwitchTab, onOpenC
         </div>
 
         {/* Metric 2 */}
-        <div className="bg-white rounded-xl p-4 border border-stone-200/80 shadow-xs flex flex-col justify-between hover:border-[#B68A36]/40 transition-colors">
+        <div
+          onClick={() => onSwitchTab('all')}
+          className="bg-white rounded-xl p-4 border border-stone-200/80 shadow-xs flex flex-col justify-between hover:border-[#B68A36]/40 cursor-pointer transition-colors"
+        >
           <div className="flex items-center justify-between text-sm text-stone-600 mb-2">
             <span className="font-semibold text-stone-700">Confirmed & Active</span>
             <span className="p-1.5 rounded-lg bg-emerald-50 text-emerald-700">

@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import {
   Sparkles,
   Calendar,
@@ -23,7 +23,7 @@ import OperationsPageHeader from '../components/temple-operations/shared/Operati
 import OperationsMetricCard from '../components/temple-operations/shared/OperationsMetricCard';
 import OperationsTabs from '../components/temple-operations/shared/OperationsTabs';
 
-export default function MelaManagement() {
+export default function MelaManagement({ isEmbedded = false, initialTab = 'overview' }) {
   const {
     melaEvents,
     melaTasks,
@@ -33,7 +33,14 @@ export default function MelaManagement() {
     toggleChecklistItem,
   } = useTempleOperations();
 
-  const [activeTab, setActiveTab] = useState('overview');
+  const [activeTab, setActiveTab] = useState(initialTab);
+
+  useEffect(() => {
+    if (initialTab) {
+      setActiveTab(initialTab);
+    }
+  }, [initialTab]);
+  const [planSubView, setPlanSubView] = useState('tasks');
   const [selectedCategory, setSelectedCategory] = useState('ALL');
   const [selectedStatus, setSelectedStatus] = useState('ALL');
   const [isAddTaskModalOpen, setIsAddTaskModalOpen] = useState(false);
@@ -95,21 +102,21 @@ export default function MelaManagement() {
 
   const tabs = [
     { id: 'overview', label: 'Diwali Mela 2026 Command', count: `${checklistScore}% Ready` },
-    { id: 'tasks', label: 'Planning Action Items', count: melaTasks.length },
-    { id: 'festivals', label: 'Annual Utsav Calendar', count: melaEvents.length },
+    { id: 'planning', label: 'Planning & Annual Festivals', count: melaTasks.length },
     { id: 'safety', label: 'Disaster & Multi-Agency Plan' },
   ];
 
   return (
     <div className="space-y-5 pb-8">
-      {/* Header */}
-      <OperationsPageHeader
-        title="Mela & Festival Management"
-        subtitle="Multi-departmental festival coordination, infrastructure readiness, crowd logistics and inter-agency safety planning."
-        primaryActionLabel="Add Planning Task"
-        onPrimaryAction={() => setIsAddTaskModalOpen(true)}
-        primaryActionIcon={Plus}
-      />
+      {/* Header (Hidden when embedded) */}
+      {!isEmbedded && (
+        <OperationsPageHeader
+          title="Mela & Festival Management"
+          primaryActionLabel="Add Planning Task"
+          onPrimaryAction={() => setIsAddTaskModalOpen(true)}
+          primaryActionIcon={Plus}
+        />
+      )}
 
       {/* Metric Cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3.5">
@@ -265,7 +272,7 @@ export default function MelaManagement() {
               </div>
 
               <button
-                onClick={() => setActiveTab('tasks')}
+                onClick={() => { setActiveTab('planning'); setPlanSubView('tasks'); }}
                 className="w-full mt-4 py-2 bg-stone-100 hover:bg-[#55132D] hover:text-white text-stone-700 text-xs font-semibold rounded-lg transition-colors flex items-center justify-center gap-1.5"
               >
                 View All {melaTasks.length} Action Tasks
@@ -276,16 +283,41 @@ export default function MelaManagement() {
         </div>
       )}
 
-      {/* TAB 2: PLANNING ACTION ITEMS */}
-      {activeTab === 'tasks' && (
+      {/* TAB 2: PLANNING & ANNUAL FESTIVALS (Segmented Sub-switch) */}
+      {activeTab === 'planning' && (
         <div className="space-y-4">
+          <div className="flex items-center gap-1.5 p-1 bg-stone-100 rounded-lg w-fit border border-stone-200">
+            <button
+              onClick={() => setPlanSubView('tasks')}
+              className={`px-4 py-1.5 text-xs font-semibold rounded-md transition-all ${
+                planSubView === 'tasks'
+                  ? 'bg-white text-[#55132D] shadow-xs font-bold'
+                  : 'text-stone-600 hover:text-stone-900'
+              }`}
+            >
+              Planning Action Tasks ({melaTasks.length})
+            </button>
+            <button
+              onClick={() => setPlanSubView('festivals')}
+              className={`px-4 py-1.5 text-xs font-semibold rounded-md transition-all ${
+                planSubView === 'festivals'
+                  ? 'bg-white text-[#55132D] shadow-xs font-bold'
+                  : 'text-stone-600 hover:text-stone-900'
+              }`}
+            >
+              Annual Utsav Calendar ({melaEvents.length})
+            </button>
+          </div>
+
+          {planSubView === 'tasks' && (
+            <div className="space-y-4">
           {/* Controls */}
           <div className="bg-white rounded-xl border border-stone-200 p-3.5 flex flex-wrap items-center justify-between gap-3 shadow-xs">
             <div className="flex flex-wrap items-center gap-2.5">
               <select
                 value={selectedCategory}
                 onChange={(e) => setSelectedCategory(e.target.value)}
-                className="text-xs border border-stone-300 rounded-lg px-2.5 py-1.5 bg-stone-50 focus:outline-none focus:border-[#800000]"
+                className="text-xs border border-stone-300 rounded-lg px-2.5 py-1.5 bg-stone-50 focus:outline-none focus:border-[#55132D]"
               >
                 <option value="ALL">All Categories</option>
                 <option value="Crowd Management">Crowd Management</option>
@@ -412,9 +444,8 @@ export default function MelaManagement() {
         </div>
       )}
 
-      {/* TAB 3: ANNUAL FESTIVAL CALENDAR */}
-      {activeTab === 'festivals' && (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {planSubView === 'festivals' && (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {melaEvents.map((evt) => (
             <div
               key={evt.id}
@@ -441,7 +472,7 @@ export default function MelaManagement() {
 
                 <div className="bg-stone-50 p-3 rounded-lg border border-stone-150 space-y-1.5 text-xs text-stone-600 mb-3">
                   <div className="flex items-center gap-1.5">
-                    <Calendar className="w-3.5 h-3.5 text-[#800000]" />
+                    <Calendar className="w-3.5 h-3.5 text-[#55132D]" />
                     <span className="font-medium">{evt.startDate} - {evt.endDate}</span>
                   </div>
                   <div className="flex items-center gap-1.5">
@@ -465,6 +496,8 @@ export default function MelaManagement() {
               </div>
             </div>
           ))}
+        </div>
+      )}
         </div>
       )}
 

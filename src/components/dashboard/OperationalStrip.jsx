@@ -41,30 +41,30 @@ export default function OperationalStrip() {
   const navigate = useNavigate();
 
   return (
-    <div className="bg-white rounded-xl border border-[#E8E2D8] shadow-subtle px-5 py-4">
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 divide-y sm:divide-y-0 sm:divide-x divide-[#E8E2D8]">
+    <div className="bg-white rounded-xl border border-[#E8E2D8] shadow-subtle px-4 sm:px-5 py-2.5 sm:py-3">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-5 divide-y sm:divide-y-0 sm:divide-x divide-[#E8E2D8]">
         {OPERATIONAL_ITEMS.map((item, idx) => {
           const Icon = item.icon;
           return (
             <div
               key={item.id}
               onClick={() => navigate(item.path)}
-              className={`flex items-center gap-3.5 sm:gap-4 p-1 rounded-xl cursor-pointer group transition-all ${
-                idx > 0 ? 'sm:pl-5 lg:pl-6' : ''
-              } ${idx >= 2 ? 'pt-3 sm:pt-1' : ''}`}
+              className={`flex items-center gap-3 p-1 rounded-xl cursor-pointer group transition-all ${
+                idx > 0 ? 'sm:pl-4 lg:pl-5' : ''
+              } ${idx >= 2 ? 'pt-2.5 sm:pt-1' : ''}`}
             >
-              <div className="w-10 h-10 rounded-xl bg-stone-100 border border-stone-200/80 text-stone-700 flex items-center justify-center flex-shrink-0 group-hover:bg-[#55132D] group-hover:text-white group-hover:border-[#55132D] transition-colors shadow-2xs">
-                <Icon className="w-5 h-5" />
+              <div className="w-8 h-8 rounded-lg bg-stone-100 border border-stone-200/80 text-stone-700 flex items-center justify-center flex-shrink-0 group-hover:bg-[#55132D] group-hover:text-white group-hover:border-[#55132D] transition-colors shadow-2xs">
+                <Icon className="w-4 h-4" />
               </div>
               <div className="min-w-0">
-                <div className="text-[11px] sm:text-xs font-medium text-stone-500 uppercase tracking-wider leading-none">
+                <div className="text-[10.5px] font-semibold text-stone-500 uppercase tracking-wider leading-none">
                   {item.label}
                 </div>
-                <div className="flex items-center gap-2 mt-1.5">
-                  <span className="font-bold text-stone-900 text-sm sm:text-base tracking-tight leading-none">
+                <div className="flex items-center gap-1.5 mt-1">
+                  <span className="font-bold text-stone-900 text-sm sm:text-[15px] tracking-tight leading-none">
                     {item.value}
                   </span>
-                  <span className={`w-2 h-2 rounded-full ${item.statusDot} flex-shrink-0`} />
+                  <span className={`w-1.5 h-1.5 rounded-full ${item.statusDot} flex-shrink-0`} />
                 </div>
               </div>
             </div>

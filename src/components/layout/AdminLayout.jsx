@@ -43,8 +43,8 @@ export default function AdminLayout() {
 
       {/* Main Workspace Area (adapts to sidebar width on desktop) */}
       <div
-        className={`flex-1 flex flex-col transition-all duration-300 ease-in-out ${
-          sidebar.isCollapsed ? 'lg:pl-[76px]' : 'lg:pl-[280px]'
+        className={`flex-1 flex flex-col transition-all duration-200 ease-in-out ${
+          sidebar.isCollapsed ? 'lg:pl-[70px]' : 'lg:pl-64'
         }`}
       >
         {/* Fixed / Sticky Top Header with solid background to prevent see-through */}
@@ -55,7 +55,7 @@ export default function AdminLayout() {
            ======================================================== */}
         <main
           id="main-workspace"
-          className="flex-1 px-4 py-4 sm:px-6 sm:py-5 lg:px-8 max-w-full overflow-x-hidden"
+          className="flex-1 px-4 py-4 sm:px-5 sm:py-5 lg:px-6 max-w-full overflow-x-hidden"
         >
           <Outlet />
         </main>

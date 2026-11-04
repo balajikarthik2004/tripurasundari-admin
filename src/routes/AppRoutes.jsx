@@ -1,41 +1,56 @@
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import AdminLayout from '../components/layout/AdminLayout';
+
+// 1. Dashboard
 import Dashboard from '../pages/Dashboard';
 
-// Devotee Services Modules (Phase 3)
-import DarshanBookings from '../pages/DarshanBookings';
-import PoojaSeva from '../pages/PoojaSeva';
-import Devotees from '../pages/Devotees';
+// 2. Approvals & Alerts (Consolidated)
+import ApprovalsAlerts from '../pages/ApprovalsAlerts';
+
+// 3. Bookings & Sacred Services (Consolidated)
+import SacredServices from '../pages/SacredServices';
+
+// 4. Annadanam (Standalone)
+import Annadanam from '../pages/Annadanam';
+
+// 5. Devotees & Grievances (Consolidated)
+import DevoteesGrievances from '../pages/DevoteesGrievances';
+
+// 6. Donations & Funds (Standalone)
 import Donations from '../pages/Donations';
+
+// 7. Prasad & Store (Standalone)
 import PrasadStore from '../pages/PrasadStore';
+
+// 8. Facilities & Accommodation (Standalone)
 import Facilities from '../pages/Facilities';
 
-// Temple Operations Modules (Phase 4)
+// 9. AI Heatmap & Crowd Control (Standalone)
 import CrowdControl from '../pages/CrowdControl';
-import GateManagement from '../pages/GateManagement';
-import StaffManagement from '../pages/StaffManagement';
+
+// 10. CCTV Monitor (Standalone)
 import CctvMonitoring from '../pages/CctvMonitoring';
-import Vendors from '../pages/Vendors';
-import Parking from '../pages/Parking';
-import MelaManagement from '../pages/MelaManagement';
-import RitualSchedule from '../pages/RitualSchedule';
+
+// 11. Volunteer & Staff (Standalone)
+import StaffManagement from '../pages/StaffManagement';
+
+// 12. Temple Calendar (Standalone)
 import TempleCalendar from '../pages/TempleCalendar';
 
-// Content Management Modules (Phase 5)
+// 13. Campus Logistics (Consolidated)
+import CampusLogistics from '../pages/CampusLogistics';
+
+// 14. Mela & Festival Management (Consolidated)
+import MelaFestival from '../pages/MelaFestival';
+
+// 15. Content Management
 import TempleInformation from '../pages/TempleInformation';
-import EventsFestivals from '../pages/EventsFestivals';
-import Announcements from '../pages/Announcements';
 import VisitGuide from '../pages/VisitGuide';
+import ContentGuide from '../pages/ContentGuide';
 
-// Overview & Management Desks
-import Approvals from '../pages/Approvals';
-import Alerts from '../pages/Alerts';
-
-// Insights & Administration Modules (Phase 6)
-import Reports from '../pages/Reports';
-import Grievances from '../pages/Grievances';
-import UsersRoles from '../pages/UsersRoles';
+// 16. Reports & Administration
+import ReportsAdmin from '../pages/ReportsAdmin';
 import TempleSettings from '../pages/TempleSettings';
 
 // Fallbacks
@@ -47,45 +62,70 @@ export default function AppRoutes() {
       <Route path="/" element={<AdminLayout />}>
         {/* Default route redirect to dashboard */}
         <Route index element={<Navigate to="/dashboard" replace />} />
-        
-        {/* Overview */}
-        <Route path="dashboard" element={<Dashboard />} />
-        <Route path="approvals" element={<Approvals />} />
-        <Route path="alerts" element={<Alerts />} />
 
-        {/* Devotee Services */}
-        <Route path="bookings" element={<DarshanBookings />} />
-        <Route path="pooja-seva" element={<PoojaSeva />} />
-        <Route path="devotees" element={<Devotees />} />
+        {/* ============================================================ */}
+        {/* 16 PRIMARY SIDEBAR ROUTES (PHASE 1 CONSOLIDATION)            */}
+        {/* ============================================================ */}
+
+        {/* 1. OVERVIEW */}
+        <Route path="dashboard" element={<Dashboard />} />
+        <Route path="approvals-alerts" element={<ApprovalsAlerts />} />
+
+        {/* 2. DEVOTEE SERVICES */}
+        <Route path="sacred-services" element={<SacredServices />} />
+        <Route path="annadanam" element={<Annadanam />} />
+        <Route path="devotees-grievances" element={<DevoteesGrievances />} />
         <Route path="donations" element={<Donations />} />
         <Route path="prasad-store" element={<PrasadStore />} />
         <Route path="facilities" element={<Facilities />} />
+        <Route path="accommodation" element={<Facilities />} />
 
-        {/* Temple Operations */}
+        {/* 3. TEMPLE OPERATIONS */}
         <Route path="crowd-control" element={<CrowdControl />} />
-        <Route path="gate-management" element={<GateManagement />} />
-        <Route path="temple-calendar" element={<TempleCalendar />} />
-        <Route path="staff-management" element={<StaffManagement />} />
         <Route path="cctv-monitoring" element={<CctvMonitoring />} />
-        <Route path="vendors" element={<Vendors />} />
-        <Route path="parking" element={<Parking />} />
-        <Route path="mela-management" element={<MelaManagement />} />
-        <Route path="ritual-schedule" element={<RitualSchedule />} />
+        <Route path="staff-management" element={<StaffManagement />} />
+        <Route path="temple-calendar" element={<TempleCalendar />} />
+        <Route path="campus-logistics" element={<CampusLogistics />} />
+        <Route path="mela-festival" element={<MelaFestival />} />
 
-        {/* Content Management */}
+        {/* 4. CONTENT MANAGEMENT (Two distinct, dedicated sections) */}
+        <Route path="temple-content" element={<TempleInformation />} />
+        <Route path="visitors-info" element={<VisitGuide />} />
+        <Route path="content-guide" element={<Navigate to="/temple-content" replace />} />
+
+        {/* 5. INSIGHTS & ADMINISTRATION */}
+        <Route path="reports-admin" element={<ReportsAdmin />} />
+        <Route path="settings" element={<TempleSettings isEmbedded={false} />} />
+        <Route path="temple-settings" element={<TempleSettings isEmbedded={false} />} />
+
+        {/* ============================================================ */}
+        {/* BACKWARD-COMPATIBLE ROUTE ALIASES (100% PRESERVED LINKS)     */}
+        {/* ============================================================ */}
+        <Route path="approvals" element={<ApprovalsAlerts />} />
+        <Route path="alerts" element={<ApprovalsAlerts />} />
+
+        <Route path="bookings" element={<SacredServices />} />
+        <Route path="pooja-seva" element={<SacredServices />} />
+        <Route path="gate-management" element={<SacredServices />} />
+        <Route path="ritual-schedule" element={<SacredServices />} />
+
+        <Route path="devotees" element={<DevoteesGrievances />} />
+        <Route path="grievances" element={<DevoteesGrievances />} />
+
+        <Route path="parking" element={<CampusLogistics />} />
+        <Route path="vendors" element={<CampusLogistics />} />
+
+        <Route path="events" element={<MelaFestival />} />
+        <Route path="events-festivals" element={<MelaFestival />} />
+        <Route path="mela-management" element={<MelaFestival />} />
+
         <Route path="temple-information" element={<TempleInformation />} />
-        <Route path="events" element={<EventsFestivals />} />
-        <Route path="events-festivals" element={<EventsFestivals />} />
-        <Route path="announcements" element={<Announcements />} />
         <Route path="visit-guide" element={<VisitGuide />} />
+        <Route path="announcements" element={<ContentGuide />} />
 
-        {/* Insights & Administration (Phase 6) */}
-        <Route path="reports" element={<Reports />} />
-        <Route path="grievances" element={<Grievances />} />
-        <Route path="users" element={<UsersRoles />} />
-        <Route path="users-roles" element={<UsersRoles />} />
-        <Route path="settings" element={<TempleSettings />} />
-        <Route path="temple-settings" element={<TempleSettings />} />
+        <Route path="reports" element={<ReportsAdmin />} />
+        <Route path="users" element={<Navigate to="/settings?tab=rbac" replace />} />
+        <Route path="users-roles" element={<Navigate to="/settings?tab=rbac" replace />} />
 
         {/* 404 Fallback */}
         <Route path="*" element={<NotFound />} />

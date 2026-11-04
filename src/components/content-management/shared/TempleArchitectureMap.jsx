@@ -7,10 +7,8 @@ import {
   Compass,
   Layers,
   Info,
-  ExternalLink,
-  ChevronRight,
   Maximize2,
-  Navigation,
+  CheckCircle2,
 } from 'lucide-react';
 
 export default function TempleArchitectureMap({
@@ -25,173 +23,78 @@ export default function TempleArchitectureMap({
 }) {
   const [zoom, setZoom] = useState(1);
   const [hoveredMarker, setHoveredMarker] = useState(null);
-  const [showContours, setShowContours] = useState(true);
-  const [showTrees, setShowTrees] = useState(true);
 
-  // Category badge styling & color palettes
-  const getCategoryTheme = (category) => {
+  const handleZoomIn = () => setZoom((prev) => Math.min(prev + 0.2, 1.8));
+  const handleZoomOut = () => setZoom((prev) => Math.max(prev - 0.2, 0.8));
+  const handleResetZoom = () => setZoom(1);
+
+  // Category palette with clean, professional dot markers
+  const getCategoryDotStyle = (category) => {
     switch (category) {
       case 'Temple':
-        return {
-          pinBg: '#800000',
-          pinBorder: '#F59E0B',
-          glow: 'rgba(128, 0, 0, 0.4)',
-          text: 'Sanctum',
-          iconColor: '#FDE68A',
-        };
+        return { color: '#55132D', ring: '#E2BC6B', label: 'Sanctum' };
       case 'Entry Point':
-        return {
-          pinBg: '#059669',
-          pinBorder: '#A7F3D0',
-          glow: 'rgba(5, 150, 105, 0.4)',
-          text: 'Gate',
-          iconColor: '#FFFFFF',
-        };
+        return { color: '#059669', ring: '#A7F3D0', label: 'Entrance' };
       case 'Exit Point':
-        return {
-          pinBg: '#0D9488',
-          pinBorder: '#99F6E4',
-          glow: 'rgba(13, 148, 136, 0.4)',
-          text: 'Exit',
-          iconColor: '#FFFFFF',
-        };
+        return { color: '#0D9488', ring: '#99F6E4', label: 'Exit' };
       case 'Parking':
-        return {
-          pinBg: '#2563EB',
-          pinBorder: '#BFDBFE',
-          glow: 'rgba(37, 99, 235, 0.4)',
-          text: 'Parking',
-          iconColor: '#FFFFFF',
-        };
+        return { color: '#2563EB', ring: '#BFDBFE', label: 'Parking' };
       case 'Drinking Water':
-        return {
-          pinBg: '#0891B2',
-          pinBorder: '#A5F3FC',
-          glow: 'rgba(8, 145, 178, 0.4)',
-          text: 'RO Water',
-          iconColor: '#FFFFFF',
-        };
+        return { color: '#0891B2', ring: '#A5F3FC', label: 'Water' };
       case 'Toilets':
-        return {
-          pinBg: '#4F46E5',
-          pinBorder: '#C7D2FE',
-          glow: 'rgba(79, 70, 229, 0.4)',
-          text: 'Restrooms',
-          iconColor: '#FFFFFF',
-        };
+        return { color: '#4F46E5', ring: '#C7D2FE', label: 'Restrooms' };
       case 'Help Desk':
-        return {
-          pinBg: '#D97706',
-          pinBorder: '#FDE68A',
-          glow: 'rgba(217, 119, 6, 0.4)',
-          text: 'Help Desk',
-          iconColor: '#FFFFFF',
-        };
+        return { color: '#D97706', ring: '#FDE68A', label: 'Help Desk' };
       case 'Prasad Area':
-        return {
-          pinBg: '#E11D48',
-          pinBorder: '#FECDD3',
-          glow: 'rgba(225, 29, 72, 0.4)',
-          text: 'Prasad',
-          iconColor: '#FFFFFF',
-        };
+        return { color: '#E11D48', ring: '#FECDD3', label: 'Prasad' };
       case 'Annadanam Area':
-        return {
-          pinBg: '#EA580C',
-          pinBorder: '#FED7AA',
-          glow: 'rgba(234, 88, 12, 0.4)',
-          text: 'Annadanam',
-          iconColor: '#FFFFFF',
-        };
+        return { color: '#EA580C', ring: '#FED7AA', label: 'Annadanam' };
       case 'Accommodation':
-        return {
-          pinBg: '#7C3AED',
-          pinBorder: '#DDD6FE',
-          glow: 'rgba(124, 58, 237, 0.4)',
-          text: 'Lodging',
-          iconColor: '#FFFFFF',
-        };
+        return { color: '#7C3AED', ring: '#DDD6FE', label: 'Yatri Niwas' };
       case 'Other Facility':
+        return { color: '#0284C7', ring: '#BAE6FD', label: 'Lake & Ghat' };
       default:
-        return {
-          pinBg: '#0284C7',
-          pinBorder: '#BAE6FD',
-          glow: 'rgba(2, 132, 199, 0.4)',
-          text: 'Facility',
-          iconColor: '#FFFFFF',
-        };
+        return { color: '#4B5563', ring: '#E5E7EB', label: 'Facility' };
     }
   };
 
-  const handleZoomIn = () => setZoom((z) => Math.min(z + 0.25, 2.0));
-  const handleZoomOut = () => setZoom((z) => Math.max(z - 0.25, 0.75));
-  const handleResetZoom = () => setZoom(1);
-
   return (
-    <div className="space-y-4">
-      {/* 1. Interactive Control Bar */}
-      <div className="bg-white border border-stone-200/90 rounded-2xl px-5 py-3.5 flex flex-wrap items-center justify-between gap-3 text-xs shadow-2xs">
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-xl bg-[#55132D]/10 text-[#55132D] flex items-center justify-center font-bold">
-            <Compass className="w-4 h-4" />
-          </div>
-          <div>
-            <h3 className="font-bold font-serif text-stone-900 text-sm sm:text-base leading-tight">
-              Mata Tripura Sundari Campus 2D Architectural Site Plan
+    <div className="bg-white rounded-2xl border border-stone-200/90 p-4 sm:p-5 shadow-2xs space-y-3.5">
+      {/* 1. Header Bar: Map Title & Controls */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pb-3 border-b border-stone-150">
+        <div>
+          <div className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-[#55132D]" />
+            <h3 className="font-serif font-bold text-stone-900 text-sm sm:text-base tracking-tight">
+              Mata Tripura Sundari Campus Architectural Site Plan
             </h3>
-            <p className="text-[11px] text-stone-500 font-medium mt-0.5">
-              Historical Kurmapitha hillock topography, Kalyan Sagar lake & pilgrim amenities layout
-            </p>
           </div>
+          <span className="text-[11px] text-stone-500 block mt-0.5 font-medium">
+            Widescreen architectural blueprint (West NH-8 to East Kalyan Sagar) · Click any dot to inspect facility details
+          </span>
         </div>
 
-        {/* Zoom & View Controls */}
-        <div className="flex items-center gap-2">
-          {/* Layer toggles */}
-          <div className="hidden sm:flex items-center bg-stone-100 rounded-xl p-1 border border-stone-200 text-xs">
-            <button
-              onClick={() => setShowContours((prev) => !prev)}
-              className={`px-2.5 py-1 rounded-lg font-semibold transition-all ${
-                showContours ? 'bg-white text-stone-900 shadow-2xs' : 'text-stone-500 hover:text-stone-800'
-              }`}
-              title="Toggle elevation contour layers"
-            >
-              Contours
-            </button>
-            <button
-              onClick={() => setShowTrees((prev) => !prev)}
-              className={`px-2.5 py-1 rounded-lg font-semibold transition-all ${
-                showTrees ? 'bg-white text-stone-900 shadow-2xs' : 'text-stone-500 hover:text-stone-800'
-              }`}
-              title="Toggle tree canopy and landscape"
-            >
-              Greenery
-            </button>
-          </div>
-
-          {/* Zoom controls */}
-          <div className="flex items-center bg-stone-100 rounded-xl p-1 border border-stone-200">
+        <div className="flex items-center gap-2 self-end sm:self-auto">
+          {/* Zoom Controls */}
+          <div className="flex items-center bg-stone-100 rounded-xl p-1 border border-stone-200 text-xs shadow-2xs">
             <button
               onClick={handleZoomIn}
-              className="p-1.5 hover:bg-white text-stone-700 rounded-lg transition-colors"
+              className="p-1.5 hover:bg-white text-stone-700 rounded-lg transition-colors cursor-pointer"
               title="Zoom In"
-              aria-label="Zoom In"
             >
               <ZoomIn className="w-3.5 h-3.5" />
             </button>
             <button
               onClick={handleZoomOut}
-              className="p-1.5 hover:bg-white text-stone-700 rounded-lg transition-colors"
+              className="p-1.5 hover:bg-white text-stone-700 rounded-lg transition-colors cursor-pointer"
               title="Zoom Out"
-              aria-label="Zoom Out"
             >
               <ZoomOut className="w-3.5 h-3.5" />
             </button>
             <button
               onClick={handleResetZoom}
-              className="p-1.5 hover:bg-white text-stone-700 rounded-lg transition-colors"
-              title="Reset Zoom"
-              aria-label="Reset Zoom"
+              className="p-1.5 hover:bg-white text-stone-700 rounded-lg transition-colors cursor-pointer"
+              title="Reset View"
             >
               <RotateCcw className="w-3.5 h-3.5" />
             </button>
@@ -199,10 +102,10 @@ export default function TempleArchitectureMap({
         </div>
       </div>
 
-      {/* 2. Filter Category Pills */}
+      {/* 2. Filter Category Pills (Consolidated to avoid scrollbars) */}
       {categories.length > 0 && (
-        <div className="flex items-center gap-2 overflow-x-auto custom-scrollbar pb-1 text-xs">
-          <span className="font-semibold text-stone-400 text-[11px] uppercase tracking-wider shrink-0 mr-1">
+        <div className="flex flex-wrap items-center gap-1.5 text-xs py-0.5">
+          <span className="font-bold text-stone-400 text-[10.5px] uppercase tracking-wider shrink-0 mr-1">
             Filter:
           </span>
           {categories.map((cat) => {
@@ -211,10 +114,10 @@ export default function TempleArchitectureMap({
               <button
                 key={cat}
                 onClick={() => onSelectCategory(cat)}
-                className={`px-3 py-1.5 rounded-xl font-semibold whitespace-nowrap transition-all ${
+                className={`px-3 py-1 rounded-xl text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
                   isSelected
-                    ? 'bg-[#55132D] text-white shadow-xs'
-                    : 'bg-white border border-stone-200/90 text-stone-600 hover:bg-stone-50 hover:border-stone-300'
+                    ? 'bg-[#55132D] text-white shadow-2xs'
+                    : 'bg-stone-100 text-stone-700 hover:bg-stone-200 border border-stone-200/80'
                 }`}
               >
                 {cat}
@@ -224,464 +127,395 @@ export default function TempleArchitectureMap({
         </div>
       )}
 
-      {/* 3. Main 2D Architectural Map Viewport */}
-      <div className="bg-[#FAF7F2] border-2 border-stone-300/80 rounded-2xl overflow-hidden shadow-sm relative min-h-[520px] lg:min-h-[580px] flex items-center justify-center">
-        {/* Adding Marker Mode Indicator Banner */}
+      {/* 3. Full-Width Rectangular Architectural Canvas (2:1 Widescreen Ratio) */}
+      <div className="bg-[#FAF7F0] border-2 border-stone-300 rounded-2xl overflow-hidden shadow-inner relative w-full aspect-[2/1] min-h-[460px] sm:min-h-[520px] lg:min-h-[580px] flex items-center justify-center">
+        {/* Adding Marker Notification */}
         {isAddingMarkerMode && (
-          <div className="absolute top-4 left-1/2 -translate-x-1/2 z-30 bg-[#55132D] text-white text-xs px-5 py-2 rounded-full font-bold shadow-xl border border-[#B68A36]/60 animate-bounce flex items-center gap-2">
-            <MapPin className="w-4 h-4 text-[#E2BC6B]" />
-            <span>Click anywhere on the campus canvas to drop a marker pin</span>
+          <div className="absolute top-4 left-1/2 -translate-x-1/2 z-30 bg-[#55132D] text-white text-xs px-4 py-1.5 rounded-full font-bold shadow-xl border border-amber-300 animate-bounce flex items-center gap-1.5">
+            <MapPin className="w-3.5 h-3.5 text-[#E2BC6B]" />
+            <span>Click anywhere on the architectural map to place pin</span>
           </div>
         )}
 
-        {/* Compass Rose Widget in Top Right */}
-        <div className="absolute top-4 right-4 z-20 bg-white/90 backdrop-blur-xs border border-stone-200/90 p-2.5 rounded-2xl shadow-xs flex flex-col items-center select-none pointer-events-none">
-          <div className="w-7 h-7 rounded-full border border-stone-300 flex items-center justify-center relative">
-            <span className="text-[10px] font-black text-rose-800 absolute -top-1 font-serif">N</span>
-            <div className="w-0.5 h-4 bg-rose-700 rounded-full" />
-            <div className="w-4 h-0.5 bg-stone-300 rounded-full absolute" />
+        {/* Vintage Drafting Compass Rose */}
+        <div className="absolute top-3 right-3 z-20 bg-white/90 backdrop-blur-xs border border-stone-300 px-3 py-2 rounded-xl shadow-2xs flex flex-col items-center select-none pointer-events-none">
+          <div className="w-8 h-8 rounded-full border border-stone-400 flex items-center justify-center relative">
+            <span className="text-[10px] font-black text-[#55132D] absolute -top-1 font-serif">N</span>
+            <div className="w-0.5 h-4.5 bg-[#55132D] rounded-full" />
+            <div className="w-4.5 h-0.5 bg-stone-400 rounded-full absolute" />
           </div>
-          <span className="text-[9px] font-mono font-bold text-stone-500 mt-1">1:500</span>
+          <span className="text-[9px] font-mono font-bold text-stone-600 mt-1">Scale 1:500m</span>
         </div>
 
-        {/* Map Canvas Scale Wrapper */}
+        {/* Architectural Legend Badge */}
+        <div className="absolute bottom-3 left-3 z-20 bg-white/90 backdrop-blur-xs border border-stone-300 px-3 py-1.5 rounded-xl shadow-2xs text-[10.5px] text-stone-700 font-serif hidden sm:flex items-center gap-2 select-none pointer-events-none">
+          <span className="font-bold text-stone-900">Udaipur, Tripura</span>
+          <span>•</span>
+          <span className="italic text-stone-600">Kurmapitha Hillock · Elevation 32m MSL</span>
+          <span>•</span>
+          <span className="text-[#55132D] font-semibold">Bengali Ek-Ratna Char-chala Style (1501 CE)</span>
+        </div>
+
+        {/* Scalable Drafting SVG - 200x100 Widescreen Rectangular ViewBox */}
         <div
-          className="w-full h-full p-4 flex items-center justify-center transition-transform duration-300 ease-out"
+          className="w-full h-full p-2 sm:p-4 flex items-center justify-center transition-transform duration-300 ease-out"
           style={{ transform: `scale(${zoom})`, transformOrigin: 'center center' }}
         >
           <svg
-            viewBox="0 0 100 100"
-            className={`w-full max-w-2xl aspect-square select-none ${
+            viewBox="0 0 200 100"
+            className={`w-full h-full select-none ${
               isAddingMarkerMode ? 'cursor-crosshair' : 'cursor-default'
             }`}
             onClick={onMapClick}
           >
             <defs>
-              {/* Architectural Campus Grid */}
-              <pattern id="archGrid" width="5" height="5" patternUnits="userSpaceOnUse">
-                <path d="M 5 0 L 0 0 0 5" fill="none" stroke="#E9E2D5" strokeWidth="0.25" />
+              {/* Subtle Drafting Grid */}
+              <pattern id="rectPencilGrid" width="5" height="5" patternUnits="userSpaceOnUse">
+                <path d="M 5 0 L 0 0 0 5" fill="none" stroke="#EAE4D7" strokeWidth="0.15" />
               </pattern>
-              <pattern id="flagstonePaving" width="3" height="3" patternUnits="userSpaceOnUse">
+
+              {/* Architectural Masonry Hatching */}
+              <pattern id="hatchPencil" width="2" height="2" patternTransform="rotate(45 0 0)" patternUnits="userSpaceOnUse">
+                <line x1="0" y1="0" x2="0" y2="2" stroke="#66594C" strokeWidth="0.25" opacity="0.35" />
+              </pattern>
+
+              {/* Paved Flagstone Pathway */}
+              <pattern id="pathwayPencil" width="3" height="3" patternUnits="userSpaceOnUse">
                 <rect width="3" height="3" fill="#F4EFE6" />
-                <path d="M 0 1.5 L 3 1.5 M 1.5 0 L 1.5 3" stroke="#E2D7C5" strokeWidth="0.2" />
+                <path d="M 0 1.5 L 3 1.5 M 1.5 0 L 1.5 3" stroke="#D8CEBD" strokeWidth="0.15" />
               </pattern>
 
-              {/* Lake Gradient & Ripple Filter */}
-              <linearGradient id="lakeWaterGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#38BDF8" stopOpacity="0.8" />
-                <stop offset="40%" stopColor="#0284C7" stopOpacity="0.85" />
-                <stop offset="100%" stopColor="#0369A1" stopOpacity="0.95" />
-              </linearGradient>
-
-              {/* Kurmapitha Hillock Terracotta Gradient */}
-              <radialGradient id="kurmaHillGradient" cx="50%" cy="46%" r="50%">
-                <stop offset="0%" stopColor="#FEF3C7" stopOpacity="0.9" />
-                <stop offset="45%" stopColor="#FDE68A" stopOpacity="0.75" />
-                <stop offset="75%" stopColor="#F59E0B" stopOpacity="0.35" />
-                <stop offset="100%" stopColor="#D97706" stopOpacity="0.05" />
-              </radialGradient>
-
-              {/* Sanctum Roof Gradient (Char-Chala Bengal Dome) */}
-              <radialGradient id="sanctumRoofGradient" cx="50%" cy="50%" r="50%">
-                <stop offset="0%" stopColor="#B68A36" />
-                <stop offset="35%" stopColor="#800000" />
-                <stop offset="100%" stopColor="#4A0012" />
-              </radialGradient>
-
-              {/* Drop Shadow for Buildings & Pins */}
-              <filter id="buildingShadow" x="-20%" y="-20%" width="140%" height="140%">
-                <feDropShadow dx="0.6" dy="0.8" stdDeviation="0.6" floodColor="#78350F" floodOpacity="0.2" />
-              </filter>
-              <filter id="pinShadow" x="-30%" y="-30%" width="160%" height="160%">
-                <feDropShadow dx="0.4" dy="0.6" stdDeviation="0.5" floodColor="#000000" floodOpacity="0.3" />
-              </filter>
+              {/* Road Dash Pattern */}
+              <pattern id="roadStripes" width="4" height="2" patternUnits="userSpaceOnUse">
+                <rect width="4" height="2" fill="#EAE5DC" />
+                <line x1="0" y1="1" x2="2" y2="1" stroke="#D1C7B7" strokeWidth="0.3" />
+              </pattern>
             </defs>
 
-            {/* Base Background Ground */}
-            <rect width="100" height="100" fill="#FAF6EE" />
-            <rect width="100" height="100" fill="url(#archGrid)" />
+            {/* Canvas Ground Fill with Drafting Grid */}
+            <rect x="2" y="2" width="196" height="96" fill="#FBF9F4" stroke="#8A7C6D" strokeWidth="0.5" />
+            <rect x="2" y="2" width="196" height="96" fill="url(#rectPencilGrid)" />
 
-            {/* Outer Compound Wall with Corner Bastions */}
-            <rect
-              x="6"
-              y="6"
-              width="88"
-              height="88"
-              rx="4"
-              fill="none"
-              stroke="#B45309"
-              strokeWidth="1.2"
-              strokeDasharray="4,1.5"
-            />
-            {/* Corner Towers / Bastions */}
-            <circle cx="6" cy="6" r="2.2" fill="#D97706" stroke="#92400E" strokeWidth="0.5" />
-            <circle cx="94" cy="6" r="2.2" fill="#D97706" stroke="#92400E" strokeWidth="0.5" />
-            <circle cx="6" cy="94" r="2.2" fill="#D97706" stroke="#92400E" strokeWidth="0.5" />
-            <circle cx="94" cy="94" r="2.2" fill="#D97706" stroke="#92400E" strokeWidth="0.5" />
+            {/* Outer Campus Border (Double Drafted Line) */}
+            <rect x="4" y="4" width="192" height="92" fill="none" stroke="#6B5E52" strokeWidth="0.6" strokeDasharray="4 1.5" />
+            <rect x="5" y="5" width="190" height="90" fill="none" stroke="#8C7D70" strokeWidth="0.25" />
 
-            {/* ========================================================= */}
-            {/* 1. KALYAN SAGAR LAKE (North-West Quadrant)                */}
-            {/* ========================================================= */}
-            <g id="kalyanSagarZone">
-              {/* Lake Basin Water Body */}
-              <path
-                d="M 6,6 L 36,6 C 36,18 34,32 24,36 C 16,39 6,36 6,36 Z"
-                fill="url(#lakeWaterGradient)"
-                stroke="#0284C7"
-                strokeWidth="1"
-              />
-
-              {/* Water Wave Ripple Lines */}
-              <path
-                d="M 10,12 Q 15,10 20,12 M 16,18 Q 21,16 26,18 M 12,24 Q 17,22 22,24"
-                fill="none"
-                stroke="#BAE6FD"
-                strokeWidth="0.5"
-                strokeLinecap="round"
-                opacity="0.8"
-              />
-
-              {/* Masonry Ghat Steps descending to water */}
-              <path
-                d="M 12,28 C 16,29 20,29 23,27"
-                fill="none"
-                stroke="#FDE68A"
-                strokeWidth="1.2"
-                strokeLinecap="round"
-              />
-              <path
-                d="M 13,29.5 C 16,30.5 19,30.5 22,28.5"
-                fill="none"
-                stroke="#D97706"
-                strokeWidth="1.2"
-                strokeLinecap="round"
-              />
-
-              {/* Sacred Bostami Turtle Motif in Lake */}
-              <g transform="translate(18, 14)">
-                <ellipse cx="0" cy="0" rx="2" ry="1.4" fill="#065F46" />
-                <circle cx="-2.3" cy="0" r="0.7" fill="#047857" />
-                <circle cx="1.5" cy="-1.3" r="0.5" fill="#047857" />
-                <circle cx="1.5" cy="1.3" r="0.5" fill="#047857" />
-                <circle cx="-1.5" cy="-1.3" r="0.5" fill="#047857" />
-                <circle cx="-1.5" cy="1.3" r="0.5" fill="#047857" />
-              </g>
-
-              {/* Lake Label */}
-              <text x="10" y="9" fontSize="2.2" fill="#FFFFFF" fontWeight="bold" fontStyle="italic">
-                Kalyan Sagar Lake
-              </text>
-              <text x="10" y="11.5" fontSize="1.4" fill="#E0F2FE" fontWeight="medium">
-                Sacred Bostami Turtle Sanctuary
-              </text>
-            </g>
-
-            {/* ========================================================= */}
-            {/* 2. KURMAPITHA HILLOCK (Tortoise Shape Mound Contours)     */}
-            {/* ========================================================= */}
-            {showContours && (
-              <g id="kurmapithaContours">
-                {/* Elevation Contour 1 (Outer Mound - 5m) */}
-                <ellipse
-                  cx="50"
-                  cy="46"
-                  rx="30"
-                  ry="24"
-                  fill="url(#kurmaHillGradient)"
-                  stroke="#F59E0B"
-                  strokeWidth="0.5"
-                  strokeDasharray="2,1"
-                />
-
-                {/* Elevation Contour 2 (Mid Terrace - 10m) */}
-                <ellipse
-                  cx="50"
-                  cy="45"
-                  rx="22"
-                  ry="18"
-                  fill="#FEF3C7"
-                  fillOpacity="0.4"
-                  stroke="#D97706"
-                  strokeWidth="0.6"
-                />
-
-                {/* Elevation Contour 3 (Sanctum Plinth Hillock - 15m) */}
-                <ellipse
-                  cx="50"
-                  cy="44"
-                  rx="15"
-                  ry="13"
-                  fill="#FDE68A"
-                  fillOpacity="0.5"
-                  stroke="#B45309"
-                  strokeWidth="0.7"
-                />
-
-                <text x="50" y="27" fontSize="1.8" fill="#92400E" fontWeight="bold" textAnchor="middle">
-                  KURMAPITHA HILLOCK (SANCTUM MOUND)
-                </text>
-              </g>
-            )}
-
-            {/* ========================================================= */}
-            {/* 3. PARIKRAMA AMBULATORY STONE PATH                       */}
-            {/* ========================================================= */}
-            <ellipse
-              cx="50"
-              cy="44"
-              rx="18"
-              ry="15"
-              fill="none"
-              stroke="#D97706"
-              strokeWidth="2.5"
-              strokeDasharray="1.5,0.5"
-            />
-            <text x="50" y="60.5" fontSize="1.4" fill="#B45309" fontWeight="bold" textAnchor="middle">
-              CIRCUMAMBULATION CORRIDOR (PARIKRAMA)
+            {/* ========================================================
+                1. WEST CORRIDOR: NATIONAL HIGHWAY 8 (NH-8) & ENTRANCES
+               ======================================================== */}
+            {/* NH-8 Road Strip */}
+            <rect x="6" y="5" width="8" height="90" fill="url(#roadStripes)" stroke="#7A6D5E" strokeWidth="0.4" />
+            <line x1="10" y1="5" x2="10" y2="95" stroke="#C4A86A" strokeWidth="0.35" strokeDasharray="2 1" />
+            <text x="7.5" y="52" fontSize="2.2" fontFamily="sans-serif" fontWeight="bold" fill="#7A6D5E" transform="rotate(-90 7.5 52)" textAnchor="middle" letterSpacing="0.8">
+              NATIONAL HIGHWAY 8 (NH-8) · UDAIPUR HIGHWAY
             </text>
 
-            {/* Pathways linking Gates to Sanctum */}
-            {/* East Gate Pathway */}
-            <path d="M 24,48 L 40,48" stroke="#E2BC6B" strokeWidth="2.8" strokeLinecap="round" />
-            <path d="M 24,48 L 40,48" stroke="#92400E" strokeWidth="0.4" strokeDasharray="1,1" />
+            {/* West Parking Terminal (Lot B) */}
+            <rect x="16" y="66" width="22" height="26" fill="#F0F4FA" stroke="#3B5998" strokeWidth="0.4" strokeDasharray="2 1" />
+            <line x1="18" y1="72" x2="36" y2="72" stroke="#7A93BD" strokeWidth="0.2" />
+            <line x1="18" y1="78" x2="36" y2="78" stroke="#7A93BD" strokeWidth="0.2" />
+            <line x1="18" y1="84" x2="36" y2="84" stroke="#7A93BD" strokeWidth="0.2" />
+            <text x="27" y="70" fontSize="1.6" fontFamily="sans-serif" fontWeight="bold" fill="#2B4978" textAnchor="middle">
+              West Parking Terminal (Lot B)
+            </text>
+            <text x="27" y="88.5" fontSize="1.1" fontFamily="sans-serif" fill="#5A739C" textAnchor="middle">
+              4-Wheelers · Two-Wheelers · Tourist Coaches
+            </text>
 
-            {/* West Exit Pathway */}
-            <path d="M 60,48 L 76,48" stroke="#E2BC6B" strokeWidth="2.8" strokeLinecap="round" />
-            <path d="M 60,48 L 76,48" stroke="#92400E" strokeWidth="0.4" strokeDasharray="1,1" />
+            {/* West Gate Plaza & Singh Dwar (Gate 1) */}
+            <rect x="14" y="42" width="18" height="12" fill="#F4EFE6" stroke="#2D5A43" strokeWidth="0.6" />
+            <path d="M 14 48 L 32 48" stroke="#2D5A43" strokeWidth="0.3" strokeDasharray="1 0.5" />
+            <text x="23" y="46.5" fontSize="1.8" fontFamily="serif" fontWeight="bold" fill="#2D5A43" textAnchor="middle">
+              Singh Dwar (West Gate 1)
+            </text>
+            <text x="23" y="51" fontSize="1.1" fontFamily="sans-serif" fill="#4B7A63" textAnchor="middle">
+              Security · Baggage Check · Footwear Counter
+            </text>
 
-            {/* South Annadanam Pathway */}
-            <path d="M 50,54 L 50,66 L 58,66 L 58,70" stroke="#E2BC6B" strokeWidth="2.2" strokeLinecap="round" fill="none" />
+            {/* ========================================================
+                2. CENTRAL PILGRIM APPROACH & AMENITIES CORRIDOR
+               ======================================================== */}
+            {/* Ceremonial Paved Flagstone Pathway connecting West to Hillock */}
+            <rect x="32" y="44" width="48" height="8" fill="url(#pathwayPencil)" stroke="#8A7B6B" strokeWidth="0.3" />
+            <line x1="32" y1="48" x2="80" y2="48" stroke="#B8A794" strokeWidth="0.2" strokeDasharray="1 1" />
 
-            {/* North Lake Ghat Pathway */}
-            <path d="M 38,40 L 26,30 L 20,26" stroke="#E2BC6B" strokeWidth="2.2" strokeLinecap="round" fill="none" />
+            {/* Yatri Niwas Pilgrim Complex (North-West) */}
+            <rect x="22" y="12" width="28" height="18" fill="#F7F2FA" stroke="#5B3E7A" strokeWidth="0.45" />
+            <text x="36" y="19" fontSize="1.7" fontFamily="serif" fontWeight="bold" fill="#5B3E7A" textAnchor="middle">
+              Yatri Niwas Pilgrim Complex
+            </text>
+            <text x="36" y="23" fontSize="1.1" fontFamily="sans-serif" fill="#6B597A" textAnchor="middle">
+              Pilgrim Dormitories &amp; Guest Cottages
+            </text>
+            <line x1="26" y1="26" x2="46" y2="26" stroke="#9E8BAE" strokeWidth="0.2" />
 
-            {/* ========================================================= */}
-            {/* 4. MAIN TEMPLE ARCHITECTURAL FOOTPRINT                    */}
-            {/* ========================================================= */}
-            <g id="mainSanctumArchitecture" filter="url(#buildingShadow)">
-              {/* Outer Stone Jagati (Plinth) */}
-              <rect x="42" y="36" width="16" height="16" rx="2" fill="#FAF5EF" stroke="#800000" strokeWidth="1" />
+            {/* Purified RO Drinking Water Pavilion */}
+            <rect x="56" y="30" width="16" height="10" fill="#EBF8FA" stroke="#0891B2" strokeWidth="0.4" />
+            <text x="64" y="35" fontSize="1.5" fontFamily="sans-serif" fontWeight="bold" fill="#0E7490" textAnchor="middle">
+              Purified RO Water Kiosk
+            </text>
+            <text x="64" y="38" fontSize="1.0" fontFamily="sans-serif" fill="#155E75" textAnchor="middle">
+              24/7 Chilled Drinking Water
+            </text>
 
-              {/* Garbhagriha Inner Sanctum Walls (Bengal Char-Chala Dome) */}
-              <rect x="44" y="38" width="12" height="12" rx="1.5" fill="url(#sanctumRoofGradient)" stroke="#F59E0B" strokeWidth="0.8" />
+            {/* Central Information & Help Desk */}
+            <circle cx="52" cy="48" r="4.5" fill="#FFFBEB" stroke="#D97706" strokeWidth="0.5" />
+            <text x="52" y="47.5" fontSize="1.3" fontFamily="sans-serif" fontWeight="bold" fill="#B45309" textAnchor="middle">
+              Help Desk
+            </text>
+            <text x="52" y="50" fontSize="0.9" fontFamily="sans-serif" fill="#92400E" textAnchor="middle">
+              Wheelchairs
+            </text>
 
-              {/* Central Shikhar / Golden Kalasha */}
-              <circle cx="50" cy="44" r="2.2" fill="#E2BC6B" stroke="#800000" strokeWidth="0.6" />
-              <circle cx="50" cy="44" r="0.8" fill="#FFFFFF" />
+            {/* Sanitation & Restrooms Block */}
+            <rect x="56" y="56" width="16" height="11" fill="#EEF2FF" stroke="#4F46E5" strokeWidth="0.4" />
+            <text x="64" y="62" fontSize="1.5" fontFamily="sans-serif" fontWeight="bold" fill="#4338CA" textAnchor="middle">
+              Pilgrim Sanitation
+            </text>
+            <text x="64" y="65" fontSize="1.0" fontFamily="sans-serif" fill="#3730A3" textAnchor="middle">
+              Modern Restrooms · Divyangjan
+            </text>
 
-              {/* Sanctum Entrance Doorway (facing South) */}
-              <rect x="48.5" y="49.2" width="3" height="1.2" fill="#F59E0B" />
+            {/* ========================================================
+                3. KURMAPITHA HILLOCK & MAIN TEMPLE SANCTUM
+               ======================================================== */}
+            {/* Concentric Tortoise-Shaped Contours (Kurmapṛṣṭhākṛti) */}
+            <ellipse cx="106" cy="48" rx="34" ry="26" fill="#FAF5E8" stroke="#D1C3B0" strokeWidth="0.4" strokeDasharray="3 1" />
+            <ellipse cx="106" cy="48" rx="27" ry="20" fill="#F7EEDC" stroke="#C4B49F" strokeWidth="0.4" strokeDasharray="2.5 1" />
+            <ellipse cx="106" cy="48" rx="20" ry="15" fill="#F4E6CB" stroke="#B8A48B" strokeWidth="0.3" strokeDasharray="2 0.8" />
+            <text x="106" y="27" fontSize="1.6" fontFamily="serif" letterSpacing="0.8" fill="#8C7B68" textAnchor="middle" fontWeight="bold">
+              KURMAPITHA HILLOCK (SANCTUM MOUND · ELEVATION 32M)
+            </text>
 
-              {/* Adjoining Nat Mandir (Pillared Hall) */}
-              <rect x="45" y="50" width="10" height="6.5" rx="1" fill="#FEF3C7" stroke="#92400E" strokeWidth="0.6" />
-              {/* Pillar Grid Points */}
-              <circle cx="46.5" cy="51.5" r="0.5" fill="#78350F" />
-              <circle cx="53.5" cy="51.5" r="0.5" fill="#78350F" />
-              <circle cx="46.5" cy="55" r="0.5" fill="#78350F" />
-              <circle cx="53.5" cy="55" r="0.5" fill="#78350F" />
-              <text x="50" y="54" fontSize="1.2" fill="#78350F" fontWeight="bold" textAnchor="middle">
-                NAT MANDIR
-              </text>
-            </g>
+            {/* Parikrama Ambulatory Court */}
+            <rect x="92" y="34" width="28" height="28" rx="2" fill="url(#pathwayPencil)" stroke="#66594C" strokeWidth="0.5" />
 
-            {/* ========================================================= */}
-            {/* 5. AUXILIARY CAMPUS BUILDINGS                             */}
-            {/* ========================================================= */}
-            {/* Sri Annapurna Annadanam Hall (South) */}
-            <g id="annadanamHall" filter="url(#buildingShadow)">
-              <rect x="52" y="68" width="16" height="11" rx="1.5" fill="#FFEDD5" stroke="#EA580C" strokeWidth="0.7" />
-              <rect x="54" y="70" width="12" height="7" rx="0.8" fill="#FFF7ED" stroke="#FDBA74" strokeWidth="0.4" />
-              <text x="60" y="74.5" fontSize="1.4" fill="#C2410C" fontWeight="bold" textAnchor="middle">
-                ANNADANAM HALL
-              </text>
-            </g>
+            {/* Inner Sanctum Plinth */}
+            <rect x="97" y="39" width="18" height="18" fill="#EFE8DC" stroke="#3A2E26" strokeWidth="0.8" />
+            <rect x="97" y="39" width="18" height="18" fill="url(#hatchPencil)" />
 
-            {/* Matabari Mahaprasad & Peda Counter */}
-            <g id="pedaCounter" filter="url(#buildingShadow)">
-              <rect x="34" y="58" width="10" height="7" rx="1" fill="#FFE4E6" stroke="#E11D48" strokeWidth="0.6" />
-              <text x="39" y="62.5" fontSize="1.2" fill="#BE123C" fontWeight="bold" textAnchor="middle">
-                PEDA BHAWAN
-              </text>
-            </g>
+            {/* Char-Chala Vault Curved Roof (Ek-Ratna Bengal Style) */}
+            <path
+              d="M 97 39 Q 106 35 115 39 Q 118 48 115 57 Q 106 61 97 57 Q 94 48 97 39 Z"
+              fill="#E8DFC8"
+              stroke="#3A2E26"
+              strokeWidth="0.7"
+            />
+            {/* Central Sacred Shikhara Kalasha Finial */}
+            <circle cx="106" cy="48" r="3.2" fill="#B68A36" stroke="#3A2E26" strokeWidth="0.5" />
+            <circle cx="106" cy="48" r="1.2" fill="#55132D" />
 
-            {/* Yatri Niwas Pilgrim Accommodation (South-West) */}
-            <g id="yatriNiwas" filter="url(#buildingShadow)">
-              <rect x="14" y="74" width="16" height="13" rx="2" fill="#F3E8FF" stroke="#7C3AED" strokeWidth="0.7" />
-              {/* Inner Courtyard */}
-              <rect x="18" y="78" width="8" height="5" rx="0.5" fill="#FAF5FF" stroke="#C4B5FD" strokeWidth="0.4" />
-              <text x="22" y="81" fontSize="1.3" fill="#6D28D9" fontWeight="bold" textAnchor="middle">
-                YATRI NIWAS
-              </text>
-            </g>
+            <text x="106" y="44" fontSize="2.0" fontFamily="serif" fontWeight="bold" fill="#3A2E26" textAnchor="middle">
+              Garbhagriha
+            </text>
+            <text x="106" y="53" fontSize="1.3" fontFamily="sans-serif" fontWeight="bold" fill="#55132D" textAnchor="middle">
+              Maa Tripura Sundari (1501 CE)
+            </text>
 
-            {/* Pilgrim Sanitation Block (North-East) */}
-            <g id="restroomBlock" filter="url(#buildingShadow)">
-              <rect x="70" y="24" width="12" height="8" rx="1.5" fill="#E0E7FF" stroke="#4F46E5" strokeWidth="0.6" />
-              <text x="76" y="28.5" fontSize="1.2" fill="#3730A3" fontWeight="bold" textAnchor="middle">
-                RESTROOMS
-              </text>
-            </g>
+            {/* Natmandir (Pillared Assembly Hall to the West of Sanctum) */}
+            <rect x="83" y="42" width="9" height="12" fill="#F4EFE6" stroke="#3A2E26" strokeWidth="0.5" />
+            {/* Natmandir pillars */}
+            <circle cx="85" cy="44" r="0.4" fill="#3A2E26" />
+            <circle cx="90" cy="44" r="0.4" fill="#3A2E26" />
+            <circle cx="85" cy="48" r="0.4" fill="#3A2E26" />
+            <circle cx="90" cy="48" r="0.4" fill="#3A2E26" />
+            <circle cx="85" cy="52" r="0.4" fill="#3A2E26" />
+            <circle cx="90" cy="52" r="0.4" fill="#3A2E26" />
+            <text x="87.5" y="47.5" fontSize="1.1" fontFamily="serif" fill="#55132D" textAnchor="middle" fontWeight="bold" transform="rotate(-90 87.5 47.5)">
+              Natmandir
+            </text>
 
-            {/* West Main Car & Scooter Parking (Lot B) */}
-            <g id="parkingGrounds">
-              <rect x="74" y="70" width="16" height="14" rx="2" fill="#EFF6FF" stroke="#2563EB" strokeWidth="0.8" strokeDasharray="1.5,1" />
-              {/* Parking bays line markings */}
-              <line x1="77" y1="73" x2="87" y2="73" stroke="#93C5FD" strokeWidth="0.5" />
-              <line x1="77" y1="76" x2="87" y2="76" stroke="#93C5FD" strokeWidth="0.5" />
-              <line x1="77" y1="79" x2="87" y2="79" stroke="#93C5FD" strokeWidth="0.5" />
-              <text x="82" y="82.5" fontSize="1.4" fill="#1D4ED8" fontWeight="bold" textAnchor="middle">
-                PARKING LOT B
-              </text>
-            </g>
+            {/* Chandi Mandap / Yajna Shala (North of Sanctum) */}
+            <rect x="100" y="16" width="16" height="8" fill="#FDF6EB" stroke="#B45309" strokeWidth="0.4" />
+            <circle cx="108" cy="20" r="1.5" fill="none" stroke="#D97706" strokeWidth="0.3" strokeDasharray="0.8 0.4" />
+            <text x="108" y="21" fontSize="1.2" fontFamily="serif" fill="#92400E" textAnchor="middle" fontWeight="bold">
+              Chandi Mandap &amp; Yajna Shala
+            </text>
 
-            {/* ========================================================= */}
-            {/* 6. GREENERY, SACRED TREES & LANDSCAPING                  */}
-            {/* ========================================================= */}
-            {showTrees && (
-              <g id="landscapeGreenery">
-                {/* Ancient Sacred Banyan / Bel Tree near Kalyan Sagar */}
-                <circle cx="12" cy="40" r="3" fill="#15803D" fillOpacity="0.4" />
-                <circle cx="12" cy="40" r="2" fill="#16A34A" />
-                <circle cx="12" cy="40" r="0.6" fill="#14532D" />
+            {/* Sri Annapurna Annadanam Free Bhog Hall (North-East) */}
+            <rect x="122" y="14" width="22" height="14" fill="#FFF7ED" stroke="#EA580C" strokeWidth="0.4" />
+            <text x="133" y="20" fontSize="1.5" fontFamily="serif" fontWeight="bold" fill="#C2410C" textAnchor="middle">
+              Sri Annapurna Hall
+            </text>
+            <text x="133" y="24" fontSize="1.0" fontFamily="sans-serif" fill="#9A3412" textAnchor="middle">
+              Free Mahaprasad Dining (12:30–2:30 PM)
+            </text>
 
-                {/* Garden Lawn South of Lake */}
-                <circle cx="30" cy="24" r="2.2" fill="#22C55E" fillOpacity="0.6" />
-                <circle cx="34" cy="26" r="1.8" fill="#16A34A" fillOpacity="0.6" />
+            {/* Matabari Peda & Prasadam Cooperative Stalls (South) */}
+            <rect x="94" y="70" width="26" height="12" fill="#FFF1F2" stroke="#E11D48" strokeWidth="0.4" />
+            <text x="107" y="76" fontSize="1.6" fontFamily="serif" fontWeight="bold" fill="#BE123C" textAnchor="middle">
+              Matabari Peda &amp; Prasad Stalls
+            </text>
+            <text x="107" y="80" fontSize="1.0" fontFamily="sans-serif" fill="#9F1239" textAnchor="middle">
+              Pure Condensed Milk Peda · Consecrated Offerings
+            </text>
 
-                {/* Courtyard trees near Parikrama */}
-                <circle cx="32" cy="42" r="1.8" fill="#16A34A" fillOpacity="0.7" />
-                <circle cx="68" cy="40" r="2" fill="#16A34A" fillOpacity="0.7" />
-                <circle cx="66" cy="62" r="2.2" fill="#16A34A" fillOpacity="0.7" />
-                <circle cx="28" cy="70" r="2.4" fill="#16A34A" fillOpacity="0.7" />
-              </g>
-            )}
+            {/* East Gate 2 / Purva Dwar */}
+            <rect x="138" y="43" width="10" height="10" fill="#F4EFE6" stroke="#0D9488" strokeWidth="0.5" />
+            <line x1="143" y1="43" x2="143" y2="53" stroke="#0D9488" strokeWidth="0.3" strokeDasharray="1 0.5" />
+            <text x="143" y="47.5" fontSize="1.4" fontFamily="serif" fontWeight="bold" fill="#0F766E" textAnchor="middle">
+              Purva Dwar
+            </text>
+            <text x="143" y="50.5" fontSize="0.9" fontFamily="sans-serif" fill="#115E59" textAnchor="middle">
+              (East Gate 2)
+            </text>
 
-            {/* Gate Arch Symbols on Walls */}
-            {/* East Gate 1 (Singhadwar) */}
-            <g transform="translate(6, 48)">
-              <rect x="-1" y="-3" width="2" height="6" fill="#800000" rx="0.5" />
-              <text x="2" y="-4" fontSize="1.4" fill="#800000" fontWeight="bold">
-                EAST GATE 1 (LION TORANA)
-              </text>
-            </g>
-            {/* West Gate 4 */}
-            <g transform="translate(94, 48)">
-              <rect x="-1" y="-3" width="2" height="6" fill="#800000" rx="0.5" />
-              <text x="-2" y="-4" fontSize="1.4" fill="#800000" fontWeight="bold" textAnchor="end">
-                WEST GATE 4 (RAMP EXIT)
-              </text>
-            </g>
+            {/* ========================================================
+                4. EAST SECTOR: SACRED KALYAN SAGAR LAKE (6.4 ACRES)
+               ======================================================== */}
+            {/* Kalyan Sagar Water Reservoir */}
+            <path
+              d="M 152 8 C 165 7, 185 10, 192 18 C 196 28, 196 68, 192 82 C 185 91, 164 94, 152 91 C 146 76, 146 22, 152 8 Z"
+              fill="#EBF3F5"
+              stroke="#3D687A"
+              strokeWidth="0.7"
+            />
+            {/* Water Ripple Ink Contours */}
+            <path
+              d="M 156 18 C 166 16, 178 18, 184 25 M 158 30 C 168 28, 182 31, 186 38 M 158 45 C 168 44, 180 47, 186 54 M 158 60 C 168 59, 182 63, 186 70 M 156 75 C 166 76, 178 78, 184 83"
+              fill="none"
+              stroke="#6B8D9E"
+              strokeWidth="0.3"
+              strokeDasharray="2 1"
+            />
 
-            {/* ========================================================= */}
-            {/* 7. INTERACTIVE FACILITY MARKER PINS                       */}
-            {/* ========================================================= */}
-            {markers.map((m) => {
-              if (!m.isVisible) return null;
-              if (selectedCategory !== 'ALL' && m.category !== selectedCategory) return null;
+            {/* Kalyan Sagar Lake Name Title */}
+            <text x="172" y="32" fontSize="2.8" fontFamily="serif" fontStyle="italic" fill="#204050" textAnchor="middle" fontWeight="bold">
+              Kalyan Sagar Lake
+            </text>
+            <text x="172" y="36.5" fontSize="1.3" fontFamily="sans-serif" fill="#42697D" textAnchor="middle">
+              6.4 Acres Sacred Holy Reservoir
+            </text>
 
-              const theme = getCategoryTheme(m.category);
-              const isSelected = selectedMarker?.id === m.id;
-              const isHovered = hoveredMarker?.id === m.id;
+            {/* Bostami Turtle Sanctuary Annotation */}
+            <ellipse cx="172" cy="46" rx="14" ry="7" fill="#E2EDF0" stroke="#3D687A" strokeWidth="0.3" strokeDasharray="1.5 0.8" />
+            <text x="172" y="45.5" fontSize="1.3" fontFamily="serif" fontWeight="bold" fill="#204050" textAnchor="middle">
+              Bostami Turtle Sanctuary
+            </text>
+            <text x="172" y="48.5" fontSize="1.0" fontFamily="sans-serif" fill="#4B7285" textAnchor="middle">
+              (Nilssonia nigricans habitat)
+            </text>
+
+            {/* Stepped Bathing Ghats (Kalvansagar Ghat) */}
+            <rect x="146" y="52" width="8" height="18" fill="#F4EFE6" stroke="#5C4E43" strokeWidth="0.4" />
+            <line x1="148" y1="55" x2="152" y2="55" stroke="#5C4E43" strokeWidth="0.3" />
+            <line x1="148" y1="58" x2="152" y2="58" stroke="#5C4E43" strokeWidth="0.3" />
+            <line x1="148" y1="61" x2="152" y2="61" stroke="#5C4E43" strokeWidth="0.3" />
+            <line x1="148" y1="64" x2="152" y2="64" stroke="#5C4E43" strokeWidth="0.3" />
+            <line x1="148" y1="67" x2="152" y2="67" stroke="#5C4E43" strokeWidth="0.3" />
+            <text x="150" y="73" fontSize="1.1" fontFamily="sans-serif" fontWeight="bold" fill="#5C4E43" textAnchor="middle">
+              Ghat Steps
+            </text>
+
+            {/* Turtle Feeding Observation Deck */}
+            <rect x="162" y="60" width="18" height="8" rx="1" fill="#FEF3C7" stroke="#D97706" strokeWidth="0.4" />
+            <text x="171" y="64.5" fontSize="1.2" fontFamily="sans-serif" fontWeight="bold" fill="#92400E" textAnchor="middle">
+              Feeding Platform
+            </text>
+            <text x="171" y="67" fontSize="0.9" fontFamily="sans-serif" fill="#B45309" textAnchor="middle">
+              Approved Puffed Rice Only
+            </text>
+
+            {/* ========================================================
+                5. CONNECTING HERITAGE CORRIDORS & PATHWAYS
+               ======================================================== */}
+            <path
+              d="M 32 48 L 83 48 M 120 48 L 138 48 M 148 48 L 152 48 M 106 62 L 106 70 M 106 34 L 106 24 M 64 40 L 64 44 M 64 52 L 64 56 M 36 30 L 36 44 M 27 66 L 27 54"
+              fill="none"
+              stroke="#B3A28F"
+              strokeWidth="1.2"
+              strokeDasharray="1 0.8"
+            />
+
+            {/* ========================================================
+                6. INTERACTIVE PINPOINT MARKERS (Dots)
+               ======================================================== */}
+            {markers.map((marker) => {
+              const isSelected = selectedMarker?.id === marker.id;
+              const isHovered = hoveredMarker?.id === marker.id;
+              const theme = getCategoryDotStyle(marker.category);
+
+              // Calculate positions for 200x100 rectangular layout
+              // If marker.x is percentage (0-100), map to 0-200. If already > 100, use as-is.
+              const posX = marker.x <= 100 ? (marker.x / 100) * 200 : marker.x;
+              const posY = marker.y;
 
               return (
                 <g
-                  key={m.id}
-                  transform={`translate(${m.x}, ${m.y})`}
+                  key={marker.id}
+                  transform={`translate(${posX}, ${posY})`}
+                  className="cursor-pointer transition-all duration-200"
                   onClick={(e) => {
                     e.stopPropagation();
-                    onSelectMarker(m);
+                    onSelectMarker(marker);
                   }}
-                  onMouseEnter={() => setHoveredMarker(m)}
+                  onMouseEnter={() => setHoveredMarker(marker)}
                   onMouseLeave={() => setHoveredMarker(null)}
-                  className="cursor-pointer transition-transform duration-200"
-                  filter="url(#pinShadow)"
                 >
-                  {/* Selection Pulsing Ring */}
-                  {isSelected && (
-                    <>
-                      <circle r="4.5" fill="none" stroke="#55132D" strokeWidth="0.8" opacity="0.4" className="animate-ping" />
-                      <circle r="3.8" fill="none" stroke="#E2BC6B" strokeWidth="0.8" />
-                    </>
+                  {/* Subtle Pulse Halo when Selected or Hovered */}
+                  {(isSelected || isHovered) && (
+                    <circle
+                      r="4.5"
+                      fill={theme.color}
+                      opacity="0.25"
+                      className="animate-ping"
+                    />
                   )}
 
-                  {/* Pin Body: Clean, High-Contrast Themed Circle */}
+                  {/* Outer Ring */}
                   <circle
-                    r={isSelected || isHovered ? 3.2 : 2.5}
-                    fill={theme.pinBg}
-                    stroke={isSelected ? '#F59E0B' : '#FFFFFF'}
-                    strokeWidth={isSelected ? 0.9 : 0.6}
-                    className="transition-all duration-200"
+                    r={isSelected ? '3.0' : '2.3'}
+                    fill="#FFFFFF"
+                    stroke={theme.color}
+                    strokeWidth={isSelected ? '0.8' : '0.55'}
+                    filter="drop-shadow(0px 1px 2px rgba(0,0,0,0.3))"
                   />
 
-                  {/* Inner Category Dot/Symbol */}
-                  <circle r={isSelected || isHovered ? 1.2 : 0.9} fill={theme.pinBorder} />
+                  {/* Core Pin Dot */}
+                  <circle
+                    r={isSelected ? '2.0' : '1.4'}
+                    fill={theme.color}
+                  />
 
-                  {/* Floating Clean Tooltip Badge on Hover OR Selection (No Clutter!) */}
+                  {/* Center Accent White Dot */}
+                  <circle
+                    r="0.5"
+                    fill="#FFFFFF"
+                  />
+
+                  {/* On-Map Floating Name Tooltip */}
                   {(isHovered || isSelected) && (
-                    <g transform="translate(0, -5)" className="pointer-events-none select-none">
-                      {/* Tooltip Background Pill */}
+                    <g transform="translate(0, -5)" className="pointer-events-none z-40">
                       <rect
-                        x="-16"
-                        y="-4.5"
-                        width="32"
-                        height="4.8"
-                        rx="1.5"
-                        fill="#1C1917"
-                        fillOpacity="0.95"
-                        stroke="#F59E0B"
-                        strokeWidth="0.3"
+                        x="-18"
+                        y="-4.8"
+                        width="36"
+                        height="5.4"
+                        rx="1.2"
+                        fill="#55132D"
+                        stroke="#B68A36"
+                        strokeWidth="0.25"
+                        filter="drop-shadow(0px 2px 3px rgba(0,0,0,0.45))"
                       />
-                      {/* Tooltip Arrow Pointer */}
-                      <polygon points="0,0.5 -1.2,-0.5 1.2,-0.5" fill="#1C1917" />
-                      {/* Tooltip Text */}
                       <text
                         x="0"
-                        y="-1.5"
-                        fontSize="1.8"
-                        fill="#FFFFFF"
+                        y="-1.4"
+                        fontSize="1.7"
+                        fontFamily="sans-serif"
                         fontWeight="bold"
+                        fill="#FFFFFF"
                         textAnchor="middle"
                       >
-                        {m.name.length > 22 ? m.name.substring(0, 21) + '…' : m.name}
+                        {marker.name.length > 24 ? marker.name.slice(0, 22) + '...' : marker.name}
                       </text>
                     </g>
                   )}
                 </g>
               );
             })}
-
-            {/* Map Scale Footnote */}
-            <text x="6" y="97.5" fontSize="1.4" fill="#A8A29E" fontMono="true">
-              MATABARI TRUST PREMISES MASTERPLAN • COORDINATE GRID SYSTEM 100x100
-            </text>
           </svg>
-        </div>
-
-        {/* Legend Overlay at Bottom Right */}
-        <div className="absolute bottom-3 right-4 z-20 bg-white/90 backdrop-blur-xs border border-stone-200/90 py-1.5 px-3 rounded-xl shadow-xs text-[10px] text-stone-600 hidden md:flex items-center gap-3 select-none">
-          <span className="flex items-center gap-1 font-semibold">
-            <span className="w-2.5 h-2.5 rounded-full bg-[#800000]" />
-            <span>Sanctum</span>
-          </span>
-          <span className="flex items-center gap-1 font-semibold">
-            <span className="w-2.5 h-2.5 rounded-full bg-[#0284C7]" />
-            <span>Kalyan Sagar</span>
-          </span>
-          <span className="flex items-center gap-1 font-semibold">
-            <span className="w-2.5 h-2.5 rounded-full bg-[#059669]" />
-            <span>Gates</span>
-          </span>
-          <span className="flex items-center gap-1 font-semibold">
-            <span className="w-2.5 h-2.5 rounded-full bg-[#EA580C]" />
-            <span>Annadanam</span>
-          </span>
-          <span className="flex items-center gap-1 font-semibold">
-            <span className="w-2.5 h-2.5 rounded-full bg-[#2563EB]" />
-            <span>Parking</span>
-          </span>
         </div>
       </div>
     </div>
   );
 }
-

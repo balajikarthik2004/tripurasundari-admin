@@ -13,7 +13,6 @@ import {
   TrendingUp,
   RefreshCw,
   ChevronRight,
-  PieChart as PieChartIcon,
 } from 'lucide-react';
 import {
   AreaChart,
@@ -22,9 +21,6 @@ import {
   YAxis,
   Tooltip,
   ResponsiveContainer,
-  PieChart,
-  Pie,
-  Cell,
 } from 'recharts';
 import { useDevoteeServices } from '../context/DevoteeServicesContext';
 import ModulePageHeader from '../components/devotee-services/shared/ModulePageHeader';
@@ -47,6 +43,7 @@ export default function PrasadStore() {
   } = useDevoteeServices();
 
   const [activeTab, setActiveTab] = useState('overview');
+  const [inventorySubTab, setInventorySubTab] = useState('products');
   const [orderSearch, setOrderSearch] = useState('');
   const [orderStatusFilter, setOrderStatusFilter] = useState('All');
   const [productCatFilter, setProductCatFilter] = useState('All');
@@ -91,14 +88,6 @@ export default function PrasadStore() {
     return products.filter((p) => p.category === productCatFilter);
   }, [products, productCatFilter]);
 
-  // Distribution
-  const distributionData = [
-    { name: 'Prasad Sweets', value: 45, color: '#55132D' },
-    { name: 'Puja Articles', value: 30, color: '#B68A36' },
-    { name: 'Souvenirs', value: 15, color: '#2563EB' },
-    { name: 'Publications', value: 10, color: '#0D9488' },
-  ];
-
   const trendData = [
     { time: '08:00 AM', sales: 4200 },
     { time: '10:00 AM', sales: 12500 },
@@ -110,9 +99,8 @@ export default function PrasadStore() {
 
   const tabsConfig = [
     { id: 'overview', label: 'Overview', icon: ShoppingBag },
-    { id: 'products', label: 'Store Products', icon: Package, badge: products.length },
     { id: 'orders', label: 'Orders & Billing', icon: Layers, badge: orders.length, dot: metrics.pendingOrders > 0 },
-    { id: 'inventory', label: 'Inventory & Stock Logs', icon: RefreshCw, badge: metrics.lowStockCount > 0 ? `${metrics.lowStockCount} Low` : null, badgeColor: 'bg-amber-100 text-amber-800' },
+    { id: 'inventory-products', label: 'Products & Inventory', icon: Package, badge: metrics.lowStockCount > 0 ? `${metrics.lowStockCount} Low` : products.length, badgeColor: metrics.lowStockCount > 0 ? 'bg-amber-100 text-amber-800' : null },
   ];
 
   const handlePrintOrderReceipt = (order) => {
@@ -135,7 +123,6 @@ export default function PrasadStore() {
       {/* Page Header */}
       <ModulePageHeader
         title="Prasad & Temple Store Management"
-        subtitle="Manage consecrated bhog inventory, traditional Matabari peda stock, counter billing and postal prasad orders"
         primaryActionLabel="Create Store Order"
         onPrimaryAction={() => setIsCreateOrderOpen(true)}
         primaryActionIcon={ShoppingBag}
@@ -152,10 +139,9 @@ export default function PrasadStore() {
             <ModuleMetricCard
               label="Store Products"
               value={metrics.totalProds}
-              subtitle={`${metrics.activeProds} active in store`}
               icon={Package}
               iconBg="bg-[#55132D]/10 text-[#55132D]"
-              onClick={() => setActiveTab('products')}
+              onClick={() => { setActiveTab('inventory-products'); setInventorySubTab('products'); }}
             />
             <ModuleMetricCard
               label="Orders Recorded"
@@ -168,7 +154,6 @@ export default function PrasadStore() {
             <ModuleMetricCard
               label="Pending Fulfillment"
               value={metrics.pendingOrders}
-              subtitle="Awaiting counter pickup"
               icon={Clock}
               iconBg="bg-amber-50 text-amber-700"
               onClick={() => setActiveTab('orders')}
@@ -176,7 +161,6 @@ export default function PrasadStore() {
             <ModuleMetricCard
               label="Low Stock Alerts"
               value={metrics.lowStockCount}
-              subtitle="Below buffer threshold"
               icon={AlertTriangle}
               iconBg="bg-rose-50 text-rose-700"
               onClick={() => setActiveTab('inventory')}
@@ -184,146 +168,199 @@ export default function PrasadStore() {
             <ModuleMetricCard
               label="Today's Store Sales"
               value={`₹${metrics.totalRevenue.toLocaleString('en-IN')}`}
-              subtitle="Bhog & articles proceeds"
               icon={TrendingUp}
               iconBg="bg-emerald-50 text-emerald-700"
             />
           </div>
 
-          {/* Row 2: Charts */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-            {/* Holy Prasad Stock Velocity & Counter Demand Meter (2 Cols) */}
-            <div className="lg:col-span-2 bg-white rounded-xl p-4 sm:p-5 border border-stone-200/80 shadow-xs flex flex-col justify-between">
-              <div className="flex items-center justify-between mb-3 pb-2.5 border-b border-stone-200/70">
+          {/* Holy Prasad Stock Velocity & Counter Inventory Health - Full Width & Spacious */}
+          <div className="bg-white rounded-xl p-5 sm:p-6 border border-stone-200/80 shadow-xs space-y-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-stone-200/70">
+              <div>
+                <h3 className="text-base font-bold text-stone-900 font-serif">
+                  Holy Prasad Stock Velocity &amp; Counter Inventory Health
+                </h3>
+              </div>
+              <span className="text-xs font-semibold text-amber-800 bg-amber-50 border border-amber-200 px-3 py-1 rounded-md flex items-center gap-1.5 w-fit">
+                <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
+                <span>Fresh Batch 2 In Oven</span>
+              </span>
+            </div>
+
+            {/* Counter Outlets & Kitchen Status Cards - 3 Columns */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
+              <div className="p-3.5 rounded-xl bg-stone-50/70 border border-stone-200/70 flex items-center justify-between">
                 <div>
-                  <h3 className="text-sm font-bold text-stone-900 font-serif">
-                    Holy Prasad Stock Velocity &amp; Counter Inventory Health
-                  </h3>
+                  <div className="text-xs uppercase font-bold text-stone-500 tracking-wider">West Gate Counter</div>
+                  <div className="font-serif font-bold text-stone-900 text-lg sm:text-xl mt-1">
+                    984 <span className="text-xs text-stone-500 font-sans font-normal">units sold</span>
+                  </div>
                 </div>
-                <span className="text-xs font-semibold text-amber-800 bg-amber-50 border border-amber-200 px-2.5 py-1 rounded-md flex items-center gap-1">
-                  <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
-                  <span>Fresh Batch 2 In Oven</span>
+                <span className="text-xs font-semibold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-md border border-emerald-200/60">
+                  Main Portal
                 </span>
               </div>
 
-              {/* Bullet Bars for Holy Prasad Stock */}
-              <div className="space-y-3.5 my-1">
-                {[
-                  { name: 'Special Matabari Peda Pack (500g)', current: 140, target: 400, unit: 'packs', color: 'bg-amber-600', alert: 'Reorder Active' },
-                  { name: 'Maha Bhog Prasad Box (Grand Assortment)', current: 85, target: 200, unit: 'boxes', color: 'bg-[#55132D]', alert: 'Fast Moving' },
-                  { name: 'Sacred Vermilion Sindoor & Red Chunri Kit', current: 220, target: 300, unit: 'kits', color: 'bg-rose-600', alert: 'Adequate' },
-                  { name: 'Panchamrita Holy Water Flask (250ml)', current: 310, target: 500, unit: 'flasks', color: 'bg-teal-600', alert: 'Adequate' },
-                  { name: 'Kalyansagar Turtle Puffed Rice Packets', current: 480, target: 600, unit: 'pouches', color: 'bg-blue-600', alert: 'Ghat Standby' },
-                ].map((item, idx) => {
-                  const pct = Math.min(100, Math.round((item.current / item.target) * 100));
-                  const isLow = pct < 40;
-                  return (
-                    <div key={idx} className="space-y-1">
+              <div className="p-3.5 rounded-xl bg-stone-50/70 border border-stone-200/70 flex items-center justify-between">
+                <div>
+                  <div className="text-xs uppercase font-bold text-stone-500 tracking-wider">East Lake Counter</div>
+                  <div className="font-serif font-bold text-stone-900 text-lg sm:text-xl mt-1">
+                    642 <span className="text-xs text-stone-500 font-sans font-normal">units sold</span>
+                  </div>
+                </div>
+                <span className="text-xs font-semibold text-blue-700 bg-blue-50 px-2.5 py-1 rounded-md border border-blue-200/60">
+                  Ghat Outlet
+                </span>
+              </div>
+
+              <div className="p-3.5 rounded-xl bg-stone-50/70 border border-stone-200/70 flex items-center justify-between">
+                <div>
+                  <div className="text-xs uppercase font-bold text-stone-500 tracking-wider">Confectionery Trust Unit</div>
+                  <div className="font-serif font-bold text-amber-900 text-lg sm:text-xl mt-1">
+                    Batch 2 <span className="text-xs text-amber-700 font-sans font-normal">in oven</span>
+                  </div>
+                </div>
+                <span className="text-xs font-semibold text-amber-700 bg-amber-50 px-2.5 py-1 rounded-md border border-amber-200/60">
+                  Fresh Baking
+                </span>
+              </div>
+            </div>
+
+            {/* Holy Prasad Items - Spacious Responsive Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pt-1">
+              {[
+                {
+                  name: 'Special Matabari Peda Pack (500g)',
+                  category: 'Holy Temple Bhog',
+                  current: 140,
+                  target: 400,
+                  unit: 'packs',
+                  color: 'bg-amber-600',
+                  alert: 'Reorder Active',
+                  badgeStyle: 'bg-rose-50 text-rose-700 border-rose-200',
+                },
+                {
+                  name: 'Maha Bhog Prasad Box (Grand Assortment)',
+                  category: 'Royal Prasad Offering',
+                  current: 85,
+                  target: 200,
+                  unit: 'boxes',
+                  color: 'bg-[#55132D]',
+                  alert: 'Fast Moving',
+                  badgeStyle: 'bg-amber-50 text-amber-800 border-amber-200',
+                },
+                {
+                  name: 'Sacred Vermilion Sindoor & Red Chunri Kit',
+                  category: 'Devi Shringar Seva',
+                  current: 220,
+                  target: 300,
+                  unit: 'kits',
+                  color: 'bg-rose-600',
+                  alert: 'Adequate Stock',
+                  badgeStyle: 'bg-emerald-50 text-emerald-800 border-emerald-200',
+                },
+                {
+                  name: 'Panchamrita Holy Water Flask (250ml)',
+                  category: 'Consecrated Abhishek',
+                  current: 310,
+                  target: 500,
+                  unit: 'flasks',
+                  color: 'bg-teal-600',
+                  alert: 'Adequate Stock',
+                  badgeStyle: 'bg-emerald-50 text-emerald-800 border-emerald-200',
+                },
+                {
+                  name: 'Kalyansagar Turtle Puffed Rice Packets',
+                  category: 'Lake Feeding Seva',
+                  current: 480,
+                  target: 600,
+                  unit: 'pouches',
+                  color: 'bg-blue-600',
+                  alert: 'Ghat Standby',
+                  badgeStyle: 'bg-blue-50 text-blue-800 border-blue-200',
+                },
+                {
+                  name: 'Pure Cow Milk Peda Box (250g)',
+                  category: 'Fresh Daily Confection',
+                  current: 190,
+                  target: 250,
+                  unit: 'boxes',
+                  color: 'bg-emerald-600',
+                  alert: 'Fresh Batch',
+                  badgeStyle: 'bg-emerald-50 text-emerald-800 border-emerald-200',
+                },
+              ].map((item, idx) => {
+                const pct = Math.min(100, Math.round((item.current / item.target) * 100));
+                return (
+                  <div
+                    key={idx}
+                    className="p-4 rounded-xl bg-stone-50/60 border border-stone-200/70 space-y-3 hover:border-stone-300 transition-all"
+                  >
+                    <div className="flex items-start justify-between gap-2">
+                      <div>
+                        <div className="font-bold text-stone-900 text-xs sm:text-sm leading-snug">{item.name}</div>
+                        <div className="text-[11px] text-stone-400 font-medium mt-0.5">{item.category}</div>
+                      </div>
+                      <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border whitespace-nowrap ${item.badgeStyle}`}>
+                        {item.alert}
+                      </span>
+                    </div>
+
+                    <div className="space-y-1.5 pt-1">
                       <div className="flex justify-between items-center text-xs">
-                        <div className="flex items-center gap-2">
-                          <span className="font-semibold text-stone-800">{item.name}</span>
-                          <span className={`text-[9.5px] font-bold px-1.5 py-0.2 rounded border ${
-                            isLow
-                              ? 'bg-rose-50 text-rose-700 border-rose-200'
-                              : 'bg-stone-50 text-stone-600 border-stone-200'
-                          }`}>
-                            {item.alert}
-                          </span>
-                        </div>
+                        <span className="text-stone-500 font-medium">Available Inventory:</span>
                         <span className="font-bold text-stone-900 font-mono">
-                          {item.current} <span className="text-stone-400 font-normal">/ {item.target} {item.unit}</span> ({pct}%)
+                          {item.current} <span className="text-stone-400 font-normal">/ {item.target} {item.unit}</span>{' '}
+                          <span className="text-stone-600">({pct}%)</span>
                         </span>
                       </div>
-                      <div className="w-full h-2 rounded-full bg-stone-100 overflow-hidden">
+                      <div className="w-full h-2 rounded-full bg-stone-200/80 overflow-hidden">
                         <div
                           className={`h-full rounded-full transition-all duration-500 ${item.color}`}
                           style={{ width: `${pct}%` }}
                         />
                       </div>
                     </div>
-                  );
-                })}
-              </div>
-
-              {/* Counter Outlets Dispatch Status */}
-              <div className="mt-3 pt-2.5 border-t border-stone-200/70 flex items-center justify-between text-xs text-stone-600 bg-stone-50/70 p-2.5 rounded-lg border border-stone-200/50">
-                <div className="flex items-center gap-3">
-                  <span className="flex items-center gap-1 font-semibold text-stone-900">
-                    <span className="w-2 h-2 rounded-full bg-emerald-500" />
-                    West Gate Main Counter: 984 units sold
-                  </span>
-                  <span>•</span>
-                  <span className="flex items-center gap-1 font-semibold text-stone-900">
-                    <span className="w-2 h-2 rounded-full bg-emerald-500" />
-                    East Lake Counter: 642 units sold
-                  </span>
-                </div>
-                <span className="font-bold text-[#55132D] text-[11px]">Authorized Confectionery Trust</span>
-              </div>
-            </div>
-
-            <div className="bg-white rounded-xl p-4 border border-stone-200/80 shadow-xs flex flex-col justify-between">
-              <div>
-                <div className="flex items-center justify-between mb-3">
-                  <h3 className="text-sm font-bold text-stone-900 font-serif">Store Sales by Category</h3>
-                  <PieChartIcon className="w-4 h-4 text-stone-400" />
-                </div>
-
-                <div className="h-44 w-full">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <PieChart>
-                      <Pie
-                        data={distributionData}
-                        cx="50%"
-                        cy="50%"
-                        innerRadius={45}
-                        outerRadius={68}
-                        paddingAngle={3}
-                        dataKey="value"
-                      >
-                        {distributionData.map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={entry.color} />
-                        ))}
-                      </Pie>
-                      <Tooltip
-                        contentStyle={{
-                          backgroundColor: '#ffffff',
-                          border: '1px solid #e7e5e4',
-                          borderRadius: '8px',
-                          fontSize: '11px',
-                        }}
-                      />
-                    </PieChart>
-                  </ResponsiveContainer>
-                </div>
-
-                <div className="space-y-1.5 pt-2 border-t border-stone-100 text-xs">
-                  {distributionData.map((item) => (
-                    <div key={item.name} className="flex items-center justify-between text-[11px]">
-                      <div className="flex items-center gap-1.5">
-                        <span className="w-2 h-2 rounded-full" style={{ backgroundColor: item.color }} />
-                        <span className="text-stone-700">{item.name}</span>
-                      </div>
-                      <span className="font-bold text-stone-900">{item.value}%</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <button
-                onClick={() => setActiveTab('products')}
-                className="mt-3 pt-2 border-t border-stone-100 text-xs font-semibold text-[#55132D] hover:underline flex items-center justify-between"
-              >
-                <span>Browse Products</span>
-                <ChevronRight className="w-4 h-4" />
-              </button>
+                  </div>
+                );
+              })}
             </div>
           </div>
         </div>
       )}
 
-      {/* TAB 2: STORE PRODUCTS */}
-      {activeTab === 'products' && (
+      {/* TAB 2: PRODUCTS & INVENTORY (Strict 3-Tab Grouping) */}
+      {activeTab === 'inventory-products' && (
+        <div className="space-y-4">
+          <div className="flex items-center gap-1.5 p-1 bg-stone-100/90 rounded-xl border border-stone-200/80 w-fit">
+            <button
+              onClick={() => setInventorySubTab('products')}
+              className={`px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-all ${
+                inventorySubTab === 'products'
+                  ? 'bg-white text-[#55132D] shadow-xs font-bold'
+                  : 'text-stone-600 hover:text-stone-900'
+              }`}
+            >
+              Product Catalogue (${products.length})
+            </button>
+            <button
+              onClick={() => setInventorySubTab('inventory')}
+              className={`px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-all flex items-center gap-1.5 ${
+                inventorySubTab === 'inventory'
+                  ? 'bg-white text-[#55132D] shadow-xs font-bold'
+                  : 'text-stone-600 hover:text-stone-900'
+              }`}
+            >
+              <span>Stock Ledger & Audit</span>
+              {metrics.lowStockCount > 0 && (
+                <span className="text-[10px] px-1.5 py-0.2 rounded-full font-bold bg-amber-500 text-white">
+                  ${metrics.lowStockCount} Low
+                </span>
+              )}
+            </button>
+          </div>
+
+          {inventorySubTab === 'products' && (
         <div className="space-y-4">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-white rounded-xl p-4 border border-stone-200/80 shadow-xs">
             <div>
@@ -410,6 +447,8 @@ export default function PrasadStore() {
               );
             })}
           </div>
+        </div>
+      )}
         </div>
       )}
 
@@ -559,8 +598,8 @@ export default function PrasadStore() {
         </div>
       )}
 
-      {/* TAB 4: INVENTORY & STOCK LOGS */}
-      {activeTab === 'inventory' && (
+      {/* INVENTORY SUB-TAB */}
+      {activeTab === 'inventory-products' && inventorySubTab === 'inventory' && (
         <div className="space-y-4">
           <div className="bg-white rounded-xl p-4 border border-stone-200/80 shadow-xs flex items-center justify-between">
             <div>

@@ -42,7 +42,7 @@ import VerificationBadge from '../components/content-management/shared/Verificat
 import PublicWebsitePreviewModal from '../components/content-management/shared/PublicWebsitePreviewModal';
 import TempleArchitectureMap from '../components/content-management/shared/TempleArchitectureMap';
 
-export default function VisitGuide() {
+export default function VisitGuide({ isEmbedded = false }) {
   const {
     visitorGuidelines,
     addVisitorGuideline,
@@ -50,10 +50,6 @@ export default function VisitGuide() {
     deleteVisitorGuideline,
     travelInformation,
     updateTravelInformation,
-    publicFacilities,
-    addPublicFacility,
-    updatePublicFacility,
-    deletePublicFacility,
     mapMarkers,
     addMapMarker,
     updateMapMarker,
@@ -69,18 +65,16 @@ export default function VisitGuide() {
   } = useContentManagement();
 
   const [activeTab, setActiveTab] = useState('facilities_map');
+  const [guidelinesSubTab, setGuidelinesSubTab] = useState('guidelines');
 
   // Map state
   const [mapZoom, setMapZoom] = useState(1);
-  const [selectedMapCategory, setSelectedMapCategory] = useState('ALL');
+  const [selectedMapCategory, setSelectedMapCategory] = useState('All');
   const [selectedMarker, setSelectedMarker] = useState(null);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isAddingMarkerMode, setIsAddingMarkerMode] = useState(false);
   const [isAddMarkerModalOpen, setIsAddMarkerModalOpen] = useState(false);
   const [isEditMarkerModalOpen, setIsEditMarkerModalOpen] = useState(false);
-
-  // Facility search & filter
-  const [facilitySearch, setFacilitySearch] = useState('');
-  const [facilityCatFilter, setFacilityCatFilter] = useState('ALL');
 
   // FAQ search & filter
   const [faqSearch, setFaqSearch] = useState('');
@@ -97,23 +91,28 @@ export default function VisitGuide() {
     status: 'Published',
   });
 
-  // Facility Form Modal State
-  const [isFacilityModalOpen, setIsFacilityModalOpen] = useState(false);
-  const [facilityForm, setFacilityForm] = useState({
-    name: '',
-    category: 'Drinking Water',
-    location: '',
-    publicDescription: '',
-    operatingHours: '05:00 AM – 09:00 PM',
-    visitorInstructions: '',
-    contactInfo: '',
-    internalFacilityId: '',
-    publicationStatus: 'Published',
-    verificationStatus: 'Verified',
+  // Guideline Form Modal State (Add & Edit)
+  const [isGuidelineModalOpen, setIsGuidelineModalOpen] = useState(false);
+  const [editingGuideline, setEditingGuideline] = useState(null);
+  const [guidelineForm, setGuidelineForm] = useState({
+    title: '',
+    category: 'Timings & Darshan',
+    content: '',
+    status: 'Published',
   });
 
-  // FAQ Form Modal State
+  // Transit Form Modal State (Edit)
+  const [isTransitModalOpen, setIsTransitModalOpen] = useState(false);
+  const [editingTransitIndex, setEditingTransitIndex] = useState(null);
+  const [transitForm, setTransitForm] = useState({
+    title: '',
+    tag: '',
+    description: '',
+  });
+
+  // FAQ Form Modal State (Add & Edit)
   const [isFaqModalOpen, setIsFaqModalOpen] = useState(false);
+  const [editingFaq, setEditingFaq] = useState(null);
   const [faqForm, setFaqForm] = useState({
     question: '',
     answer: '',
@@ -124,37 +123,32 @@ export default function VisitGuide() {
 
   // Metrics
   const totalGuideSections = visitorGuidelines.length;
-  const publishedFacilitiesCount = useMemo(
-    () => publicFacilities.filter((f) => f.publicationStatus === 'Published').length,
-    [publicFacilities]
-  );
   const visibleMarkersCount = useMemo(
     () => mapMarkers.filter((m) => m.isVisible).length,
     [mapMarkers]
   );
 
-  // Filtered map markers
+  // Filtered map markers (Streamlined into 6 concise categories to avoid scrollbars)
   const filteredMarkers = useMemo(() => {
     return mapMarkers.filter((m) => {
-      if (selectedMapCategory === 'ALL') return true;
+      if (selectedMapCategory === 'All' || selectedMapCategory === 'ALL') return true;
+      if (selectedMapCategory === 'Sanctum') return m.category === 'Temple';
+      if (selectedMapCategory === 'Gates & Parking') return ['Entry Point', 'Exit Point', 'Parking'].includes(m.category);
+      if (selectedMapCategory === 'Amenities') return ['Drinking Water', 'Toilets', 'Help Desk', 'Accommodation'].includes(m.category);
+      if (selectedMapCategory === 'Prasad & Dining') return ['Prasad Area', 'Annadanam Area'].includes(m.category);
+      if (selectedMapCategory === 'Kalyan Sagar') return m.category === 'Other Facility';
       return m.category === selectedMapCategory;
     });
   }, [mapMarkers, selectedMapCategory]);
 
-  // Marker categories
+  // Streamlined marker categories (Fits on one line without horizontal scrollbars)
   const markerCategories = [
-    'ALL',
-    'Temple',
-    'Entry Point',
-    'Exit Point',
-    'Parking',
-    'Drinking Water',
-    'Toilets',
-    'Help Desk',
-    'Prasad Area',
-    'Annadanam Area',
-    'Accommodation',
-    'Other Facility',
+    'All',
+    'Sanctum',
+    'Gates & Parking',
+    'Amenities',
+    'Prasad & Dining',
+    'Kalyan Sagar',
   ];
 
   // Handle map click to place new marker or move marker
@@ -192,30 +186,80 @@ export default function VisitGuide() {
     setIsEditMarkerModalOpen(false);
   };
 
-  const handleCreateFacilitySubmit = (e) => {
-    e.preventDefault();
-    if (!facilityForm.name) return;
-    addPublicFacility(facilityForm);
-    setIsFacilityModalOpen(false);
-    setFacilityForm({
-      name: '',
-      category: 'Drinking Water',
-      location: '',
-      publicDescription: '',
-      operatingHours: '05:00 AM – 09:00 PM',
-      visitorInstructions: '',
-      contactInfo: '',
-      internalFacilityId: '',
-      publicationStatus: 'Published',
-      verificationStatus: 'Verified',
+  // Guideline Actions
+  const openAddGuidelineModal = () => {
+    setEditingGuideline(null);
+    setGuidelineForm({
+      title: '',
+      category: 'Timings & Darshan',
+      content: '',
+      status: 'Published',
     });
+    setIsGuidelineModalOpen(true);
   };
 
-  const handleCreateFaqSubmit = (e) => {
+  const openEditGuidelineModal = (g) => {
+    setEditingGuideline(g);
+    setGuidelineForm({
+      title: g.title,
+      category: g.category,
+      content: g.content,
+      status: g.status || 'Published',
+    });
+    setIsGuidelineModalOpen(true);
+  };
+
+  const handleGuidelineSubmit = (e) => {
     e.preventDefault();
-    if (!faqForm.question || !faqForm.answer) return;
-    addFaq(faqForm);
-    setIsFaqModalOpen(false);
+    if (!guidelineForm.title || !guidelineForm.content) return;
+    if (editingGuideline) {
+      updateVisitorGuideline(editingGuideline.id, guidelineForm);
+      showToast('Guideline updated successfully.');
+    } else {
+      addVisitorGuideline(guidelineForm);
+      showToast('New Guideline created.');
+    }
+    setIsGuidelineModalOpen(false);
+    setEditingGuideline(null);
+  };
+
+  const toggleGuidelineStatus = (g) => {
+    const nextStatus = g.status === 'Published' ? 'Draft' : 'Published';
+    updateVisitorGuideline(g.id, { status: nextStatus });
+    showToast(`Guideline "${g.title}" set to ${nextStatus}.`);
+  };
+
+  // Transit Actions
+  const openEditTransitModal = (index) => {
+    const tm = travelInformation.transportModes[index];
+    setEditingTransitIndex(index);
+    setTransitForm({
+      title: tm.title,
+      tag: tm.tag || tm.mode,
+      description: tm.description,
+    });
+    setIsTransitModalOpen(true);
+  };
+
+  const handleTransitSubmit = (e) => {
+    e.preventDefault();
+    if (editingTransitIndex === null) return;
+    const updatedModes = [...travelInformation.transportModes];
+    updatedModes[editingTransitIndex] = {
+      ...updatedModes[editingTransitIndex],
+      title: transitForm.title,
+      tag: transitForm.tag,
+      description: transitForm.description,
+    };
+    updateTravelInformation({ transportModes: updatedModes });
+    showToast('Transit option updated successfully.');
+    setIsTransitModalOpen(false);
+    setEditingTransitIndex(null);
+  };
+
+  // FAQ Actions
+  const openAddFaqModal = () => {
+    setEditingFaq(null);
     setFaqForm({
       question: '',
       answer: '',
@@ -223,6 +267,39 @@ export default function VisitGuide() {
       status: 'Published',
       verificationStatus: 'Verified',
     });
+    setIsFaqModalOpen(true);
+  };
+
+  const openEditFaqModal = (faq) => {
+    setEditingFaq(faq);
+    setFaqForm({
+      question: faq.question,
+      answer: faq.answer,
+      category: faq.category,
+      status: faq.status || 'Published',
+      verificationStatus: faq.verificationStatus || 'Verified',
+    });
+    setIsFaqModalOpen(true);
+  };
+
+  const handleFaqSubmit = (e) => {
+    e.preventDefault();
+    if (!faqForm.question || !faqForm.answer) return;
+    if (editingFaq) {
+      updateFaq(editingFaq.id, faqForm);
+      showToast('FAQ updated successfully.');
+    } else {
+      addFaq(faqForm);
+      showToast('New FAQ added.');
+    }
+    setIsFaqModalOpen(false);
+    setEditingFaq(null);
+  };
+
+  const toggleFaqStatus = (faq) => {
+    const nextStatus = faq.status === 'Published' ? 'Draft' : 'Published';
+    updateFaq(faq.id, { status: nextStatus });
+    showToast(`FAQ "${faq.id}" set to ${nextStatus}.`);
   };
 
   // Helper to get marker badge color and icon
@@ -254,487 +331,464 @@ export default function VisitGuide() {
   };
 
   const tabs = [
-    { id: 'facilities_map', label: 'Interactive Facilities Map', count: mapMarkers.length },
-    { id: 'facilities_directory', label: 'Public Facilities Directory', count: publicFacilities.length },
-    { id: 'visitor_guidelines', label: 'Visitor Guidelines & Transit', count: visitorGuidelines.length },
-    { id: 'faqs', label: 'Devotee FAQs', count: faqs.length },
+    { id: 'facilities_map', label: 'Interactive Facilities Map' },
+    { id: 'guidelines_faqs', label: 'Visitor Guidelines & FAQs' },
   ];
 
   return (
     <div className="space-y-5 pb-8">
       {/* Header */}
-      <ContentPageHeader
-        title="Visit Guide & Facilities Map"
-        subtitle="Curate pilgrim guidelines, public facility directories, transit itineraries and interactive visitor campus map."
-        actions={
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => {
-                setIsAddingMarkerMode(true);
-                showToast('Click anywhere on the map to place a new marker pin.', 'info');
-              }}
-              className={`px-3.5 py-1.5 text-xs font-semibold rounded-lg shadow-xs flex items-center gap-1.5 transition-colors ${
-                isAddingMarkerMode
-                  ? 'bg-amber-500 text-white animate-pulse'
-                  : 'bg-[#55132D] hover:bg-[#681B37] text-white'
-              }`}
-            >
-              <Plus className="w-3.5 h-3.5" />
-              {isAddingMarkerMode ? 'Click Map to Place Pin' : 'Add Map Marker'}
-            </button>
-          </div>
-        }
-      />
+      {!isEmbedded && (
+        <ContentPageHeader
+          title="Visitors Info"
+          actions={
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => {
+                  setIsAddingMarkerMode(true);
+                  showToast('Click anywhere on the map to place a new marker pin.', 'info');
+                }}
+                className={`px-3.5 py-1.5 text-xs font-semibold rounded-lg shadow-xs flex items-center gap-1.5 transition-colors ${
+                  isAddingMarkerMode
+                    ? 'bg-amber-500 text-white animate-pulse'
+                    : 'bg-[#55132D] hover:bg-[#681B37] text-white'
+                }`}
+              >
+                <Plus className="w-3.5 h-3.5" />
+                {isAddingMarkerMode ? 'Click Map to Place Pin' : 'Add Map Marker'}
+              </button>
+            </div>
+          }
+        />
+      )}
 
       {/* Tabs */}
       <ContentTabs activeTab={activeTab} onTabChange={setActiveTab} tabs={tabs} />
 
-      {/* TAB 1: INTERACTIVE FACILITIES MAP */}
+      {/* TAB 1: INTERACTIVE FACILITIES MAP (FULL WIDTH WITH SLIDE-IN INSPECTOR DRAWER) */}
       {activeTab === 'facilities_map' && (
-        <div className="space-y-4">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 items-start">
-            {/* 2D Architectural Site Plan Map Component */}
-            <div className="lg:col-span-2">
-              <TempleArchitectureMap
-                markers={filteredMarkers}
-                selectedMarker={selectedMarker}
-                onSelectMarker={setSelectedMarker}
-                isAddingMarkerMode={isAddingMarkerMode}
-                onMapClick={handleSvgMapClick}
-                selectedCategory={selectedMapCategory}
-                onSelectCategory={setSelectedMapCategory}
-                categories={markerCategories}
-              />
-            </div>
+        <div className="w-full space-y-4">
+          {/* Full Width Pencil-Drawn Architectural Masterplan */}
+          <TempleArchitectureMap
+            markers={filteredMarkers}
+            selectedMarker={selectedMarker}
+            onSelectMarker={(marker) => {
+              setSelectedMarker(marker);
+              setIsDrawerOpen(true);
+            }}
+            isAddingMarkerMode={isAddingMarkerMode}
+            onMapClick={handleSvgMapClick}
+            selectedCategory={selectedMapCategory}
+            onSelectCategory={setSelectedMapCategory}
+            categories={markerCategories}
+          />
+        </div>
+      )}
 
-            {/* Marker Inspector & Quick Directory Panel */}
-            <div className="bg-white rounded-2xl border border-stone-200/90 p-5 shadow-2xs flex flex-col justify-between space-y-4">
-              {selectedMarker ? (
-                <div className="space-y-3.5">
-                  <div className="flex items-center justify-between border-b border-stone-200/80 pb-3">
-                    <span className="font-mono text-xs font-bold text-stone-900 bg-stone-100 px-2.5 py-0.5 rounded-lg border border-stone-200">
-                      {selectedMarker.id}
+      {/* Slide-In Facility & Marker Detail Drawer */}
+      {isDrawerOpen && selectedMarker && (
+        <div className="fixed inset-0 z-50 overflow-hidden select-none">
+          {/* Backdrop */}
+          <div
+            className="absolute inset-0 bg-stone-900/40 backdrop-blur-2xs transition-opacity animate-in fade-in"
+            onClick={() => setIsDrawerOpen(false)}
+          />
+
+          {/* Drawer Container */}
+          <div className="fixed inset-y-0 right-0 max-w-full flex pl-8 sm:pl-16">
+            <div className="w-screen max-w-md bg-white shadow-2xl border-l border-stone-200 flex flex-col justify-between animate-in slide-in-from-right duration-300">
+              {/* Drawer Header */}
+              <div className="p-4.5 bg-[#55132D] text-white flex items-center justify-between shadow-xs shrink-0">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center border border-[#E2BC6B]/30 shadow-2xs">
+                    <MapPin className="w-5 h-5 text-[#E2BC6B]" />
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-[10px] uppercase font-bold tracking-wider text-[#E2BC6B]">
+                        Facility Inspector
+                      </span>
+                      <span className="px-2 py-0.2 rounded-full bg-white/10 text-white font-mono text-[9px] font-bold">
+                        {selectedMarker.id}
+                      </span>
+                    </div>
+                    <h3 className="text-sm font-bold font-serif leading-tight">
+                      {selectedMarker.name}
+                    </h3>
+                  </div>
+                </div>
+
+                <button
+                  onClick={() => setIsDrawerOpen(false)}
+                  className="p-1.5 rounded-xl hover:bg-white/10 text-white/80 hover:text-white transition-colors cursor-pointer"
+                  title="Close Inspector"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              {/* Scrollable Body Content */}
+              <div className="flex-1 overflow-y-auto p-5 space-y-4 text-xs">
+                {/* Category & Status */}
+                <div className="flex items-center justify-between bg-stone-50 p-3 rounded-xl border border-stone-200">
+                  <div>
+                    <span className="text-[10px] text-stone-500 font-bold uppercase tracking-wider block">
+                      Facility Category
                     </span>
-                    <span className="text-[10px] font-bold text-[#55132D] uppercase bg-[#55132D]/10 px-2.5 py-0.5 rounded-full border border-[#55132D]/20">
+                    <span className="text-xs font-bold text-stone-900">
                       {selectedMarker.category}
                     </span>
                   </div>
+                  <span
+                    className={`px-2.5 py-0.5 rounded-full text-[10.5px] font-bold ${
+                      selectedMarker.isVisible
+                        ? 'bg-emerald-50 text-emerald-800 border border-emerald-200'
+                        : 'bg-stone-100 text-stone-600'
+                    }`}
+                  >
+                    ● {selectedMarker.isVisible ? 'Visible on Map' : 'Hidden from Map'}
+                  </span>
+                </div>
 
-                  <div>
-                    <h3 className="text-base font-bold text-stone-900 font-serif leading-snug">
-                      {selectedMarker.name}
-                    </h3>
-                    <p className="text-xs text-stone-500 mt-1 leading-relaxed">
-                      {selectedMarker.shortDescription}
-                    </p>
-                  </div>
+                {/* Description */}
+                <div className="space-y-1">
+                  <span className="font-bold text-stone-800 block text-xs uppercase tracking-wider">
+                    Facility Overview
+                  </span>
+                  <p className="text-xs text-stone-700 leading-relaxed bg-stone-50/70 p-3 rounded-xl border border-stone-150">
+                    {selectedMarker.shortDescription}
+                  </p>
+                </div>
 
-                  <div className="bg-stone-50/80 p-3 rounded-xl border border-stone-200/80 text-xs space-y-1">
-                    <span className="font-bold text-stone-800 block text-[11px] uppercase tracking-wider">
-                      Visitor Guidance
-                    </span>
-                    <p className="text-xs text-stone-600 leading-relaxed">
+                {/* Visitor Guidance */}
+                <div className="space-y-1">
+                  <span className="font-bold text-stone-800 block text-xs uppercase tracking-wider">
+                    Devotee Guidance &amp; Rules
+                  </span>
+                  <div className="bg-amber-500/10 p-3.5 rounded-xl border border-amber-300 text-amber-950 space-y-1">
+                    <p className="text-xs leading-relaxed font-medium">
                       {selectedMarker.visitorInstructions}
                     </p>
                   </div>
-
-                  <div className="bg-stone-50/80 p-3 rounded-xl border border-stone-200/80 text-xs flex justify-between items-center">
-                    <span className="text-stone-500 font-medium">Campus Coordinates:</span>
-                    <span className="font-mono font-bold text-stone-800 text-xs">
-                      X: {selectedMarker.x}% · Y: {selectedMarker.y}%
-                    </span>
-                  </div>
-
-                  <div className="pt-2 flex flex-col gap-2">
-                    <button
-                      onClick={() => setIsEditMarkerModalOpen(true)}
-                      className="w-full py-2 bg-[#55132D] hover:bg-[#681B37] text-white text-xs font-semibold rounded-xl flex items-center justify-center gap-1.5 transition-colors shadow-xs"
-                    >
-                      <Edit3 className="w-3.5 h-3.5" />
-                      <span>Edit Marker Info</span>
-                    </button>
-                    <button
-                      onClick={() => toggleMarkerVisibility(selectedMarker.id)}
-                      className="w-full py-2 bg-stone-100 hover:bg-stone-200 text-stone-700 text-xs font-semibold rounded-xl transition-colors border border-stone-200/80"
-                    >
-                      {selectedMarker.isVisible ? 'Hide from Visitor Map' : 'Show on Visitor Map'}
-                    </button>
-                    <button
-                      onClick={() => {
-                        deleteMapMarker(selectedMarker.id);
-                        setSelectedMarker(null);
-                      }}
-                      className="w-full py-2 text-rose-700 hover:bg-rose-50 text-xs font-semibold rounded-xl transition-colors border border-rose-200"
-                    >
-                      Delete Marker
-                    </button>
-                  </div>
                 </div>
-              ) : (
-                <div className="space-y-4">
-                  <div className="text-center p-4 text-stone-400 space-y-1.5 border-b border-stone-100 pb-4">
-                    <div className="w-10 h-10 rounded-2xl bg-stone-100 text-stone-400 flex items-center justify-center mx-auto mb-2">
-                      <MapPin className="w-5 h-5 text-stone-400 stroke-1" />
-                    </div>
-                    <p className="text-xs font-bold text-stone-800">Campus Amenity Inspector</p>
-                    <p className="text-[11px] text-stone-500 leading-normal">
-                      Click any pin on the 2D architectural map or select from the list below to inspect guidelines.
-                    </p>
-                  </div>
 
-                  {/* Quick-Jump Facility Roster */}
-                  <div className="space-y-1.5">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-stone-400 block px-1">
-                      Quick Facilities Directory
-                    </span>
-                    <div className="max-h-[300px] overflow-y-auto custom-scrollbar space-y-1 pr-1">
-                      {mapMarkers.map((m) => (
-                        <div
-                          key={m.id}
-                          onClick={() => setSelectedMarker(m)}
-                          className="p-2.5 rounded-xl border border-stone-200/80 hover:border-stone-300 hover:bg-stone-50/80 cursor-pointer transition-all flex items-center justify-between text-xs"
-                        >
-                          <div className="min-w-0 pr-2">
-                            <span className="font-semibold text-stone-900 block truncate">{m.name}</span>
-                            <span className="text-[10px] text-stone-400 block">{m.category}</span>
+                {/* Campus Coordinates */}
+                <div className="bg-stone-50 p-3 rounded-xl border border-stone-200 flex justify-between items-center text-xs">
+                  <span className="text-stone-500 font-medium">Architectural Grid Position:</span>
+                  <span className="font-mono font-bold text-stone-800 bg-white px-2 py-0.5 rounded border border-stone-200">
+                    X: {selectedMarker.x}% · Y: {selectedMarker.y}%
+                  </span>
+                </div>
+              </div>
+
+              {/* Footer Action Buttons */}
+              <div className="p-4 border-t border-stone-200 bg-stone-50 flex flex-col gap-2 shrink-0">
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => {
+                      setIsDrawerOpen(false);
+                      setIsEditMarkerModalOpen(true);
+                    }}
+                    className="flex-1 py-2 bg-[#55132D] hover:bg-[#681B37] text-white text-xs font-bold rounded-xl transition-colors shadow-2xs flex items-center justify-center gap-1.5 cursor-pointer"
+                  >
+                    <Edit3 className="w-3.5 h-3.5 text-[#E2BC6B]" />
+                    <span>Edit Marker Info</span>
+                  </button>
+                  <button
+                    onClick={() => toggleMarkerVisibility(selectedMarker.id)}
+                    className="flex-1 py-2 bg-white hover:bg-stone-100 text-stone-700 text-xs font-bold rounded-xl border border-stone-200 transition-colors cursor-pointer"
+                  >
+                    {selectedMarker.isVisible ? 'Hide from Map' : 'Show on Map'}
+                  </button>
+                </div>
+                <button
+                  onClick={() => {
+                    deleteMapMarker(selectedMarker.id);
+                    setSelectedMarker(null);
+                    setIsDrawerOpen(false);
+                  }}
+                  className="w-full py-1.5 text-rose-600 hover:bg-rose-50 text-xs font-semibold rounded-lg transition-colors cursor-pointer"
+                >
+                  Delete Marker
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* TAB 2: VISITOR GUIDELINES & FAQS (Segmented Sub-views) */}
+      {activeTab === 'guidelines_faqs' && (
+        <div className="space-y-4">
+          {/* Segmented Sub-view Switcher */}
+          <div className="flex items-center gap-2 border border-stone-200/90 bg-stone-100/80 p-1 rounded-xl w-fit">
+            <button
+              onClick={() => setGuidelinesSubTab('guidelines')}
+              className={`px-4 py-1.5 text-xs font-semibold rounded-lg transition-all ${
+                guidelinesSubTab === 'guidelines'
+                  ? 'bg-white text-stone-900 shadow-2xs font-bold'
+                  : 'text-stone-600 hover:text-stone-900'
+              }`}
+            >
+              Visitor Guidelines & Transit
+            </button>
+            <button
+              onClick={() => setGuidelinesSubTab('faqs')}
+              className={`px-4 py-1.5 text-xs font-semibold rounded-lg transition-all ${
+                guidelinesSubTab === 'faqs'
+                  ? 'bg-white text-stone-900 shadow-2xs font-bold'
+                  : 'text-stone-600 hover:text-stone-900'
+              }`}
+            >
+              Devotee FAQs & Answers
+            </button>
+          </div>
+
+          {guidelinesSubTab === 'guidelines' && (
+            <div className="space-y-5">
+              {/* Section 1: Travel & Transit Guide */}
+              <div className="bg-white rounded-2xl border border-stone-200/90 p-5 shadow-2xs space-y-4">
+                <div className="flex items-center justify-between pb-3 border-b border-stone-150">
+                  <h3 className="text-sm font-bold text-stone-900 font-serif">Transit & How to Reach</h3>
+                  <ContentStatusBadge status={travelInformation.status} />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3.5">
+                  {travelInformation.transportModes.map((tm, idx) => (
+                    <div
+                      key={idx}
+                      className="p-4 bg-stone-50/80 hover:bg-stone-50 rounded-xl border border-stone-200/80 transition-all flex flex-col justify-between space-y-3"
+                    >
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between gap-2">
+                          <div className="flex items-center gap-2">
+                            <span className="p-2 bg-[#55132D]/10 text-[#55132D] rounded-lg">
+                              {tm.mode === 'Air Travel' && <Plane className="w-4 h-4" />}
+                              {tm.mode === 'Rail Travel' && <Train className="w-4 h-4" />}
+                              {tm.mode === 'Road & Highway' && <Bus className="w-4 h-4" />}
+                              {tm.mode.includes('Local') && <Car className="w-4 h-4" />}
+                            </span>
+                            <span className="text-[10px] font-bold text-stone-600 bg-white px-2 py-0.5 rounded-md border border-stone-200">
+                              {tm.tag || tm.mode}
+                            </span>
                           </div>
-                          <ChevronRight className="w-3.5 h-3.5 text-stone-400 shrink-0" />
+                          <button
+                            onClick={() => openEditTransitModal(idx)}
+                            className="p-1.5 hover:bg-white text-stone-500 hover:text-[#55132D] rounded-lg transition-colors cursor-pointer border border-transparent hover:border-stone-200 shadow-2xs"
+                            title="Edit Transit Option"
+                          >
+                            <Edit3 className="w-3.5 h-3.5" />
+                          </button>
                         </div>
-                      ))}
+                        <h4 className="font-bold text-stone-900 text-xs">{tm.title}</h4>
+                        <p className="text-stone-600 leading-relaxed text-xs">{tm.description}</p>
+                      </div>
                     </div>
-                  </div>
+                  ))}
                 </div>
-              )}
-
-              <div className="pt-3 border-t border-stone-200 text-[11px] text-stone-500 flex justify-between items-center font-medium">
-                <span>Total Configured: {mapMarkers.length} pins</span>
-                <span className="text-emerald-700 font-semibold">Active: {visibleMarkersCount}</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* TAB 2: PUBLIC FACILITIES DIRECTORY */}
-      {activeTab === 'facilities_directory' && (
-        <div className="space-y-4">
-          <div className="bg-white rounded-xl border border-stone-200 p-3.5 flex flex-wrap items-center justify-between gap-3 shadow-xs">
-            <div className="flex flex-wrap items-center gap-2.5">
-              <div className="relative">
-                <Search className="w-3.5 h-3.5 text-stone-400 absolute left-2.5 top-1/2 -translate-y-1/2" />
-                <input
-                  type="text"
-                  placeholder="Search facilities..."
-                  value={facilitySearch}
-                  onChange={(e) => setFacilitySearch(e.target.value)}
-                  className="pl-8 pr-3 py-1.5 text-xs border border-stone-300 rounded-lg bg-stone-50 focus:outline-none focus:border-[#800000] w-60"
-                />
               </div>
 
-              <select
-                value={facilityCatFilter}
-                onChange={(e) => setFacilityCatFilter(e.target.value)}
-                className="text-xs border border-stone-300 rounded-lg px-2.5 py-1.5 bg-stone-50 focus:outline-none focus:border-[#800000]"
-              >
-                <option value="ALL">All Categories</option>
-                <option value="Accommodation">Accommodation</option>
-                <option value="Waiting Area">Waiting Area</option>
-                <option value="Bathing & Viewing Ghat">Bathing Ghat</option>
-                <option value="Drinking Water">Drinking Water</option>
-                <option value="Toilets">Toilets</option>
-                <option value="Help Desk">Help Desk</option>
-                <option value="Prasad">Prasad</option>
-              </select>
-            </div>
+              {/* Section 2: Devotee Guidelines & Sacred Conduct */}
+              <div className="bg-white rounded-2xl border border-stone-200/90 p-5 shadow-2xs space-y-4">
+                <div className="flex items-center justify-between pb-3 border-b border-stone-150">
+                  <h3 className="text-sm font-bold text-stone-900 font-serif">Devotee Guidelines & Sacred Conduct</h3>
+                  <button
+                    onClick={openAddGuidelineModal}
+                    className="px-3 py-1.5 bg-[#55132D] hover:bg-[#681B37] text-white text-xs font-semibold rounded-lg flex items-center gap-1.5 transition-colors cursor-pointer shadow-2xs"
+                  >
+                    <Plus className="w-3.5 h-3.5" />
+                    <span>Add Guideline</span>
+                  </button>
+                </div>
 
-            <button
-              onClick={() => setIsFacilityModalOpen(true)}
-              className="px-3.5 py-1.5 bg-[#800000] hover:bg-[#660000] text-white text-xs font-semibold rounded-lg flex items-center gap-1.5 transition-colors"
-            >
-              <Plus className="w-3.5 h-3.5" />
-              Add Facility Entry
-            </button>
-          </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+                  {visitorGuidelines.map((g, idx) => (
+                    <div
+                      key={g.id}
+                      className="p-4 bg-stone-50/70 hover:bg-stone-50 rounded-xl border border-stone-200/80 flex flex-col justify-between gap-3 transition-colors"
+                    >
+                      <div className="space-y-2 text-xs">
+                        <div className="flex items-center justify-between gap-2">
+                          <div className="flex items-center gap-2">
+                            <span className="font-mono text-xs font-bold text-stone-900 bg-stone-200/70 px-2 py-0.5 rounded">
+                              #{idx + 1}
+                            </span>
+                            <span className="text-[10.5px] font-semibold text-[#55132D] bg-[#55132D]/10 px-2.5 py-0.5 rounded">
+                              {g.category}
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-1.5">
+                            {/* Interactive Live/Draft Toggle Button */}
+                            <button
+                              onClick={() => toggleGuidelineStatus(g)}
+                              className={`px-2 py-0.5 rounded-full text-[10px] font-bold border transition-all cursor-pointer flex items-center gap-1 ${
+                                g.status === 'Published'
+                                  ? 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100'
+                                  : 'bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100'
+                              }`}
+                              title="Click to toggle Devotee Portal visibility"
+                            >
+                              <span
+                                className={`w-1.5 h-1.5 rounded-full ${
+                                  g.status === 'Published' ? 'bg-emerald-500' : 'bg-amber-500'
+                                }`}
+                              />
+                              <span>{g.status === 'Published' ? 'Live on Portal' : 'Draft (Hidden)'}</span>
+                            </button>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
-            {publicFacilities
-              .filter((f) => {
-                const matchCat = facilityCatFilter === 'ALL' || f.category === facilityCatFilter;
-                const matchSearch =
-                  f.name.toLowerCase().includes(facilitySearch.toLowerCase()) ||
-                  f.publicDescription.toLowerCase().includes(facilitySearch.toLowerCase());
-                return matchCat && matchSearch;
-              })
-              .map((fac) => (
-                <div
-                  key={fac.id}
-                  className="bg-white rounded-xl border border-stone-200 p-4 shadow-xs flex flex-col justify-between hover:border-[#800000]/40 transition-all space-y-3"
-                >
-                  <div>
-                    <div className="flex items-center justify-between mb-1.5">
-                      <div className="flex items-center gap-2">
-                        <span className="font-mono text-xs font-bold text-stone-900 bg-stone-100 px-2 py-0.5 rounded">
-                          {fac.id}
-                        </span>
-                        <span className="text-[10px] font-bold text-[#800000] uppercase bg-[#800000]/10 px-2 py-0.5 rounded">
-                          {fac.category}
-                        </span>
-                      </div>
-                      <ContentStatusBadge status={fac.publicationStatus} />
-                    </div>
+                            {/* Edit Guideline Button */}
+                            <button
+                              onClick={() => openEditGuidelineModal(g)}
+                              className="p-1 hover:bg-white text-stone-600 hover:text-[#55132D] rounded transition-colors cursor-pointer"
+                              title="Edit Guideline"
+                            >
+                              <Edit3 className="w-3.5 h-3.5" />
+                            </button>
 
-                    <h4 className="text-sm font-bold text-stone-900 mb-1">{fac.name}</h4>
-                    <p className="text-xs text-stone-600 mb-2 leading-relaxed">{fac.publicDescription}</p>
+                            {/* Preview on Devotee Portal */}
+                            <button
+                              onClick={() => openPreview('visitor-guide', g)}
+                              className="p-1 hover:bg-white text-stone-600 rounded transition-colors cursor-pointer"
+                              title="Devotee Preview"
+                            >
+                              <Eye className="w-3.5 h-3.5 text-[#55132D]" />
+                            </button>
 
-                    <div className="bg-stone-50 p-2.5 rounded-lg border border-stone-150 space-y-1 text-xs text-stone-600 mb-2">
-                      <div className="flex items-center gap-1 text-[11px]">
-                        <MapPin className="w-3 h-3 text-[#800000]" />
-                        <span className="font-medium text-stone-800">{fac.location}</span>
-                      </div>
-                      <div className="flex items-center gap-1 text-[11px]">
-                        <Clock className="w-3 h-3 text-stone-400" />
-                        <span>Hours: {fac.operatingHours}</span>
-                      </div>
-                      {fac.internalFacilityId && (
-                        <div className="pt-1 text-[10px] text-blue-700 flex items-center gap-1 font-mono">
-                          <Tag className="w-2.5 h-2.5" /> Linked Operational Record: {fac.internalFacilityId}
+                            {/* Delete Guideline */}
+                            <button
+                              onClick={() => deleteVisitorGuideline(g.id)}
+                              className="p-1 text-stone-400 hover:text-red-600 rounded transition-colors cursor-pointer"
+                              title="Delete guideline"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
                         </div>
-                      )}
+                        <h4 className="text-xs font-bold text-stone-900">{g.title}</h4>
+                        <p className="text-stone-700 leading-relaxed text-xs">{g.content}</p>
+                      </div>
                     </div>
-                  </div>
-
-                  <div className="pt-2 border-t border-stone-150 flex items-center justify-between text-xs">
-                    <button
-                      onClick={() => openPreview('facility', fac)}
-                      className="text-[11px] text-stone-600 hover:text-stone-900 underline font-medium"
-                    >
-                      Public Preview
-                    </button>
-                    <button
-                      onClick={() =>
-                        updatePublicFacility(fac.id, {
-                          publicationStatus: fac.publicationStatus === 'Published' ? 'Draft' : 'Published',
-                        })
-                      }
-                      className="text-[10px] font-semibold text-[#800000] hover:underline"
-                    >
-                      {fac.publicationStatus === 'Published' ? 'Set as Draft' : 'Publish Live'}
-                    </button>
-                  </div>
+                  ))}
                 </div>
-              ))}
-          </div>
-        </div>
-      )}
-
-      {/* TAB 3: VISITOR GUIDELINES & TRANSIT (Merged Guidelines + Travel Guide) */}
-      {activeTab === 'visitor_guidelines' && (
-        <div className="space-y-5">
-          {/* Section 1: Travel & Transit Guide */}
-          <div className="bg-white rounded-xl border border-stone-200 p-5 shadow-xs space-y-4">
-            <div className="flex items-center justify-between border-b border-stone-150 pb-3">
-              <div>
-                <h3 className="text-sm font-bold text-stone-900 font-serif">Transit & How to Reach</h3>
-                <p className="text-xs text-stone-500">
-                  Devotee traveler guide covering flights, trains, highways and local Udaipur transit routes.
-                </p>
               </div>
-              <ContentStatusBadge status={travelInformation.status} />
             </div>
+          )}
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {travelInformation.transportModes.map((tm, idx) => (
-                <div key={idx} className="p-4 bg-stone-50 rounded-xl border border-stone-200 space-y-2 text-xs">
-                  <div className="flex items-center gap-2">
-                    <span className="p-1.5 bg-[#55132D]/10 text-[#55132D] rounded-lg">
-                      {tm.mode === 'Air Travel' && <Plane className="w-4 h-4" />}
-                      {tm.mode === 'Rail Travel' && <Train className="w-4 h-4" />}
-                      {tm.mode === 'Road & Highway' && <Bus className="w-4 h-4" />}
-                      {tm.mode.includes('Local') && <Car className="w-4 h-4" />}
-                    </span>
-                    <span className="font-bold text-stone-900 text-xs">{tm.title}</span>
+          {guidelinesSubTab === 'faqs' && (
+            <div className="space-y-4">
+              <div className="bg-white rounded-xl border border-stone-200 p-3.5 flex flex-wrap items-center justify-between gap-3 shadow-xs">
+                <div className="flex flex-wrap items-center gap-2.5">
+                  <div className="relative">
+                    <Search className="w-3.5 h-3.5 text-stone-400 absolute left-2.5 top-1/2 -translate-y-1/2" />
+                    <input
+                      type="text"
+                      placeholder="Search questions..."
+                      value={faqSearch}
+                      onChange={(e) => setFaqSearch(e.target.value)}
+                      className="pl-8 pr-3 py-1.5 text-xs border border-stone-300 rounded-lg bg-stone-50 focus:outline-none focus:border-[#55132D] w-60"
+                    />
                   </div>
 
-                  <p className="text-stone-700 leading-relaxed text-[11px]">{tm.description}</p>
-                  <p className="text-[10px] text-stone-500 italic bg-white p-2 rounded border border-stone-150">
-                    Note: {tm.notes}
-                  </p>
+                  <select
+                    value={faqCatFilter}
+                    onChange={(e) => setFaqCatFilter(e.target.value)}
+                    className="text-xs border border-stone-300 rounded-lg px-2.5 py-1.5 bg-stone-50 focus:outline-none focus:border-[#55132D]"
+                  >
+                    <option value="ALL">All Categories</option>
+                    <option value="General Visit">General Visit</option>
+                    <option value="Darshan">Darshan</option>
+                    <option value="Travel">Travel</option>
+                    <option value="Facilities">Facilities</option>
+                    <option value="Accommodation">Accommodation</option>
+                    <option value="Donations">Donations</option>
+                    <option value="Accessibility">Accessibility</option>
+                  </select>
                 </div>
-              ))}
-            </div>
 
-            <div className="p-3 bg-amber-50 rounded-xl border border-amber-200 text-xs text-amber-900 flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Info className="w-4 h-4 text-amber-700 shrink-0" />
-                <span>
-                  <strong>Highway Advisory:</strong> {travelInformation.travelAdvisory}
-                </span>
-              </div>
-              <span className="font-mono text-[10px] bg-amber-100 px-2 py-0.5 rounded font-bold">
-                NH-8 Verified
-              </span>
-            </div>
-          </div>
-
-          {/* Section 2: Devotee Guidelines & Sacred Conduct */}
-          <div className="space-y-3">
-            <div className="bg-white rounded-xl border border-stone-200 p-4 shadow-xs flex items-center justify-between">
-              <div>
-                <h3 className="text-sm font-bold text-stone-900 font-serif">Devotee Guidelines & Sacred Conduct</h3>
-                <p className="text-xs text-stone-500">
-                  Visitor decorum, dress code, photography policies and accessibility information.
-                </p>
-              </div>
-              <button
-                onClick={() => {
-                  const title = prompt('Enter guideline title:');
-                  if (title) {
-                    const content = prompt('Enter guideline instructions:');
-                    if (content) {
-                      addVisitorGuideline({
-                        title,
-                        category: 'Visitor Guidelines',
-                        content,
-                        status: 'Published',
-                        verificationStatus: 'Verified',
-                      });
-                    }
-                  }
-                }}
-                className="px-3 py-1.5 bg-[#55132D] hover:bg-[#681B37] text-white text-xs font-semibold rounded-lg flex items-center gap-1.5 transition-colors"
-              >
-                <Plus className="w-3.5 h-3.5" />
-                Add Guideline
-              </button>
-            </div>
-
-            <div className="space-y-3">
-              {visitorGuidelines.map((g, idx) => (
-                <div
-                  key={g.id}
-                  className="bg-white rounded-xl border border-stone-200 p-4 shadow-xs flex flex-col md:flex-row md:items-start justify-between gap-4"
+                <button
+                  onClick={openAddFaqModal}
+                  className="px-3.5 py-1.5 bg-[#55132D] hover:bg-[#681B37] text-white text-xs font-semibold rounded-lg flex items-center gap-1.5 transition-colors cursor-pointer shadow-2xs"
                 >
-                  <div className="space-y-1.5 text-xs flex-1">
-                    <div className="flex items-center gap-2">
-                      <span className="font-mono text-xs font-bold text-stone-900 bg-stone-100 px-2 py-0.5 rounded">
-                        #{idx + 1}
-                      </span>
-                      <span className="text-[10px] font-semibold text-[#55132D] bg-[#55132D]/10 px-2 py-0.5 rounded">
-                        {g.category}
-                      </span>
-                      <ContentStatusBadge status={g.status} />
-                    </div>
-                    <h4 className="text-sm font-bold text-stone-900">{g.title}</h4>
-                    <p className="text-stone-700 leading-relaxed text-xs">{g.content}</p>
-                  </div>
-
-                  <div className="flex items-center gap-2 shrink-0 self-end md:self-start">
-                    <button
-                      onClick={() => openPreview('visitor-guide', g)}
-                      className="p-1.5 bg-stone-100 hover:bg-stone-200 text-stone-700 rounded text-xs font-semibold"
-                      title="Devotee Preview"
-                    >
-                      <Eye className="w-3.5 h-3.5 text-[#55132D]" />
-                    </button>
-                    <button
-                      onClick={() => deleteVisitorGuideline(g.id)}
-                      className="p-1.5 text-stone-400 hover:text-red-600 rounded"
-                      title="Delete guideline"
-                    >
-                      <Trash2 className="w-3.5 h-3.5" />
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* TAB 4: DEVOTEE FAQS */}
-      {activeTab === 'faqs' && (
-        <div className="space-y-4">
-          <div className="bg-white rounded-xl border border-stone-200 p-3.5 flex flex-wrap items-center justify-between gap-3 shadow-xs">
-            <div className="flex flex-wrap items-center gap-2.5">
-              <div className="relative">
-                <Search className="w-3.5 h-3.5 text-stone-400 absolute left-2.5 top-1/2 -translate-y-1/2" />
-                <input
-                  type="text"
-                  placeholder="Search questions..."
-                  value={faqSearch}
-                  onChange={(e) => setFaqSearch(e.target.value)}
-                  className="pl-8 pr-3 py-1.5 text-xs border border-stone-300 rounded-lg bg-stone-50 focus:outline-none focus:border-[#55132D] w-60"
-                />
+                  <Plus className="w-3.5 h-3.5" />
+                  <span>Add FAQ</span>
+                </button>
               </div>
 
-              <select
-                value={faqCatFilter}
-                onChange={(e) => setFaqCatFilter(e.target.value)}
-                className="text-xs border border-stone-300 rounded-lg px-2.5 py-1.5 bg-stone-50 focus:outline-none focus:border-[#55132D]"
-              >
-                <option value="ALL">All Categories</option>
-                <option value="General Visit">General Visit</option>
-                <option value="Darshan">Darshan</option>
-                <option value="Travel">Travel</option>
-                <option value="Facilities">Facilities</option>
-                <option value="Accommodation">Accommodation</option>
-                <option value="Donations">Donations</option>
-                <option value="Accessibility">Accessibility</option>
-              </select>
+              {/* Single Column List of FAQ Cards */}
+              <div className="space-y-3.5">
+                {faqs
+                  .filter((f) => {
+                    const matchCat = faqCatFilter === 'ALL' || f.category === faqCatFilter;
+                    const matchSearch =
+                      f.question.toLowerCase().includes(faqSearch.toLowerCase()) ||
+                      f.answer.toLowerCase().includes(faqSearch.toLowerCase());
+                    return matchCat && matchSearch;
+                  })
+                  .map((faq) => (
+                    <div
+                      key={faq.id}
+                      className="bg-white rounded-xl border border-stone-200/90 p-4 shadow-2xs space-y-2.5 text-xs hover:border-[#55132D]/30 transition-all flex flex-col justify-between"
+                    >
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between gap-2">
+                          <div className="flex items-center gap-2">
+                            <span className="font-mono text-xs font-bold text-stone-900 bg-stone-100 px-2 py-0.5 rounded">
+                              {faq.id}
+                            </span>
+                            <span className="text-[10px] font-semibold text-[#55132D] bg-[#55132D]/10 px-2 py-0.5 rounded">
+                              {faq.category}
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-1.5">
+                            {/* Live/Draft Toggle Button */}
+                            <button
+                              onClick={() => toggleFaqStatus(faq)}
+                              className={`px-2 py-0.5 rounded-full text-[10px] font-bold border transition-all cursor-pointer flex items-center gap-1 ${
+                                faq.status === 'Published'
+                                  ? 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100'
+                                  : 'bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100'
+                              }`}
+                              title="Click to toggle Devotee Portal visibility"
+                            >
+                              <span
+                                className={`w-1.5 h-1.5 rounded-full ${
+                                  faq.status === 'Published' ? 'bg-emerald-500' : 'bg-amber-500'
+                                }`}
+                              />
+                              <span>{faq.status === 'Published' ? 'Live on Portal' : 'Draft (Hidden)'}</span>
+                            </button>
+
+                            {/* Edit FAQ Button */}
+                            <button
+                              onClick={() => openEditFaqModal(faq)}
+                              className="p-1 hover:bg-stone-100 text-stone-600 hover:text-[#55132D] rounded transition-colors cursor-pointer"
+                              title="Edit FAQ"
+                            >
+                              <Edit3 className="w-3.5 h-3.5" />
+                            </button>
+
+                            {/* Delete FAQ Button */}
+                            <button
+                              onClick={() => deleteFaq(faq.id)}
+                              className="text-stone-400 hover:text-red-600 p-1 rounded transition-colors cursor-pointer"
+                              title="Delete FAQ"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        </div>
+
+                        <h4 className="text-xs font-bold text-stone-900 flex items-start gap-1.5">
+                          <HelpCircle className="w-4 h-4 text-[#55132D] shrink-0 mt-0.5" />
+                          <span>{faq.question}</span>
+                        </h4>
+                        <p className="text-stone-700 leading-relaxed text-xs pl-5.5">{faq.answer}</p>
+                      </div>
+                    </div>
+                  ))}
+              </div>
             </div>
-
-            <button
-              onClick={() => setIsFaqModalOpen(true)}
-              className="px-3.5 py-1.5 bg-[#55132D] hover:bg-[#681B37] text-white text-xs font-semibold rounded-lg flex items-center gap-1.5 transition-colors"
-            >
-              <Plus className="w-3.5 h-3.5" />
-              Add FAQ
-            </button>
-          </div>
-
-          <div className="space-y-3">
-            {faqs
-              .filter((f) => {
-                const matchCat = faqCatFilter === 'ALL' || f.category === faqCatFilter;
-                const matchSearch =
-                  f.question.toLowerCase().includes(faqSearch.toLowerCase()) ||
-                  f.answer.toLowerCase().includes(faqSearch.toLowerCase());
-                return matchCat && matchSearch;
-              })
-              .map((faq) => (
-                <div
-                  key={faq.id}
-                  className="bg-white rounded-xl border border-stone-200 p-4 shadow-xs space-y-2 text-xs"
-                >
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <span className="font-mono text-xs font-bold text-stone-900 bg-stone-100 px-2 py-0.5 rounded">
-                        {faq.id}
-                      </span>
-                      <span className="text-[10px] font-semibold text-[#55132D] bg-[#55132D]/10 px-2 py-0.5 rounded">
-                        {faq.category}
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <ContentStatusBadge status={faq.status} />
-                      <button
-                        onClick={() => deleteFaq(faq.id)}
-                        className="text-stone-400 hover:text-red-600 p-1"
-                        title="Delete FAQ"
-                      >
-                        <Trash2 className="w-3.5 h-3.5" />
-                      </button>
-                    </div>
-                  </div>
-
-                  <h4 className="text-xs font-bold text-stone-900 flex items-start gap-1.5">
-                    <HelpCircle className="w-4 h-4 text-[#55132D] shrink-0 mt-0.5" />
-                    <span>{faq.question}</span>
-                  </h4>
-                  <p className="text-stone-700 leading-relaxed text-xs pl-5.5">{faq.answer}</p>
-                </div>
-              ))}
-          </div>
+          )}
         </div>
       )}
 
@@ -952,33 +1006,35 @@ export default function VisitGuide() {
         </div>
       )}
 
-      {/* MODAL: ADD FACILITY */}
-      {isFacilityModalOpen && (
+      {/* MODAL: CONFIGURE DEVOTEE GUIDELINE (ADD & EDIT) */}
+      {isGuidelineModalOpen && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl max-w-md w-full overflow-hidden shadow-2xl border border-stone-200">
             <div className="px-5 py-4 bg-stone-50 border-b border-stone-200 flex items-center justify-between">
               <div>
-                <h3 className="text-sm font-bold text-stone-900">Add Public Facility Record</h3>
-                <p className="text-xs text-stone-500">Public guide entry displayed to devotees.</p>
+                <h3 className="text-sm font-bold text-stone-900 font-serif">
+                  {editingGuideline ? 'Edit Devotee Guideline' : 'Add Devotee Guideline'}
+                </h3>
+                <p className="text-xs text-stone-500">Public policy displayed on the devotee portal.</p>
               </div>
               <button
-                onClick={() => setIsFacilityModalOpen(false)}
-                className="p-1 rounded-lg hover:bg-stone-200 text-stone-500"
+                onClick={() => setIsGuidelineModalOpen(false)}
+                className="p-1 rounded-lg hover:bg-stone-200 text-stone-500 cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
-            <form onSubmit={handleCreateFacilitySubmit} className="p-5 space-y-3.5 text-xs">
+            <form onSubmit={handleGuidelineSubmit} className="p-5 space-y-3.5 text-xs">
               <div>
-                <label className="block font-semibold text-stone-700 mb-1">Facility Name *</label>
+                <label className="block font-semibold text-stone-700 mb-1">Guideline Title *</label>
                 <input
                   type="text"
                   required
-                  placeholder="e.g. Free Cloakroom & Footwear Deposit"
-                  value={facilityForm.name}
-                  onChange={(e) => setFacilityForm({ ...facilityForm, name: e.target.value })}
-                  className="w-full border border-stone-300 rounded-lg px-3 py-2 bg-stone-50 focus:outline-none focus:border-[#800000]"
+                  placeholder="e.g. Temple Timings & Recommended Hours"
+                  value={guidelineForm.title}
+                  onChange={(e) => setGuidelineForm({ ...guidelineForm, title: e.target.value })}
+                  className="w-full border border-stone-300 rounded-lg px-3 py-2 bg-stone-50 focus:outline-none focus:border-[#55132D]"
                 />
               </div>
 
@@ -986,76 +1042,57 @@ export default function VisitGuide() {
                 <div>
                   <label className="block font-semibold text-stone-700 mb-1">Category</label>
                   <select
-                    value={facilityForm.category}
-                    onChange={(e) => setFacilityForm({ ...facilityForm, category: e.target.value })}
-                    className="w-full border border-stone-300 rounded-lg px-3 py-2 bg-stone-50 focus:outline-none focus:border-[#800000]"
+                    value={guidelineForm.category}
+                    onChange={(e) => setGuidelineForm({ ...guidelineForm, category: e.target.value })}
+                    className="w-full border border-stone-300 rounded-lg px-3 py-2 bg-stone-50 focus:outline-none focus:border-[#55132D]"
                   >
-                    <option value="Accommodation">Accommodation</option>
-                    <option value="Waiting Area">Waiting Area</option>
-                    <option value="Drinking Water">Drinking Water</option>
-                    <option value="Toilets">Toilets</option>
-                    <option value="Help Desk">Help Desk</option>
-                    <option value="Prasad">Prasad</option>
+                    <option value="Timings & Darshan">Timings & Darshan</option>
+                    <option value="Dress & Conduct">Dress & Conduct</option>
+                    <option value="Photography Rules">Photography Rules</option>
+                    <option value="Accessibility">Accessibility</option>
+                    <option value="Sacred Offerings">Sacred Offerings</option>
+                    <option value="General Guidelines">General Guidelines</option>
                   </select>
                 </div>
+
                 <div>
-                  <label className="block font-semibold text-stone-700 mb-1">Premises Location</label>
-                  <input
-                    type="text"
-                    placeholder="e.g. East Gate Torana"
-                    value={facilityForm.location}
-                    onChange={(e) => setFacilityForm({ ...facilityForm, location: e.target.value })}
-                    className="w-full border border-stone-300 rounded-lg px-3 py-2 bg-stone-50 focus:outline-none focus:border-[#800000]"
-                  />
+                  <label className="block font-semibold text-stone-700 mb-1">Devotee Portal Visibility</label>
+                  <select
+                    value={guidelineForm.status}
+                    onChange={(e) => setGuidelineForm({ ...guidelineForm, status: e.target.value })}
+                    className="w-full border border-stone-300 rounded-lg px-3 py-2 bg-stone-50 focus:outline-none focus:border-[#55132D]"
+                  >
+                    <option value="Published">Published (Live)</option>
+                    <option value="Draft">Draft (Hidden)</option>
+                  </select>
                 </div>
               </div>
 
               <div>
-                <label className="block font-semibold text-stone-700 mb-1">Public Description</label>
+                <label className="block font-semibold text-stone-700 mb-1">Guidance Instructions *</label>
                 <textarea
-                  rows={2}
-                  placeholder="Facility specifications for visiting devotees..."
-                  value={facilityForm.publicDescription}
-                  onChange={(e) => setFacilityForm({ ...facilityForm, publicDescription: e.target.value })}
-                  className="w-full border border-stone-300 rounded-lg px-3 py-2 bg-stone-50 focus:outline-none focus:border-[#800000]"
+                  rows={3}
+                  required
+                  placeholder="Official advisory instructions for visiting yatris..."
+                  value={guidelineForm.content}
+                  onChange={(e) => setGuidelineForm({ ...guidelineForm, content: e.target.value })}
+                  className="w-full border border-stone-300 rounded-lg px-3 py-2 bg-stone-50 focus:outline-none focus:border-[#55132D]"
                 />
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block font-semibold text-stone-700 mb-1">Operating Hours</label>
-                  <input
-                    type="text"
-                    value={facilityForm.operatingHours}
-                    onChange={(e) => setFacilityForm({ ...facilityForm, operatingHours: e.target.value })}
-                    className="w-full border border-stone-300 rounded-lg px-3 py-2 bg-stone-50 focus:outline-none focus:border-[#800000]"
-                  />
-                </div>
-                <div>
-                  <label className="block font-semibold text-stone-700 mb-1">Inquiry Contact</label>
-                  <input
-                    type="text"
-                    placeholder="e.g. Help Desk Ext 101"
-                    value={facilityForm.contactInfo}
-                    onChange={(e) => setFacilityForm({ ...facilityForm, contactInfo: e.target.value })}
-                    className="w-full border border-stone-300 rounded-lg px-3 py-2 bg-stone-50 focus:outline-none focus:border-[#800000]"
-                  />
-                </div>
               </div>
 
               <div className="pt-3 border-t border-stone-200 flex items-center justify-end gap-2">
                 <button
                   type="button"
-                  onClick={() => setIsFacilityModalOpen(false)}
-                  className="px-3 py-2 border border-stone-300 text-stone-700 font-semibold rounded-lg hover:bg-stone-100"
+                  onClick={() => setIsGuidelineModalOpen(false)}
+                  className="px-3.5 py-2 border border-stone-300 text-stone-700 font-semibold rounded-lg hover:bg-stone-100 cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-[#800000] hover:bg-[#660000] text-white font-semibold rounded-lg shadow-sm"
+                  className="px-4 py-2 bg-[#55132D] hover:bg-[#681B37] text-white font-semibold rounded-lg shadow-2xs cursor-pointer"
                 >
-                  Save Facility
+                  {editingGuideline ? 'Save Updates' : 'Publish Guideline'}
                 </button>
               </div>
             </form>
@@ -1063,24 +1100,98 @@ export default function VisitGuide() {
         </div>
       )}
 
-      {/* MODAL: ADD FAQ */}
-      {isFaqModalOpen && (
+      {/* MODAL: EDIT TRANSIT OPTION */}
+      {isTransitModalOpen && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl max-w-md w-full overflow-hidden shadow-2xl border border-stone-200">
             <div className="px-5 py-4 bg-stone-50 border-b border-stone-200 flex items-center justify-between">
               <div>
-                <h3 className="text-sm font-bold text-stone-900">Add Devotee FAQ</h3>
-                <p className="text-xs text-stone-500">Provide authoritative answer for public portal.</p>
+                <h3 className="text-sm font-bold text-stone-900 font-serif">Edit Transit Option</h3>
+                <p className="text-xs text-stone-500">Route guidance displayed in How to Reach.</p>
               </div>
               <button
-                onClick={() => setIsFaqModalOpen(false)}
-                className="p-1 rounded-lg hover:bg-stone-200 text-stone-500"
+                onClick={() => setIsTransitModalOpen(false)}
+                className="p-1 rounded-lg hover:bg-stone-200 text-stone-500 cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
-            <form onSubmit={handleCreateFaqSubmit} className="p-5 space-y-3.5 text-xs">
+            <form onSubmit={handleTransitSubmit} className="p-5 space-y-3.5 text-xs">
+              <div>
+                <label className="block font-semibold text-stone-700 mb-1">Transit Title / Station *</label>
+                <input
+                  type="text"
+                  required
+                  value={transitForm.title}
+                  onChange={(e) => setTransitForm({ ...transitForm, title: e.target.value })}
+                  className="w-full border border-stone-300 rounded-lg px-3 py-2 bg-stone-50 focus:outline-none focus:border-[#55132D]"
+                />
+              </div>
+
+              <div>
+                <label className="block font-semibold text-stone-700 mb-1">Distance &amp; Time Tag *</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. 55 km · ~1.5 hrs via NH-8"
+                  value={transitForm.tag}
+                  onChange={(e) => setTransitForm({ ...transitForm, tag: e.target.value })}
+                  className="w-full border border-stone-300 rounded-lg px-3 py-2 bg-stone-50 focus:outline-none focus:border-[#55132D]"
+                />
+              </div>
+
+              <div>
+                <label className="block font-semibold text-stone-700 mb-1">Transit Details &amp; Options *</label>
+                <textarea
+                  rows={3}
+                  required
+                  value={transitForm.description}
+                  onChange={(e) => setTransitForm({ ...transitForm, description: e.target.value })}
+                  className="w-full border border-stone-300 rounded-lg px-3 py-2 bg-stone-50 focus:outline-none focus:border-[#55132D]"
+                />
+              </div>
+
+              <div className="pt-3 border-t border-stone-200 flex items-center justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={() => setIsTransitModalOpen(false)}
+                  className="px-3.5 py-2 border border-stone-300 text-stone-700 font-semibold rounded-lg hover:bg-stone-100 cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 bg-[#55132D] hover:bg-[#681B37] text-white font-semibold rounded-lg shadow-2xs cursor-pointer"
+                >
+                  Save Transit Option
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL: CONFIGURE FAQ (ADD & EDIT) */}
+      {isFaqModalOpen && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl max-w-md w-full overflow-hidden shadow-2xl border border-stone-200">
+            <div className="px-5 py-4 bg-stone-50 border-b border-stone-200 flex items-center justify-between">
+              <div>
+                <h3 className="text-sm font-bold text-stone-900 font-serif">
+                  {editingFaq ? 'Edit Devotee FAQ' : 'Add Devotee FAQ'}
+                </h3>
+                <p className="text-xs text-stone-500">Provide authoritative answer for public portal.</p>
+              </div>
+              <button
+                onClick={() => setIsFaqModalOpen(false)}
+                className="p-1 rounded-lg hover:bg-stone-200 text-stone-500 cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <form onSubmit={handleFaqSubmit} className="p-5 space-y-3.5 text-xs">
               <div>
                 <label className="block font-semibold text-stone-700 mb-1">Devotee Question *</label>
                 <input
@@ -1089,25 +1200,39 @@ export default function VisitGuide() {
                   placeholder="e.g. Can elderly pilgrims book wheelchair assistance in advance?"
                   value={faqForm.question}
                   onChange={(e) => setFaqForm({ ...faqForm, question: e.target.value })}
-                  className="w-full border border-stone-300 rounded-lg px-3 py-2 bg-stone-50 focus:outline-none focus:border-[#800000]"
+                  className="w-full border border-stone-300 rounded-lg px-3 py-2 bg-stone-50 focus:outline-none focus:border-[#55132D]"
                 />
               </div>
 
-              <div>
-                <label className="block font-semibold text-stone-700 mb-1">FAQ Category</label>
-                <select
-                  value={faqForm.category}
-                  onChange={(e) => setFaqForm({ ...faqForm, category: e.target.value })}
-                  className="w-full border border-stone-300 rounded-lg px-3 py-2 bg-stone-50 focus:outline-none focus:border-[#800000]"
-                >
-                  <option value="General Visit">General Visit</option>
-                  <option value="Darshan">Darshan</option>
-                  <option value="Travel">Travel</option>
-                  <option value="Facilities">Facilities</option>
-                  <option value="Accommodation">Accommodation</option>
-                  <option value="Donations">Donations</option>
-                  <option value="Accessibility">Accessibility</option>
-                </select>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block font-semibold text-stone-700 mb-1">FAQ Category</label>
+                  <select
+                    value={faqForm.category}
+                    onChange={(e) => setFaqForm({ ...faqForm, category: e.target.value })}
+                    className="w-full border border-stone-300 rounded-lg px-3 py-2 bg-stone-50 focus:outline-none focus:border-[#55132D]"
+                  >
+                    <option value="General Visit">General Visit</option>
+                    <option value="Darshan">Darshan</option>
+                    <option value="Travel">Travel</option>
+                    <option value="Facilities">Facilities</option>
+                    <option value="Accommodation">Accommodation</option>
+                    <option value="Donations">Donations</option>
+                    <option value="Accessibility">Accessibility</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block font-semibold text-stone-700 mb-1">Portal Visibility</label>
+                  <select
+                    value={faqForm.status}
+                    onChange={(e) => setFaqForm({ ...faqForm, status: e.target.value })}
+                    className="w-full border border-stone-300 rounded-lg px-3 py-2 bg-stone-50 focus:outline-none focus:border-[#55132D]"
+                  >
+                    <option value="Published">Published (Live)</option>
+                    <option value="Draft">Draft (Hidden)</option>
+                  </select>
+                </div>
               </div>
 
               <div>
@@ -1118,7 +1243,7 @@ export default function VisitGuide() {
                   placeholder="Official guidance according to temple trust guidelines..."
                   value={faqForm.answer}
                   onChange={(e) => setFaqForm({ ...faqForm, answer: e.target.value })}
-                  className="w-full border border-stone-300 rounded-lg px-3 py-2 bg-stone-50 focus:outline-none focus:border-[#800000]"
+                  className="w-full border border-stone-300 rounded-lg px-3 py-2 bg-stone-50 focus:outline-none focus:border-[#55132D]"
                 />
               </div>
 
@@ -1126,15 +1251,15 @@ export default function VisitGuide() {
                 <button
                   type="button"
                   onClick={() => setIsFaqModalOpen(false)}
-                  className="px-3 py-2 border border-stone-300 text-stone-700 font-semibold rounded-lg hover:bg-stone-100"
+                  className="px-3.5 py-2 border border-stone-300 text-stone-700 font-semibold rounded-lg hover:bg-stone-100 cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-[#800000] hover:bg-[#660000] text-white font-semibold rounded-lg shadow-sm"
+                  className="px-4 py-2 bg-[#55132D] hover:bg-[#681B37] text-white font-semibold rounded-lg shadow-2xs cursor-pointer"
                 >
-                  Publish FAQ
+                  {editingFaq ? 'Save Updates' : 'Publish FAQ'}
                 </button>
               </div>
             </form>

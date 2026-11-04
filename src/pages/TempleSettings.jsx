@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import {
   Settings,
+  ShieldCheck,
   Sliders,
   DollarSign,
   Bell,
@@ -19,6 +21,7 @@ import {
   Info
 } from 'lucide-react';
 import { useInsightsAdmin } from '../context/InsightsAdminContext';
+import UsersRoles from './UsersRoles';
 
 export default function TempleSettings() {
   const {
@@ -27,6 +30,16 @@ export default function TempleSettings() {
     resetAllDemoData,
     showToast,
   } = useInsightsAdmin();
+
+  const [searchParams, setSearchParams] = useSearchParams();
+  const urlTab = searchParams.get('tab');
+  const initialNavTab = urlTab === 'rbac' || urlTab === 'users' || urlTab === 'roles' ? 'rbac' : 'settings';
+  const [mainNavTab, setMainNavTab] = useState(initialNavTab);
+
+  const handleMainNavChange = (tab) => {
+    setMainNavTab(tab);
+    setSearchParams({ tab });
+  };
 
   const [activeTab, setActiveTab] = useState('general');
   const [localSettings, setLocalSettings] = useState(templeSettings);
@@ -81,28 +94,56 @@ export default function TempleSettings() {
 
   return (
     <div className="space-y-5 pb-8">
-      {/* Header */}
-      <div className="bg-white rounded-xl border border-stone-200 p-4 shadow-xs">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
-          <div>
-            <h1 className="text-xl font-bold text-stone-900 tracking-tight font-serif">
-              Temple Master Settings
-            </h1>
-          </div>
+      {/* Header with Navigation Bar: Settings & RBAC */}
+      <div className="bg-white rounded-2xl border border-stone-200/90 p-5 sm:p-6 shadow-2xs flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-xl sm:text-2xl font-bold text-stone-900 tracking-tight font-serif">
+            {mainNavTab === 'rbac' ? 'Role-Based Access Control (RBAC)' : 'Temple Settings'}
+          </h1>
+        </div>
 
-          {hasChanges && (
+        <div className="flex items-center gap-3">
+          {mainNavTab === 'settings' && hasChanges && (
             <button
               onClick={() => handleSaveSection(activeTab)}
-              className="px-4 py-2 bg-[#800000] hover:bg-[#660000] text-white text-xs font-semibold rounded-lg shadow-sm flex items-center gap-1.5 transition-colors self-start md:self-auto animate-pulse"
+              className="px-4 py-2 bg-[#55132D] hover:bg-[#681B37] text-white text-xs font-semibold rounded-lg shadow-sm flex items-center gap-1.5 transition-colors self-start md:self-auto animate-pulse cursor-pointer"
             >
               <Save className="w-3.5 h-3.5" />
-              Save Configuration
+              <span>Save Configuration</span>
             </button>
           )}
+
+          {/* Navigation Bar: Settings & RBAC */}
+          <div className="flex items-center gap-1.5 p-1 bg-stone-100/90 rounded-xl border border-stone-200/80 shrink-0 overflow-x-auto custom-scrollbar">
+            <button
+              onClick={() => handleMainNavChange('settings')}
+              className={`px-4 py-2 text-xs font-bold rounded-lg transition-all flex items-center gap-2 whitespace-nowrap cursor-pointer ${
+                mainNavTab === 'settings'
+                  ? 'bg-[#55132D] text-white shadow-xs'
+                  : 'text-stone-600 hover:text-stone-900'
+              }`}
+            >
+              <Settings className="w-3.5 h-3.5 text-stone-400" />
+              <span>Settings</span>
+            </button>
+
+            <button
+              onClick={() => handleMainNavChange('rbac')}
+              className={`px-4 py-2 text-xs font-bold rounded-lg transition-all flex items-center gap-2 whitespace-nowrap cursor-pointer ${
+                mainNavTab === 'rbac'
+                  ? 'bg-[#55132D] text-white shadow-xs'
+                  : 'text-stone-600 hover:text-stone-900'
+              }`}
+            >
+              <ShieldCheck className="w-3.5 h-3.5 text-blue-500" />
+              <span>RBAC</span>
+            </button>
+          </div>
         </div>
       </div>
 
-      {/* Main Settings Layout: Left Nav + Right Content */}
+      {mainNavTab === 'settings' && (
+      /* Main Settings Layout: Left Nav + Right Content */
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-start">
         {/* Left Settings Sidebar Navigation */}
         <div className="bg-white rounded-xl border border-stone-200 p-2 shadow-xs space-y-1">
@@ -113,11 +154,10 @@ export default function TempleSettings() {
               <button
                 key={item.id}
                 onClick={() => setActiveTab(item.id)}
-                className={`w-full text-left p-3.5 rounded-xl text-sm font-medium transition-all flex items-start gap-3.5 ${
-                  isActive
-                    ? 'bg-[#55132D] text-white shadow-xs'
-                    : 'text-stone-700 hover:bg-stone-50'
-                }`}
+                className={`w-full text-left p-3.5 rounded-xl text-sm font-medium transition-all flex items-start gap-3.5 ${isActive
+                  ? 'bg-[#55132D] text-white shadow-xs'
+                  : 'text-stone-700 hover:bg-stone-50'
+                  }`}
               >
                 <Icon className={`w-5 h-5 shrink-0 mt-0.5 ${isActive ? 'text-amber-300' : 'text-stone-400'}`} />
                 <div className="min-w-0">
@@ -487,6 +527,14 @@ export default function TempleSettings() {
           </div>
         </div>
       </div>
+      )}
+
+      {/* Tab 2: Role-Based Access Control (RBAC) */}
+      {mainNavTab === 'rbac' && (
+        <div className="space-y-4">
+          <UsersRoles />
+        </div>
+      )}
     </div>
   );
 }

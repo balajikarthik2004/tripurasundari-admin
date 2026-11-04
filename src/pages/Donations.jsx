@@ -16,6 +16,7 @@ import {
   Sparkles,
   ChevronRight,
   PieChart as PieChartIcon,
+  CreditCard,
 } from 'lucide-react';
 import {
   AreaChart,
@@ -48,6 +49,8 @@ export default function Donations() {
   } = useDevoteeServices();
 
   const [activeTab, setActiveTab] = useState('overview');
+  const [donationSubView, setDonationSubView] = useState('donations'); // 'donations' or 'sponsorships'
+  const [receiptSubView, setReceiptSubView] = useState('receipts'); // 'receipts' or 'funds'
   const [searchTerm, setSearchTerm] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('All');
   const [statusFilter, setStatusFilter] = useState('All');
@@ -142,20 +145,18 @@ export default function Donations() {
     { day: '31 Oct', amount: 109601 },
   ];
 
+  // Strictly 3 primary tabs
   const tabsConfig = [
     { id: 'overview', label: 'Overview', icon: HeartHandshake },
-    { id: 'donations', label: 'Donations Register', icon: DollarSign, badge: donations.length },
-    { id: 'sponsorships', label: 'Sponsorship Programs', icon: Award, badge: sponsorships.length },
-    { id: 'receipts', label: 'Receipts Directory', icon: FileCheck },
-    { id: 'categories', label: 'Earmarked Funds', icon: Layers },
+    { id: 'donations-sponsorships', label: 'Donations & Sponsorships', icon: DollarSign },
+    { id: 'receipts-funds', label: 'Receipts & Funds', icon: FileCheck },
   ];
 
   return (
     <div className="space-y-5 pb-10">
       {/* Page Header */}
       <ModulePageHeader
-        title="Donations & Sponsorships Administration"
-        subtitle="Record temple contributions, earmarked trust funds, sponsorship programs and verified electronic vouchers"
+        title="Donations & Funds Administration"
         primaryActionLabel="Record Donation"
         onPrimaryAction={() => setIsRecordDonationOpen(true)}
         primaryActionIcon={HeartHandshake}
@@ -179,22 +180,19 @@ export default function Donations() {
             <ModuleMetricCard
               label="Verified Receipts"
               value={metrics.verifiedTransactions}
-              subtitle="All vouchers generated"
               icon={CheckCircle2}
               iconBg="bg-emerald-50 text-emerald-700"
             />
             <ModuleMetricCard
               label="Pending Audit Review"
               value={metrics.pendingTransactions}
-              subtitle="POS clearance check"
               icon={Clock}
               iconBg="bg-amber-50 text-amber-700"
-              onClick={() => setActiveTab('donations')}
+              onClick={() => { setActiveTab('donations-sponsorships'); setDonationSubView('donations'); }}
             />
             <ModuleMetricCard
               label="Sponsorship Programs"
               value={`₹${metrics.totalSponsorshipsAmount.toLocaleString('en-IN')}`}
-              subtitle={`${sponsorships.length} patrons committed`}
               icon={Award}
               iconBg="bg-blue-50 text-blue-700"
               onClick={() => setActiveTab('sponsorships')}
@@ -202,62 +200,43 @@ export default function Donations() {
             <ModuleMetricCard
               label="Earmarked Categories"
               value={donationCategories.length}
-              subtitle="Active trust funds"
               icon={Layers}
               iconBg="bg-purple-50 text-purple-700"
               onClick={() => setActiveTab('categories')}
             />
           </div>
 
-          {/* Row 2: Charts */}
+          {/* Row 2: Charts & Allocations */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
             {/* Earmarked Trust Funds & Sacred Endowments (2 Cols) */}
             <div className="lg:col-span-2 bg-white rounded-xl p-4 sm:p-5 border border-stone-200/80 shadow-xs flex flex-col justify-between">
               <div>
-                <div className="flex items-center justify-between mb-3 pb-2.5 border-b border-stone-200/70">
-                  <div>
-                    <h3 className="text-sm font-bold text-stone-900 font-serif">
-                      Earmarked Trust Fund Allocation &amp; Sacred Endowments
-                    </h3>
-                  </div>
+                <div className="flex items-center justify-between mb-4 pb-2.5 border-b border-stone-150">
+                  <h3 className="text-sm font-bold text-stone-900">
+                    Earmarked Trust Fund Allocation
+                  </h3>
+                  <span className="text-xs font-semibold text-stone-500 font-mono">
+                    5 Endowments • ₹12,48,350 Total
+                  </span>
                 </div>
 
-                {/* Channel Distribution Mini-strip */}
-                <div className="mb-4 grid grid-cols-3 gap-2 text-center text-xs">
-                  <div className="p-2 rounded-lg bg-stone-50 border border-stone-100">
-                    <div className="text-[10px] uppercase font-bold text-stone-500">UPI / QR Counter</div>
-                    <div className="font-number font-bold text-stone-900 text-sm mt-0.5">64%</div>
-                  </div>
-                  <div className="p-2 rounded-lg bg-stone-50 border border-stone-100">
-                    <div className="text-[10px] uppercase font-bold text-stone-500">Bank NEFT / RTGS</div>
-                    <div className="font-number font-bold text-stone-900 text-sm mt-0.5">22%</div>
-                  </div>
-                  <div className="p-2 rounded-lg bg-stone-50 border border-stone-100">
-                    <div className="text-[10px] uppercase font-bold text-stone-500">Physical Hundi &amp; Cash</div>
-                    <div className="font-number font-bold text-[#55132D] text-sm mt-0.5">14%</div>
-                  </div>
-                </div>
-
-                {/* Fund Allocation Bars */}
+                {/* Fund Allocation Clean Rows */}
                 <div className="space-y-3.5 my-1">
                   {[
-                    { name: 'Nitya Annadanam Free Meals Fund', amount: '₹4,49,400', pct: 36, color: 'bg-[#55132D]', desc: 'Daily Pilgrim Community Dining' },
-                    { name: 'Sanctum Heritage & Shikhara Conservation', amount: '₹3,24,570', pct: 26, color: 'bg-amber-600', desc: 'Temple Architectural Preservation' },
-                    { name: 'Sacred Kalyansagar Lake & Bostami Turtle Habitat', amount: '₹1,99,730', pct: 16, color: 'bg-teal-600', desc: 'Ecological & Lake Ghat Safety' },
-                    { name: 'Veda Pathshala & Purohit Welfare Trust', amount: '₹1,49,800', pct: 12, color: 'bg-purple-600', desc: 'Vedic Learning & Priest Healthcare' },
-                    { name: 'Pilgrim Yatri Niwas & Rest Pavilions', amount: '₹1,24,850', pct: 10, color: 'bg-blue-600', desc: 'Shelters & Clean Drinking Water' },
+                    { name: 'Nitya Annadanam Free Meals', amount: '₹4,49,400', pct: 36, color: 'bg-[#55132D]' },
+                    { name: 'Sanctum Heritage & Conservation', amount: '₹3,24,570', pct: 26, color: 'bg-amber-600' },
+                    { name: 'Kalyansagar Lake Preservation', amount: '₹1,99,730', pct: 16, color: 'bg-teal-600' },
+                    { name: 'Veda Pathshala & Priest Welfare', amount: '₹1,49,800', pct: 12, color: 'bg-purple-600' },
+                    { name: 'Pilgrim Yatri Niwas & Rest Pavilions', amount: '₹1,24,850', pct: 10, color: 'bg-blue-600' },
                   ].map((fund, idx) => (
-                    <div key={idx} className="space-y-1">
+                    <div key={idx} className="space-y-1.5">
                       <div className="flex justify-between items-center text-xs">
-                        <div className="flex items-center gap-2">
-                          <span className="font-semibold text-stone-800">{fund.name}</span>
-                          <span className="text-[10px] text-stone-400 font-medium">({fund.desc})</span>
-                        </div>
+                        <span className="font-semibold text-stone-800">{fund.name}</span>
                         <span className="font-bold text-stone-900 font-number">
                           {fund.amount} <span className="text-stone-500 font-normal">({fund.pct}%)</span>
                         </span>
                       </div>
-                      <div className="w-full h-2 rounded-full bg-stone-100 overflow-hidden">
+                      <div className="w-full h-1.5 rounded-full bg-stone-100 overflow-hidden">
                         <div
                           className={`h-full rounded-full transition-all duration-500 ${fund.color}`}
                           style={{ width: `${fund.pct}%` }}
@@ -269,31 +248,41 @@ export default function Donations() {
               </div>
             </div>
 
-            {/* Distribution Donut */}
-            <div className="bg-white rounded-xl p-4 border border-stone-200/80 shadow-xs flex flex-col justify-between">
+            {/* Payment Channels & Mode Breakdown */}
+            <div className="bg-white rounded-xl p-4 sm:p-5 border border-stone-200/80 shadow-xs flex flex-col justify-between">
               <div>
-                <div className="flex items-center justify-between mb-3">
-                  <h3 className="text-sm font-bold text-stone-900 font-serif">Category Allocation</h3>
-                  <PieChartIcon className="w-4 h-4 text-stone-400" />
+                <div className="flex items-center justify-between mb-3 pb-2.5 border-b border-stone-150">
+                  <h3 className="text-sm font-bold text-stone-900">Payment Channels</h3>
+                  <CreditCard className="w-4 h-4 text-stone-400" />
                 </div>
 
-                <div className="h-44 w-full">
+                {/* Donut Chart */}
+                <div className="h-40 w-full">
                   <ResponsiveContainer width="100%" height="100%">
                     <PieChart>
                       <Pie
-                        data={distributionData}
+                        data={[
+                          { name: 'UPI & QR Counter', value: 70144, color: '#55132D' },
+                          { name: 'Bank NEFT / RTGS', value: 24112, color: '#B68A36' },
+                          { name: 'Physical Hundi & Cash', value: 15345, color: '#2563EB' },
+                        ]}
                         cx="50%"
                         cy="50%"
-                        innerRadius={45}
-                        outerRadius={68}
+                        innerRadius={44}
+                        outerRadius={66}
                         paddingAngle={3}
                         dataKey="value"
                       >
-                        {distributionData.map((entry, index) => (
+                        {[
+                          { color: '#55132D' },
+                          { color: '#B68A36' },
+                          { color: '#2563EB' },
+                        ].map((entry, index) => (
                           <Cell key={`cell-${index}`} fill={entry.color} />
                         ))}
                       </Pie>
                       <Tooltip
+                        formatter={(val) => `₹${Number(val).toLocaleString('en-IN')}`}
                         contentStyle={{
                           backgroundColor: '#ffffff',
                           border: '1px solid #e7e5e4',
@@ -305,24 +294,32 @@ export default function Donations() {
                   </ResponsiveContainer>
                 </div>
 
-                <div className="space-y-1.5 pt-2 border-t border-stone-100 text-xs">
-                  {distributionData.slice(0, 3).map((item) => (
-                    <div key={item.name} className="flex items-center justify-between text-[11px]">
+                {/* Channel Breakdown Legend */}
+                <div className="space-y-2 pt-2 border-t border-stone-150 text-xs">
+                  {[
+                    { name: 'UPI & QR Counter', pct: '64%', amount: '₹70,144', color: '#55132D' },
+                    { name: 'Bank NEFT / RTGS', pct: '22%', amount: '₹24,112', color: '#B68A36' },
+                    { name: 'Physical Hundi & Cash', pct: '14%', amount: '₹15,345', color: '#2563EB' },
+                  ].map((ch) => (
+                    <div key={ch.name} className="flex items-center justify-between text-[11px]">
                       <div className="flex items-center gap-1.5 truncate pr-2">
-                        <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: item.color }} />
-                        <span className="text-stone-700 truncate">{item.name}</span>
+                        <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: ch.color }} />
+                        <span className="text-stone-700 font-medium truncate">{ch.name}</span>
                       </div>
-                      <span className="font-number font-bold text-stone-900 whitespace-nowrap">₹{item.value.toLocaleString('en-IN')}</span>
+                      <div className="flex items-center gap-1.5 font-number font-bold text-stone-900 whitespace-nowrap">
+                        <span className="text-stone-500 font-normal">({ch.pct})</span>
+                        <span>{ch.amount}</span>
+                      </div>
                     </div>
                   ))}
                 </div>
               </div>
 
               <button
-                onClick={() => setActiveTab('donations')}
-                className="mt-3 pt-2 border-t border-stone-100 text-xs font-semibold text-[#55132D] hover:underline flex items-center justify-between"
+                onClick={() => { setActiveTab('donations-sponsorships'); setDonationSubView('donations'); }}
+                className="mt-3 pt-2.5 border-t border-stone-150 text-xs font-semibold text-[#55132D] hover:underline flex items-center justify-between w-full cursor-pointer"
               >
-                <span>View Full Register</span>
+                <span>View Full Donations Register</span>
                 <ChevronRight className="w-4 h-4" />
               </button>
             </div>
@@ -330,9 +327,35 @@ export default function Donations() {
         </div>
       )}
 
-      {/* TAB 2: DONATIONS REGISTER */}
-      {activeTab === 'donations' && (
+      
+      {/* TAB 2: DONATIONS & SPONSORSHIPS */}
+      {activeTab === 'donations-sponsorships' && (
         <div className="space-y-4">
+          <div className="flex items-center gap-1.5 p-1 bg-stone-100 rounded-lg w-fit border border-stone-200">
+            <button
+              onClick={() => setDonationSubView('donations')}
+              className={`px-4 py-1.5 text-xs font-semibold rounded-md transition-all ${
+                donationSubView === 'donations'
+                  ? 'bg-white text-[#55132D] shadow-xs font-bold'
+                  : 'text-stone-600 hover:text-stone-900'
+              }`}
+            >
+              Donations Register ({donations.length})
+            </button>
+            <button
+              onClick={() => setDonationSubView('sponsorships')}
+              className={`px-4 py-1.5 text-xs font-semibold rounded-md transition-all ${
+                donationSubView === 'sponsorships'
+                  ? 'bg-white text-[#55132D] shadow-xs font-bold'
+                  : 'text-stone-600 hover:text-stone-900'
+              }`}
+            >
+              Sponsorship Programs ({sponsorships.length})
+            </button>
+          </div>
+
+          {donationSubView === 'donations' && (
+            <div className="space-y-4">
           <div className="bg-white rounded-xl p-4 border border-stone-200/80 shadow-xs flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
             <div className="relative flex-1">
               <Search className="w-4 h-4 text-stone-400 absolute left-3 top-1/2 -translate-y-1/2" />
@@ -469,11 +492,10 @@ export default function Donations() {
             </div>
           </div>
         </div>
-      )}
+          )}
 
-      {/* TAB 3: SPONSORSHIPS */}
-      {activeTab === 'sponsorships' && (
-        <div className="space-y-4">
+          {donationSubView === 'sponsorships' && (
+            <div className="space-y-4">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-white rounded-xl p-4 border border-stone-200/80 shadow-xs">
             <div>
               <h3 className="text-sm font-bold text-stone-900 font-serif">
@@ -536,11 +558,38 @@ export default function Donations() {
             ))}
           </div>
         </div>
+          )}
+        </div>
       )}
 
-      {/* TAB 4: RECEIPTS DIRECTORY */}
-      {activeTab === 'receipts' && (
+      {/* TAB 3: RECEIPTS & FUNDS */}
+      {activeTab === 'receipts-funds' && (
         <div className="space-y-4">
+          <div className="flex items-center gap-1.5 p-1 bg-stone-100 rounded-lg w-fit border border-stone-200">
+            <button
+              onClick={() => setReceiptSubView('receipts')}
+              className={`px-4 py-1.5 text-xs font-semibold rounded-md transition-all ${
+                receiptSubView === 'receipts'
+                  ? 'bg-white text-[#55132D] shadow-xs font-bold'
+                  : 'text-stone-600 hover:text-stone-900'
+              }`}
+            >
+              Receipts Directory
+            </button>
+            <button
+              onClick={() => setReceiptSubView('funds')}
+              className={`px-4 py-1.5 text-xs font-semibold rounded-md transition-all ${
+                receiptSubView === 'funds'
+                  ? 'bg-white text-[#55132D] shadow-xs font-bold'
+                  : 'text-stone-600 hover:text-stone-900'
+              }`}
+            >
+              Earmarked Trust Funds ({donationCategories.length})
+            </button>
+          </div>
+
+          {receiptSubView === 'receipts' && (
+            <div className="space-y-4">
           <div className="bg-white rounded-xl p-4 border border-stone-200/80 shadow-xs flex items-center justify-between">
             <div>
               <h3 className="text-sm font-bold text-stone-900 font-serif">Electronic Receipt Register</h3>
@@ -586,11 +635,10 @@ export default function Donations() {
             ))}
           </div>
         </div>
-      )}
+          )}
 
-      {/* TAB 5: CATEGORIES & CONFIGURATION */}
-      {activeTab === 'categories' && (
-        <div className="space-y-4">
+          {receiptSubView === 'funds' && (
+            <div className="space-y-4">
           <div className="bg-white rounded-xl p-4 border border-stone-200/80 shadow-xs">
             <h3 className="text-sm font-bold text-stone-900 font-serif">Configured Earmarked Trust Funds</h3>
           </div>
@@ -620,6 +668,8 @@ export default function Donations() {
               </div>
             ))}
           </div>
+        </div>
+          )}
         </div>
       )}
 

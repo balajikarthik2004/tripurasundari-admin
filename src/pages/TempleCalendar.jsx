@@ -1,12 +1,11 @@
 import React from 'react';
 import {
   CalendarHeader,
-  CalendarPlanningSummary,
   CalendarMonthView,
   CalendarWeekView,
   CalendarDayView,
   CalendarAgendaView,
-  CalendarSelectedDatePanel,
+  CalendarDayDetailDrawer,
   CalendarAddScheduleModal,
 } from '../components/temple-operations/calendar';
 import { useTempleCalendar } from '../context/TempleCalendarContext';
@@ -16,7 +15,7 @@ export default function TempleCalendar() {
   const { view, calendarToast } = useTempleCalendar();
 
   return (
-    <div className="space-y-6 pb-14 select-none">
+    <div className="space-y-4 pb-12 select-none">
       {/* Toast Notification */}
       {calendarToast && (
         <div
@@ -35,27 +34,19 @@ export default function TempleCalendar() {
         </div>
       )}
 
-      {/* 1. Header (Clean & Minimal: Title, Subtitle, View Switcher & Add Schedule) */}
+      {/* 1. Header (Clean Temple Calendar + View Switcher + Actions) */}
       <CalendarHeader />
 
-      {/* 2. Top 4 Useful Summary Cards (Today's Duty, Today's Rituals, Next Occasion, Pending Tasks) */}
-      <CalendarPlanningSummary />
-
-      {/* 3. Main Two-Column Calendar Layout (Matches Reference Image) */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-        {/* Left Column: Calendar View (~70% width) */}
-        <div className="lg:col-span-8">
-          {view === 'month' && <CalendarMonthView />}
-          {view === 'week' && <CalendarWeekView />}
-          {view === 'day' && <CalendarDayView />}
-          {view === 'agenda' && <CalendarAgendaView />}
-        </div>
-
-        {/* Right Column: Selected Date Panel (~30% width) */}
-        <div className="lg:col-span-4">
-          <CalendarSelectedDatePanel />
-        </div>
+      {/* 2. Full-Width Calendar Views (Matches Reference Image) */}
+      <div className="w-full">
+        {view === 'month' && <CalendarMonthView />}
+        {view === 'week' && <CalendarWeekView />}
+        {view === 'day' && <CalendarDayView />}
+        {view === 'agenda' && <CalendarAgendaView />}
       </div>
+
+      {/* 3. Slide-in Day Detail Info Drawer (Triggered by tapping any cell) */}
+      <CalendarDayDetailDrawer />
 
       {/* 4. Add Schedule Modal */}
       <CalendarAddScheduleModal />

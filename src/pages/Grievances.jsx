@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import {
   MessageSquareText,
   AlertCircle,
@@ -23,7 +23,7 @@ import {
 } from 'lucide-react';
 import { useInsightsAdmin } from '../context/InsightsAdminContext';
 
-export default function Grievances() {
+export default function Grievances({ isEmbedded = false, initialTab = 'grievances' }) {
   const {
     grievances,
     addGrievance,
@@ -37,7 +37,13 @@ export default function Grievances() {
     showToast,
   } = useInsightsAdmin();
 
-  const [activeTab, setActiveTab] = useState('grievances');
+  const [activeTab, setActiveTab] = useState(initialTab);
+
+  useEffect(() => {
+    if (initialTab) {
+      setActiveTab(initialTab);
+    }
+  }, [initialTab]);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('ALL');
   const [selectedPriority, setSelectedPriority] = useState('ALL');
@@ -143,114 +149,26 @@ export default function Grievances() {
 
   return (
     <div className="space-y-5 pb-8">
-      {/* Header */}
-      <div className="bg-white rounded-2xl border border-stone-200/90 p-5 sm:p-6 shadow-2xs flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-stone-900 tracking-tight font-serif">
-            Grievances & Devotee Feedback
-          </h1>
-          <p className="text-xs text-stone-500 mt-1 leading-relaxed">
-            Review and resolve devotee concerns, monitor resolution SLA compliance, and analyze recurring issues.
-          </p>
-        </div>
-
-        <div className="flex items-center gap-2.5 shrink-0">
-          <button
-            onClick={() => setIsNewCaseModalOpen(true)}
-            className="px-4 py-2 bg-[#55132D] hover:bg-[#681B37] text-white text-xs font-semibold rounded-xl shadow-xs flex items-center gap-1.5 transition-all whitespace-nowrap active:scale-[0.98]"
-          >
-            <Plus className="w-3.5 h-3.5 text-[#E2BC6B]" />
-            <span>Log Devotee Grievance</span>
-          </button>
-        </div>
-      </div>
-
-      {/* KPI Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
-        <div className="bg-white rounded-2xl border border-stone-200/90 p-5 shadow-2xs hover:shadow-xs hover:border-stone-300 transition-all flex flex-col justify-between">
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-[11px] font-bold text-stone-400 uppercase tracking-wider">Open Cases</span>
-            <div className="w-8 h-8 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center">
-              <AlertCircle className="w-4 h-4" />
-            </div>
-          </div>
+      {/* Header (Hidden when embedded) */}
+      {!isEmbedded && (
+        <div className="bg-white rounded-2xl border border-stone-200/90 p-5 sm:p-6 shadow-2xs flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <div className="text-2xl sm:text-3xl font-bold font-serif text-stone-900 tracking-tight leading-tight">{openCases.length}</div>
-            <span className="text-xs text-stone-500 mt-1.5 block font-medium">Unresolved devotee complaints</span>
+            <h1 className="text-xl sm:text-2xl font-bold text-stone-900 tracking-tight font-serif">
+              Grievances & Devotee Feedback
+            </h1>
           </div>
-        </div>
 
-        <div className="bg-white rounded-2xl border border-stone-200/90 p-5 shadow-2xs hover:shadow-xs hover:border-stone-300 transition-all flex flex-col justify-between">
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-[11px] font-bold text-stone-400 uppercase tracking-wider">High / Critical</span>
-            <div className="w-8 h-8 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center">
-              <AlertTriangle className="w-4 h-4" />
-            </div>
-          </div>
-          <div>
-            <div className="text-2xl sm:text-3xl font-bold font-serif text-rose-700 tracking-tight leading-tight">{highPriorityCases.length}</div>
-            <span className="text-xs text-stone-500 mt-1.5 block font-medium">Immediate administrative action</span>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-2xl border border-stone-200/90 p-5 shadow-2xs hover:shadow-xs hover:border-stone-300 transition-all flex flex-col justify-between">
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-[11px] font-bold text-stone-400 uppercase tracking-wider">Resolved Cases</span>
-            <div className="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
-              <CheckCircle className="w-4 h-4" />
-            </div>
-          </div>
-          <div>
-            <div className="text-2xl sm:text-3xl font-bold font-serif text-emerald-700 tracking-tight leading-tight">{resolvedCases.length}</div>
-            <span className="text-xs text-stone-500 mt-1.5 block font-medium">Successfully investigated & closed</span>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-2xl border border-stone-200/90 p-5 shadow-2xs hover:shadow-xs hover:border-stone-300 transition-all flex flex-col justify-between">
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-[11px] font-bold text-stone-400 uppercase tracking-wider">Avg Resolution Time</span>
-            <div className="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
-              <Clock className="w-4 h-4" />
-            </div>
-          </div>
-          <div>
-            <div className="text-2xl sm:text-3xl font-bold font-serif text-stone-900 tracking-tight leading-tight">4.2 Hours</div>
-            <span className="text-xs text-stone-500 mt-1.5 block font-medium">Standard response SLA compliance</span>
-          </div>
-        </div>
-      </div>
-
-      {/* Internal Tabs */}
-      <div className="flex items-center gap-2 border border-stone-200/80 bg-white/70 backdrop-blur-xs p-1.5 rounded-2xl shadow-2xs overflow-x-auto custom-scrollbar w-full">
-        {tabs.map((tab) => {
-          const isActive = activeTab === tab.id;
-          const Icon = tab.icon;
-          return (
+          <div className="flex items-center gap-2.5 shrink-0">
             <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`flex-1 min-w-fit px-4 py-2.5 text-xs sm:text-sm font-semibold rounded-xl transition-all flex items-center justify-center gap-2 whitespace-nowrap shrink-0 ${
-                isActive
-                  ? 'bg-[#55132D] text-white shadow-xs'
-                  : 'text-stone-600 hover:text-stone-900 hover:bg-stone-100'
-              }`}
+              onClick={() => setIsNewCaseModalOpen(true)}
+              className="px-4 py-2 bg-[#55132D] hover:bg-[#681B37] text-white text-xs font-semibold rounded-xl shadow-xs flex items-center gap-1.5 transition-all whitespace-nowrap active:scale-[0.98]"
             >
-              {Icon && <Icon className="w-4 h-4 flex-shrink-0" />}
-              <span>{tab.label}</span>
-              {tab.count !== undefined && (
-                <span
-                  className={`text-xs font-number px-2.5 py-0.5 rounded-full font-bold flex-shrink-0 ${
-                    isActive ? 'bg-white/20 text-white' : 'bg-stone-100 text-stone-600'
-                  }`}
-                >
-                  {tab.count}
-                </span>
-              )}
-              {tab.alert && <span className={`w-2 h-2 rounded-full flex-shrink-0 ${isActive ? 'bg-amber-300' : 'bg-red-500'} animate-pulse`} />}
+              <Plus className="w-3.5 h-3.5 text-[#E2BC6B]" />
+              <span>Log Devotee Grievance</span>
             </button>
-          );
-        })}
-      </div>
+          </div>
+        </div>
+      )}
 
       {/* TAB 1: ACTIVE GRIEVANCES TABLE */}
       {activeTab === 'grievances' && (
@@ -307,9 +225,18 @@ export default function Grievances() {
               </select>
             </div>
 
-            <span className="text-xs text-stone-500 font-semibold bg-stone-100/80 px-3 py-1 rounded-full border border-stone-200">
-              Showing {filteredGrievances.length} cases
-            </span>
+            <div className="flex items-center gap-2.5">
+              <span className="text-xs text-stone-500 font-semibold bg-stone-100/80 px-3 py-1 rounded-full border border-stone-200">
+                Showing {filteredGrievances.length} cases
+              </span>
+              <button
+                onClick={() => setIsNewCaseModalOpen(true)}
+                className="px-3.5 py-2 bg-[#55132D] hover:bg-[#681B37] text-white text-xs font-semibold rounded-xl shadow-xs flex items-center gap-1.5 transition-all whitespace-nowrap active:scale-[0.98]"
+              >
+                <Plus className="w-3.5 h-3.5 text-[#E2BC6B]" />
+                <span>Log Grievance</span>
+              </button>
+            </div>
           </div>
 
           {/* Table (Zero-Scroll Responsive Design) */}
@@ -428,17 +355,12 @@ export default function Grievances() {
         </div>
       )}
 
-      {/* TAB 2: DEVOTEE FEEDBACK FEED */}
-      {activeTab === 'feedback' && (
-        <div className="space-y-4">
-          <div className="bg-white rounded-xl border border-stone-200 p-4 shadow-xs flex items-center justify-between">
-            <div>
-              <h3 className="text-sm font-bold text-stone-900">Devotee Feedback & Experience Ratings</h3>
-              <p className="text-xs text-stone-500">
-                Visitor ratings collected via official portal and help desk feedback kiosks.
-              </p>
-            </div>
-            <span className="text-xs font-mono font-bold text-[#800000] bg-[#800000]/10 px-2.5 py-1 rounded-full">
+      {/* TAB 2: DEVOTEE FEEDBACK FEED & RECURRING INSIGHTS */}
+      {(activeTab === 'feedback' || activeTab === 'recurring') && (
+        <div className="space-y-6">
+          <div className="flex items-center justify-between pb-1 border-b border-stone-200/80">
+            <h3 className="text-sm font-bold text-stone-900 font-serif">Devotee Experience Feedback</h3>
+            <span className="text-xs font-semibold text-stone-600 bg-stone-100 px-3 py-1 rounded-full border border-stone-200">
               {feedbackList.length} Entries Recorded
             </span>
           </div>
@@ -495,51 +417,47 @@ export default function Grievances() {
               </div>
             ))}
           </div>
-        </div>
-      )}
 
-      {/* TAB 3: RECURRING ISSUE INSIGHTS */}
-      {activeTab === 'recurring' && (
-        <div className="bg-white rounded-xl border border-stone-200 p-5 shadow-xs space-y-4">
-          <div>
-            <h3 className="text-sm font-bold text-stone-900">Recurring Operational Issue Analytics</h3>
-            <p className="text-xs text-stone-500">
-              Rule-based correlation of devotee complaints across temple departments.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-            {/* Pattern 1 */}
-            <div className="p-4 bg-amber-50/60 rounded-xl border border-amber-200 space-y-2">
-              <div className="flex items-center justify-between">
-                <span className="font-bold text-amber-900 uppercase text-[10px]">Frequent Bottleneck</span>
-                <span className="text-[10px] font-bold bg-amber-100 px-2 py-0.5 rounded text-amber-800">
-                  2 Cases this week
-                </span>
-              </div>
-              <h4 className="font-bold text-stone-900">West Gate Accessibility Passage Obstructed</h4>
-              <p className="text-stone-700 leading-relaxed text-[11px]">
-                Senior citizens and wheelchair users flagged temporary barricades blocking the designated ramp. Security marshals frequently position overflow queue stanchions across the pathway.
-              </p>
-              <div className="p-2.5 bg-white rounded-lg border border-amber-200 text-[11px] text-stone-600">
-                <strong>Recommended Action:</strong> Paint high-visibility yellow diagonal box markings on pavement and install fixed bollards preventing barricade repositioning.
-              </div>
+          {/* Recurring Issue Insights */}
+          <div className="bg-white rounded-xl border border-stone-200/90 p-5 shadow-xs space-y-4">
+            <div className="flex items-center justify-between pb-2 border-b border-stone-100">
+              <h3 className="text-sm font-bold text-stone-900 font-serif">Recurring Operational Issue Analytics</h3>
+              <span className="text-xs text-stone-500 font-medium">Departmental Correlation</span>
             </div>
 
-            {/* Pattern 2 */}
-            <div className="p-4 bg-blue-50/60 rounded-xl border border-blue-200 space-y-2">
-              <div className="flex items-center justify-between">
-                <span className="font-bold text-blue-900 uppercase text-[10px]">Process Improvement</span>
-                <span className="text-[10px] font-bold bg-blue-100 px-2 py-0.5 rounded text-blue-800">
-                  3 Inquiries
-                </span>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+              {/* Pattern 1 */}
+              <div className="p-4 bg-amber-50/60 rounded-xl border border-amber-200 space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="font-bold text-amber-900 uppercase text-[10px]">Frequent Bottleneck</span>
+                  <span className="text-[10px] font-bold bg-amber-100 px-2 py-0.5 rounded text-amber-800">
+                    2 Cases this week
+                  </span>
+                </div>
+                <h4 className="font-bold text-stone-900">West Gate Accessibility Passage Obstructed</h4>
+                <p className="text-stone-700 leading-relaxed text-[11px]">
+                  Senior citizens and wheelchair users flagged temporary barricades blocking the designated ramp. Security marshals frequently position overflow queue stanchions across the pathway.
+                </p>
+                <div className="p-2.5 bg-white rounded-lg border border-amber-200 text-[11px] text-stone-600">
+                  <strong>Recommended Action:</strong> Paint high-visibility yellow diagonal box markings on pavement and install fixed bollards preventing barricade repositioning.
+                </div>
               </div>
-              <h4 className="font-bold text-stone-900">Prasad Pre-order Delivery Counter Sync</h4>
-              <p className="text-stone-700 leading-relaxed text-[11px]">
-                Devotees booking Mahaprasad online report 15-20 min delays at the counter during noon Bhog rush due to barcode scanner lookup latency.
-              </p>
-              <div className="p-2.5 bg-white rounded-lg border border-blue-200 text-[11px] text-stone-600">
-                <strong>Recommended Action:</strong> Pre-print packing vouchers 1 hour before scheduled pickup and create a dedicated "Online Pre-orders Express Window".
+
+              {/* Pattern 2 */}
+              <div className="p-4 bg-blue-50/60 rounded-xl border border-blue-200 space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="font-bold text-blue-900 uppercase text-[10px]">Process Improvement</span>
+                  <span className="text-[10px] font-bold bg-blue-100 px-2 py-0.5 rounded text-blue-800">
+                    3 Inquiries
+                  </span>
+                </div>
+                <h4 className="font-bold text-stone-900">Prasad Pre-order Delivery Counter Sync</h4>
+                <p className="text-stone-700 leading-relaxed text-[11px]">
+                  Devotees booking Mahaprasad online report 15-20 min delays at the counter during noon Bhog rush due to barcode scanner lookup latency.
+                </p>
+                <div className="p-2.5 bg-white rounded-lg border border-blue-200 text-[11px] text-stone-600">
+                  <strong>Recommended Action:</strong> Pre-print packing vouchers 1 hour before scheduled pickup and create a dedicated "Online Pre-orders Express Window".
+                </div>
               </div>
             </div>
           </div>

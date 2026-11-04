@@ -10,6 +10,7 @@ import {
   CheckCircle2,
   AlertTriangle,
   Flame,
+  BarChart3,
 } from 'lucide-react';
 import { DarshanBookingProvider, useDarshanBookings } from '../context/DarshanBookingContext';
 import BookingOverviewTab from '../components/bookings/BookingOverviewTab';
@@ -24,7 +25,7 @@ import SlotModal from '../components/bookings/SlotModal';
 import ConfirmationModal from '../components/bookings/ConfirmationModal';
 import CancellationReviewModal from '../components/bookings/CancellationReviewModal';
 
-function DarshanBookingsContent() {
+function DarshanBookingsContent({ isEmbedded = false }) {
   const {
     bookings,
     services,
@@ -41,6 +42,8 @@ function DarshanBookingsContent() {
 
   // Active Tab: 'overview' | 'all' | 'services' | 'slots' | 'cancellations'
   const [activeTab, setActiveTab] = useState('overview');
+  const [bookingsSubView, setBookingsSubView] = useState('all');
+  const [servicesSubView, setServicesSubView] = useState('services');
 
   // Modals & Drawer State
   const [isCreateOpen, setIsCreateOpen] = useState(false);
@@ -193,127 +196,96 @@ function DarshanBookingsContent() {
 
   return (
     <div className="space-y-5 pb-10">
-      {/* Module Page Header */}
-      <div className="bg-white rounded-2xl p-5 border border-stone-200/90 shadow-xs flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold font-serif text-stone-900 tracking-tight">
-            Darshan & Bookings Administration
-          </h1>
-        </div>
+      {/* Module Page Header (Hidden when embedded) */}
+      {!isEmbedded && (
+        <div className="bg-white rounded-2xl p-5 border border-stone-200/90 shadow-xs flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+          <div>
+            <h1 className="text-2xl font-bold font-serif text-stone-900 tracking-tight">
+              Darshan & Bookings Administration
+            </h1>
+          </div>
 
-        {/* Action Button */}
-        <div className="flex items-center gap-2.5 shrink-0">
+          {/* Action Button */}
+          <div className="flex items-center gap-2.5 shrink-0">
+            <button
+              onClick={() => setIsCreateOpen(true)}
+              className="px-4 py-2.5 text-xs sm:text-sm font-bold text-white bg-[#55132D] hover:bg-[#681B37] rounded-xl shadow-xs transition-all duration-150 flex items-center gap-2 whitespace-nowrap shrink-0"
+            >
+              <Plus className="w-4 h-4 text-[#E2BC6B] shrink-0" />
+              <span>Create Booking</span>
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Two-Option Navigation Bar: Strictly (1) Analyze Bookings (2) Slots & Capacity */}
+      <div className="bg-white rounded-xl border border-stone-200/90 p-2 shadow-2xs flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+        <div className="flex items-center gap-1.5 p-1 bg-stone-100 rounded-lg">
           <button
-            onClick={() => setIsCreateOpen(true)}
-            className="px-4 py-2.5 text-xs sm:text-sm font-bold text-white bg-[#55132D] hover:bg-[#681B37] rounded-xl shadow-xs transition-all duration-150 flex items-center gap-2 whitespace-nowrap shrink-0"
+            type="button"
+            onClick={() => setActiveTab('overview')}
+            className={`px-4 py-2 text-xs font-bold rounded-md transition-all flex items-center gap-2 ${
+              activeTab === 'overview'
+                ? 'bg-white text-[#55132D] shadow-xs'
+                : 'text-stone-600 hover:text-stone-900'
+            }`}
           >
-            <Plus className="w-4 h-4 text-[#E2BC6B] shrink-0" />
-            <span>Create Booking</span>
+            <BarChart3 className="w-3.5 h-3.5 text-[#55132D]" />
+            <span>Analyze Bookings</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setActiveTab('slots')}
+            className={`px-4 py-2 text-xs font-bold rounded-md transition-all flex items-center gap-2 ${
+              activeTab === 'slots'
+                ? 'bg-white text-[#55132D] shadow-xs'
+                : 'text-stone-600 hover:text-stone-900'
+            }`}
+          >
+            <Clock className="w-3.5 h-3.5 text-amber-600" />
+            <span>Slots & Capacity</span>
           </button>
         </div>
-      </div>
 
-      {/* Tabs Navigation */}
-      <div className="flex items-center gap-1.5 border border-stone-200/80 bg-white/70 backdrop-blur-xs p-1.5 rounded-xl shadow-2xs overflow-x-auto custom-scrollbar w-full">
-        {/* Overview Tab */}
-        <button
-          onClick={() => setActiveTab('overview')}
-          className={`flex-1 min-w-fit px-3.5 py-2 sm:px-4 sm:py-2.5 text-xs sm:text-sm font-semibold rounded-lg transition-all flex items-center justify-center gap-1.5 sm:gap-2 whitespace-nowrap shrink-0 ${
-            activeTab === 'overview'
-              ? 'bg-[#55132D] text-white shadow-xs'
-              : 'text-stone-600 hover:text-stone-900 hover:bg-stone-100'
-          }`}
-        >
-          <Calendar className="w-4 h-4 flex-shrink-0" />
-          <span>Overview & Analytics</span>
-        </button>
-
-        {/* All Bookings Tab */}
-        <button
-          onClick={() => setActiveTab('all')}
-          className={`flex-1 min-w-fit px-3.5 py-2 sm:px-4 sm:py-2.5 text-xs sm:text-sm font-semibold rounded-lg transition-all flex items-center justify-center gap-1.5 sm:gap-2 whitespace-nowrap shrink-0 ${
-            activeTab === 'all'
-              ? 'bg-[#55132D] text-white shadow-xs'
-              : 'text-stone-600 hover:text-stone-900 hover:bg-stone-100'
-          }`}
-        >
-          <Ticket className="w-4 h-4 flex-shrink-0" />
-          <span>All Devotee Bookings</span>
-          <span
-            className={`text-xs px-2 py-0.5 rounded-full font-bold flex-shrink-0 ${
-              activeTab === 'all' ? 'bg-white/20 text-white' : 'bg-stone-100 text-stone-600'
-            }`}
-          >
-            {bookings.length}
-          </span>
-          {metrics.cancellationRequestsTotal > 0 && (
-            <span
-              className="text-xs px-2 py-0.5 rounded-full font-bold bg-amber-500 text-white flex-shrink-0"
-              title={`${metrics.cancellationRequestsTotal} cancellation request(s) awaiting approval`}
+        {/* Quick Action Button based on active view */}
+        <div>
+          {activeTab === 'slots' ? (
+            <button
+              type="button"
+              onClick={() => setSlotModalConfig({ isOpen: true, editingSlot: null })}
+              className="px-3.5 py-2 text-xs font-bold text-white bg-[#55132D] hover:bg-[#681B37] rounded-lg shadow-xs flex items-center gap-1.5 transition-all w-full sm:w-auto justify-center cursor-pointer"
             >
-              {metrics.cancellationRequestsTotal} req
-            </span>
+              <Plus className="w-3.5 h-3.5 text-[#E2BC6B]" />
+              <span>Add New Slot</span>
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={() => setIsCreateOpen(true)}
+              className="px-3.5 py-2 text-xs font-bold text-white bg-[#55132D] hover:bg-[#681B37] rounded-lg shadow-xs flex items-center gap-1.5 transition-all w-full sm:w-auto justify-center cursor-pointer"
+            >
+              <Plus className="w-3.5 h-3.5 text-[#E2BC6B]" />
+              <span>Create Booking</span>
+            </button>
           )}
-        </button>
-
-        {/* Darshan Services Tab */}
-        <button
-          onClick={() => setActiveTab('services')}
-          className={`flex-1 min-w-fit px-3.5 py-2 sm:px-4 sm:py-2.5 text-xs sm:text-sm font-semibold rounded-lg transition-all flex items-center justify-center gap-1.5 sm:gap-2 whitespace-nowrap shrink-0 ${
-            activeTab === 'services'
-              ? 'bg-[#55132D] text-white shadow-xs'
-              : 'text-stone-600 hover:text-stone-900 hover:bg-stone-100'
-          }`}
-        >
-          <Layers className="w-4 h-4 flex-shrink-0" />
-          <span>Darshan Services</span>
-          <span
-            className={`text-xs px-2 py-0.5 rounded-full font-bold flex-shrink-0 ${
-              activeTab === 'services' ? 'bg-white/20 text-white' : 'bg-stone-100 text-stone-600'
-            }`}
-          >
-            {services.length}
-          </span>
-        </button>
-
-        {/* Slots & Capacity Tab */}
-        <button
-          onClick={() => setActiveTab('slots')}
-          className={`flex-1 min-w-fit px-3.5 py-2 sm:px-4 sm:py-2.5 text-xs sm:text-sm font-semibold rounded-lg transition-all flex items-center justify-center gap-1.5 sm:gap-2 whitespace-nowrap shrink-0 ${
-            activeTab === 'slots'
-              ? 'bg-[#55132D] text-white shadow-xs'
-              : 'text-stone-600 hover:text-stone-900 hover:bg-stone-100'
-          }`}
-        >
-          <Clock className="w-4 h-4 flex-shrink-0" />
-          <span>Slots & Live Capacity</span>
-          <span
-            className={`text-xs px-2 py-0.5 rounded-full font-bold flex-shrink-0 ${
-              activeTab === 'slots' ? 'bg-white/20 text-white' : 'bg-stone-100 text-stone-600'
-            }`}
-          >
-            {slots.length}
-          </span>
-        </button>
-
-        {/* Cancellations Tab */}
-        <button
-          onClick={() => setActiveTab('cancellations')}
-          className={`flex-1 min-w-fit px-3.5 py-2 sm:px-4 sm:py-2.5 text-xs sm:text-sm font-semibold rounded-lg transition-all flex items-center justify-center gap-1.5 sm:gap-2 whitespace-nowrap shrink-0 ${
-            activeTab === 'cancellations'
-              ? 'bg-[#55132D] text-white shadow-xs'
-              : 'text-stone-600 hover:text-stone-900 hover:bg-stone-100'
-          }`}
-        >
-          <Ban className="w-4 h-4 flex-shrink-0" />
-          <span>Cancellations</span>
-          {metrics.cancellationRequestsTotal > 0 && (
-            <span className="text-xs px-2 py-0.5 rounded-full font-bold bg-rose-600 text-white flex-shrink-0">
-              {metrics.cancellationRequestsTotal}
-            </span>
-          )}
-        </button>
+        </div>
       </div>
+
+      {/* Back button when drilled down into a specific subview */}
+      {activeTab !== 'overview' && activeTab !== 'slots' && (
+        <div className="flex items-center justify-between bg-white border border-stone-200/90 rounded-xl px-4 py-2.5 shadow-2xs">
+          <button
+            onClick={() => setActiveTab('overview')}
+            className="text-xs font-bold text-[#55132D] hover:underline flex items-center gap-1.5 cursor-pointer"
+          >
+            <span>← Back to Overview</span>
+          </button>
+          <span className="text-xs text-stone-500 font-medium capitalize">
+            {activeTab === 'all' || activeTab === 'bookings' ? 'All Bookings' : activeTab}
+          </span>
+        </div>
+      )}
 
       {/* Tab Panels */}
       <div>
@@ -325,7 +297,7 @@ function DarshanBookingsContent() {
           />
         )}
 
-        {activeTab === 'all' && (
+        {(activeTab === 'all' || activeTab === 'bookings') && (
           <AllBookingsTab
             onOpenDetails={(booking) => setSelectedBookingForDrawer(booking)}
             onOpenCreate={() => setIsCreateOpen(true)}
@@ -424,10 +396,10 @@ function DarshanBookingsContent() {
   );
 }
 
-export default function DarshanBookings() {
+export default function DarshanBookings({ isEmbedded = false }) {
   return (
     <DarshanBookingProvider>
-      <DarshanBookingsContent />
+      <DarshanBookingsContent isEmbedded={isEmbedded} />
     </DarshanBookingProvider>
   );
 }

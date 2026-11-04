@@ -26,7 +26,7 @@ import ContentStatusBadge from '../components/content-management/shared/ContentS
 import VerificationBadge from '../components/content-management/shared/VerificationBadge';
 import PublicWebsitePreviewModal from '../components/content-management/shared/PublicWebsitePreviewModal';
 
-export default function Announcements() {
+export default function Announcements({ isEmbedded = false }) {
   const {
     announcements,
     addAnnouncement,
@@ -167,21 +167,22 @@ export default function Announcements() {
   return (
     <div className="space-y-5 pb-8">
       {/* Header */}
-      <ContentPageHeader
-        title="Public Announcements & Circulars"
-        subtitle="Publish instant administrative advisories, festival timings, queue protocols and circulars for public website."
-        actions={
-          <div className="flex items-center gap-2">
-            <button
-              onClick={handleOpenCreateModal}
-              className="px-3.5 py-1.5 bg-[#55132D] hover:bg-[#681B37] text-white text-xs font-semibold rounded-lg shadow-xs flex items-center gap-1.5 transition-colors whitespace-nowrap shrink-0"
-            >
-              <Plus className="w-3.5 h-3.5" />
-              <span>New Announcement</span>
-            </button>
-          </div>
-        }
-      />
+      {!isEmbedded && (
+        <ContentPageHeader
+          title="Public Announcements & Circulars"
+          actions={
+            <div className="flex items-center gap-2">
+              <button
+                onClick={handleOpenCreateModal}
+                className="px-3.5 py-1.5 bg-[#55132D] hover:bg-[#681B37] text-white text-xs font-semibold rounded-lg shadow-xs flex items-center gap-1.5 transition-colors whitespace-nowrap shrink-0"
+              >
+                <Plus className="w-3.5 h-3.5" />
+                <span>New Announcement</span>
+              </button>
+            </div>
+          }
+        />
+      )}
 
       {/* Metric Cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3.5">

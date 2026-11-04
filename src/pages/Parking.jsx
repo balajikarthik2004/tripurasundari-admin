@@ -22,7 +22,7 @@ import OperationsPageHeader from '../components/temple-operations/shared/Operati
 import OperationsMetricCard from '../components/temple-operations/shared/OperationsMetricCard';
 import OperationsTabs from '../components/temple-operations/shared/OperationsTabs';
 
-export default function Parking() {
+export default function Parking({ isEmbedded = false }) {
   const { parkingAreas, vehicleRecords, recordVehicleEntry, recordVehicleExit } = useTempleOperations();
 
   const [activeTab, setActiveTab] = useState('overview');
@@ -78,22 +78,22 @@ export default function Parking() {
   };
 
   const tabs = [
-    { id: 'overview', label: 'Bay Capacity & Status', count: parkingAreas.length },
-    { id: 'entry_exit', label: 'Vehicle Movement Log', count: vehicleRecords.filter(v => v.status === 'Parked').length },
-    { id: 'tariffs', label: 'Tariffs & Parking Rules' },
-    { id: 'traffic', label: 'NH-8 Approach Coordination' },
+    { id: 'overview', label: 'Overview', count: parkingAreas.length },
+    { id: 'movement', label: 'Vehicle Movement', count: vehicleRecords.filter(v => v.status === 'Parked').length },
+    { id: 'tariffs', label: 'Tariffs & Rules' },
   ];
 
   return (
     <div className="space-y-5 pb-8">
-      {/* Header */}
-      <OperationsPageHeader
-        title="Parking Management"
-        subtitle="Vehicle flow, parking bay capacity monitoring, token ticketing and NH-8 yatri bus terminal management."
-        primaryActionLabel="Check In Vehicle"
-        onPrimaryAction={() => setIsEntryModalOpen(true)}
-        primaryActionIcon={Car}
-      />
+      {/* Header (Hidden when embedded) */}
+      {!isEmbedded && (
+        <OperationsPageHeader
+          title="Parking Management"
+          primaryActionLabel="Check In Vehicle"
+          onPrimaryAction={() => setIsEntryModalOpen(true)}
+          primaryActionIcon={Car}
+        />
+      )}
 
       {/* Metric Cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3.5">
@@ -128,7 +128,8 @@ export default function Parking() {
 
       {/* TAB 1: OVERVIEW & CAPACITY GAUGES */}
       {activeTab === 'overview' && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {parkingAreas.map((area) => {
             const pct = Math.round((area.currentOccupancy / area.capacity) * 100);
             const isHigh = pct >= 80;
@@ -209,11 +210,42 @@ export default function Parking() {
               </div>
             );
           })}
+          </div>
+
+          {/* National Highway (NH-8) Traffic Coordination */}
+          <div className="bg-white rounded-xl border border-stone-200/90 p-5 shadow-subtle space-y-3">
+            <div>
+              <h3 className="section-heading">National Highway (NH-8) Traffic Coordination</h3>
+              <p className="supporting-text">
+                Coordination desk between temple marshals and Udaipur Sub-Division Traffic Police
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5 text-xs pt-1">
+              <div className="p-3.5 bg-emerald-50 rounded-xl border border-emerald-200">
+                <span className="text-[10px] font-bold text-emerald-800 uppercase tracking-wide">Agartala Approach (North)</span>
+                <p className="font-bold text-stone-900 mt-1">Normal Vehicular Speed</p>
+                <p className="supporting-text mt-0.5">No congestion reported at Kakraban bypass intersection.</p>
+              </div>
+
+              <div className="p-3.5 bg-blue-50 rounded-xl border border-blue-200">
+                <span className="text-[10px] font-bold text-blue-800 uppercase tracking-wide">Sabroom Approach (South)</span>
+                <p className="font-bold text-stone-900 mt-1">Pilgrim Tourist Convoys Inflow</p>
+                <p className="supporting-text mt-0.5">Buses diverted toward Lot A terminal seamlessly.</p>
+              </div>
+
+              <div className="p-3.5 bg-stone-50 rounded-xl border border-stone-200">
+                <span className="text-[10px] font-bold text-stone-700 uppercase tracking-wide">Secondary Overflow Field</span>
+                <p className="font-bold text-stone-900 mt-1">Standby Mode (Dry & Ready)</p>
+                <p className="supporting-text mt-0.5">Available for Diwali Mela high density rush.</p>
+              </div>
+            </div>
+          </div>
         </div>
       )}
 
       {/* TAB 2: VEHICLE MOVEMENT LOG */}
-      {activeTab === 'entry_exit' && (
+      {activeTab === 'movement' && (
         <div className="bg-white rounded-xl border border-stone-200 shadow-xs overflow-hidden">
           {/* Controls */}
           <div className="p-3.5 border-b border-stone-200 flex flex-wrap items-center justify-between gap-3">
@@ -392,35 +424,7 @@ export default function Parking() {
         </div>
       )}
 
-      {/* TAB 4: TRAFFIC COORDINATION */}
-      {activeTab === 'traffic' && (
-        <div className="bg-white rounded-xl border border-stone-200 p-5 shadow-xs">
-          <h3 className="text-sm font-bold text-stone-800 mb-1">National Highway (NH-8) Traffic Coordination</h3>
-          <p className="text-xs text-stone-500 mb-4">
-            Coordination desk between temple marshals and Udaipur Sub-Division Traffic Police.
-          </p>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5 text-xs">
-            <div className="p-3 bg-emerald-50 rounded-xl border border-emerald-200">
-              <span className="text-[10px] font-bold text-emerald-800 uppercase tracking-wide">Agartala Approach (North)</span>
-              <p className="font-bold text-stone-900 mt-1">Normal Vehicular Speed</p>
-              <p className="text-[11px] text-stone-600 mt-0.5">No congestion reported at Kakraban bypass intersection.</p>
-            </div>
-
-            <div className="p-3 bg-blue-50 rounded-xl border border-blue-200">
-              <span className="text-[10px] font-bold text-blue-800 uppercase tracking-wide">Sabroom Approach (South)</span>
-              <p className="font-bold text-stone-900 mt-1">Pilgrim Tourist Convoys Inflow</p>
-              <p className="text-[11px] text-stone-600 mt-0.5">Buses diverted toward Lot A terminal seamlessly.</p>
-            </div>
-
-            <div className="p-3 bg-stone-50 rounded-xl border border-stone-200">
-              <span className="text-[10px] font-bold text-stone-700 uppercase tracking-wide">Secondary Overflow Field</span>
-              <p className="font-bold text-stone-900 mt-1">Standby Mode (Dry & Ready)</p>
-              <p className="text-[11px] text-stone-600 mt-0.5">Available for Diwali Mela high density rush.</p>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* MODAL: CHECK IN VEHICLE */}
       {isEntryModalOpen && (

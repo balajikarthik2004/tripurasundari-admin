@@ -6,6 +6,7 @@ import {
   Maximize2,
   X,
   Filter,
+  Search,
   Plus,
   Radio,
   Clock,
@@ -149,294 +150,266 @@ export default function CctvMonitoring() {
 
   return (
     <div className="space-y-4 pb-12">
-      {/* 1. Header with Register Camera Action */}
-      <OperationsPageHeader
-        title="CCTV & Premises Monitoring"
-        subtitle="Live surveillance matrix and operational security inspection across sacred Matabari premises."
-        primaryActionLabel="Register Camera"
-        onPrimaryAction={() => setIsAddModalOpen(true)}
-        primaryActionIcon={Plus}
-      />
-
-      {/* 2. Clean Surveillance Network Status Banner */}
-      <div className="bg-white border border-stone-200/90 rounded-2xl p-4 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div className="flex items-center gap-3.5">
-          <div className="w-10 h-10 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-700 flex items-center justify-center flex-shrink-0">
-            <Radio className="w-5 h-5 animate-pulse" />
-          </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <h3 className="font-serif font-bold text-sm text-stone-900">
-                Surveillance Network
-              </h3>
-              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                24/7 Active
-              </span>
-            </div>
-            <p className="text-xs text-stone-500 mt-0.5">
-              Live IP feeds covering sanctum sanctorum, parikrama corridor, and gates
-            </p>
-          </div>
+      {/* 1. ONE HEADING CARD */}
+      <div className="bg-white rounded-2xl border border-stone-200/90 p-5 sm:p-6 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-xl sm:text-2xl font-bold text-stone-900 tracking-tight font-serif">
+            CCTV &amp; Premises Monitoring
+          </h1>
+          <p className="text-xs text-stone-500 mt-1">
+            Real-time IP surveillance feeds across sanctum sanctorum, parikrama corridor, and campus perimeter
+          </p>
         </div>
 
-        <div className="flex items-center gap-3 flex-wrap">
-          <div className="flex items-center gap-2 text-xs px-3 py-1.5 rounded-lg bg-stone-50 border border-stone-200 text-stone-600">
-            <span className="text-stone-400">Feeds:</span>
-            <span className="font-bold text-stone-900">{cameras.length} Total</span>
-            <span>•</span>
-            <span className="text-emerald-700 font-semibold">{onlineCount} Online</span>
-            {offlineCount > 0 && (
-              <>
-                <span>•</span>
-                <span className="text-rose-600 font-semibold">{offlineCount} Offline</span>
-              </>
-            )}
-          </div>
-
-          <button
-            onClick={() => setIsAiFaceSearchOpen(true)}
-            className="px-3.5 py-2 text-xs font-bold text-white bg-[#55132D] hover:bg-[#681B37] rounded-xl shadow-xs transition-colors flex items-center gap-2 cursor-pointer"
-          >
-            <Scan className="w-3.5 h-3.5 text-[#E2BC6B]" />
-            <span>AI Face Search</span>
-          </button>
-        </div>
+        <button
+          onClick={() => setIsAddModalOpen(true)}
+          className="px-4 py-2.5 text-xs font-bold text-white bg-[#55132D] hover:bg-[#681B37] rounded-xl shadow-xs transition-colors flex items-center justify-center gap-2 shrink-0 self-start sm:self-auto cursor-pointer"
+        >
+          <Plus className="w-4 h-4 text-[#E2BC6B]" />
+          <span>Register Camera</span>
+        </button>
       </div>
 
-      {/* 3. Controls & Filter Bar */}
-      <div className="bg-white rounded-xl border border-[#E8E2D8] p-3 sm:p-3.5 shadow-subtle flex flex-wrap items-center justify-between gap-3 text-xs">
-        <div className="flex flex-wrap items-center gap-2 sm:gap-3 flex-1 min-w-0">
-          {/* Status Filter */}
-          <div className="flex items-center gap-1.5">
-            <span className="font-semibold text-stone-600">Status:</span>
-            <select
-              value={selectedStatusFilter}
-              onChange={(e) => setSelectedStatusFilter(e.target.value)}
-              className="px-2.5 py-1.5 rounded-lg border border-[#E8E2D8] bg-white text-stone-800 font-medium focus:outline-none focus:border-[#55132D]"
-            >
-              <option value="ALL">All Statuses ({cameras.length})</option>
-              <option value="Online">Online ({onlineCount})</option>
-              <option value="Offline">Offline ({offlineCount})</option>
-            </select>
+      {/* 2. ONE CONTROL CENTER */}
+      <div className="bg-white rounded-2xl border border-stone-200/90 p-4 sm:p-5 shadow-2xs space-y-4">
+        {/* Top Telemetry Row */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 pb-3 border-b border-stone-100">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-700 flex items-center justify-center shrink-0">
+              <Radio className="w-4 h-4 animate-pulse" />
+            </div>
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="font-serif font-bold text-sm text-stone-900">
+                Surveillance Command Center
+              </span>
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                24/7 Live Monitoring
+              </span>
+            </div>
           </div>
 
-          {/* Zone Filter */}
-          <div className="flex items-center gap-1.5">
-            <span className="font-semibold text-stone-600">Configured Zone:</span>
+          <div className="flex items-center gap-2.5 flex-wrap">
+            <div className="flex items-center gap-2 text-xs px-3 py-1.5 rounded-lg bg-stone-50 border border-stone-200 text-stone-600">
+              <span className="font-bold text-stone-900">{cameras.length} Feeds</span>
+              <span className="text-stone-300">•</span>
+              <span className="text-emerald-700 font-semibold">{onlineCount} Online</span>
+              {offlineCount > 0 && (
+                <>
+                  <span className="text-stone-300">•</span>
+                  <span className="text-rose-600 font-semibold">{offlineCount} Offline</span>
+                </>
+              )}
+            </div>
+
+            <button
+              onClick={() => setIsAiFaceSearchOpen(true)}
+              className="px-3.5 py-1.5 text-xs font-bold text-stone-800 bg-stone-100 hover:bg-stone-200 rounded-lg border border-stone-200 transition-colors flex items-center gap-2 cursor-pointer shadow-2xs"
+            >
+              <Scan className="w-3.5 h-3.5 text-[#55132D]" />
+              <span>AI Face Search</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Filter & Search Controls */}
+        <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3 text-xs">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 flex-1 min-w-0">
+            {/* Search Input */}
+            <div className="relative flex-1">
+              <Search className="w-4 h-4 text-stone-400 absolute left-3 top-1/2 -translate-y-1/2" />
+              <input
+                type="text"
+                placeholder="Search camera ID (CAM-...) or location..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-9 pr-3 py-2 rounded-lg border border-stone-200 text-xs focus:outline-none focus:ring-1 focus:ring-[#55132D]"
+              />
+            </div>
+
+            {/* Zone Filter */}
             <select
               value={selectedZoneFilter}
               onChange={(e) => setSelectedZoneFilter(e.target.value)}
-              className="px-2.5 py-1.5 rounded-lg border border-[#E8E2D8] bg-white text-stone-800 font-medium focus:outline-none focus:border-[#55132D] max-w-[220px] truncate"
+              className="px-3 py-2 rounded-lg border border-stone-200 bg-white text-stone-800 font-medium focus:outline-none focus:ring-1 focus:ring-[#55132D]"
             >
-              <option value="ALL">All Configured Zones</option>
+              <option value="ALL">All Campus Zones</option>
               {distinctZones.map((z) => (
                 <option key={z.id} value={z.id}>
                   {z.name}
                 </option>
               ))}
             </select>
-          </div>
 
-          {/* Quick Search */}
-          <div className="min-w-[180px] flex-1 max-w-xs">
-            <input
-              type="text"
-              placeholder="Search camera ID or name..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full px-3 py-1.5 rounded-lg border border-[#E8E2D8] text-xs focus:outline-none focus:border-[#55132D]"
-            />
-          </div>
-        </div>
-
-        {/* Display Counter */}
-        <div className="text-xs text-stone-500 font-medium flex items-center gap-2">
-          <span>Showing <strong>{filteredCameras.length}</strong> of {cameras.length} cameras</span>
-          {filteredCameras.length !== cameras.length && (
-            <button
-              type="button"
-              onClick={() => {
-                setSelectedStatusFilter('ALL');
-                setSelectedZoneFilter('ALL');
-                setSearchQuery('');
-              }}
-              className="text-[#55132D] font-bold hover:underline"
+            {/* Status Filter */}
+            <select
+              value={selectedStatusFilter}
+              onChange={(e) => setSelectedStatusFilter(e.target.value)}
+              className="px-3 py-2 rounded-lg border border-stone-200 bg-white text-stone-800 font-medium focus:outline-none focus:ring-1 focus:ring-[#55132D]"
             >
-              Reset Filters
-            </button>
-          )}
+              <option value="ALL">All Feeds ({cameras.length})</option>
+              <option value="Online">Online Feeds ({onlineCount})</option>
+              <option value="Offline">Offline Feeds ({offlineCount})</option>
+            </select>
+          </div>
+
+          {/* Counter & Reset */}
+          <div className="flex items-center justify-between lg:justify-end gap-2 text-stone-500 text-xs font-medium shrink-0">
+            <span>Showing <strong>{filteredCameras.length}</strong> of {cameras.length} feeds</span>
+            {filteredCameras.length !== cameras.length && (
+              <button
+                type="button"
+                onClick={() => {
+                  setSelectedStatusFilter('ALL');
+                  setSelectedZoneFilter('ALL');
+                  setSearchQuery('');
+                }}
+                className="text-[#55132D] font-bold hover:underline"
+              >
+                Reset Filters
+              </button>
+            )}
+          </div>
         </div>
       </div>
 
-      {/* 4. Full Professional Camera Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-        {filteredCameras.length === 0 ? (
-          <div className="col-span-full py-16 text-center bg-white rounded-xl border border-[#E8E2D8] p-6">
-            <Camera className="w-10 h-10 text-stone-300 mx-auto mb-2" />
-            <h4 className="font-serif text-sm font-bold text-stone-800">No Configured Cameras Found</h4>
-            <p className="text-xs text-stone-500 mt-1 max-w-md mx-auto">
-              No surveillance cameras match the selected filters. Reset filters or register a new configured camera.
-            </p>
+      {/* 3. ONE MATRIX (CCTV Video Wall Matrix) */}
+      <div className="bg-white rounded-2xl p-5 shadow-2xs border border-stone-200/90 space-y-4">
+        {/* Matrix Header Bar */}
+        <div className="flex items-center justify-between pb-3 border-b border-stone-150 text-xs text-stone-600">
+          <div className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
+            <span className="font-serif font-bold text-stone-900 text-sm tracking-tight">
+              Live Surveillance Matrix
+            </span>
+            <span className="text-stone-300">•</span>
+            <span className="text-stone-500 font-medium">{filteredCameras.length} Active Feeds</span>
           </div>
-        ) : (
-          filteredCameras.map((cam) => {
-            const isOnline = cam.status === 'Online';
-            const linkedIncidents = incidents.filter((i) => i.cameraId === cam.id);
-            const activeIncidentCount = linkedIncidents.filter((i) => i.status !== 'Resolved' && i.status !== 'Closed').length;
+          <span className="text-[11.5px] text-stone-400 hidden sm:inline">
+            Click any feed for high-res inspection &amp; incident dispatch
+          </span>
+        </div>
 
-            return (
-              <div
-                key={cam.id}
-                className="bg-white rounded-xl border border-[#E8E2D8] shadow-subtle overflow-hidden flex flex-col justify-between hover:border-[#55132D]/40 hover:shadow-card transition-all group"
-              >
-                <div>
-                  {/* Card Header Bar */}
-                  <div className="px-3.5 py-2.5 bg-stone-900 text-white flex items-center justify-between text-xs">
+        {/* Video Wall Tiles */}
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+          {filteredCameras.length === 0 ? (
+            <div className="col-span-full py-16 text-center text-stone-400 text-xs">
+              <Camera className="w-8 h-8 text-stone-400 mx-auto mb-2" />
+              <span>No surveillance feeds match the current filter.</span>
+            </div>
+          ) : (
+            filteredCameras.map((cam) => {
+              const isOnline = cam.status === 'Online';
+              const linkedIncidents = incidents.filter((i) => i.cameraId === cam.id);
+              const activeIncidentCount = linkedIncidents.filter((i) => i.status !== 'Resolved' && i.status !== 'Closed').length;
+
+              return (
+                <div
+                  key={cam.id}
+                  onClick={() => handleOpenDrawer(cam)}
+                  className="group relative aspect-[16/10] bg-stone-100 rounded-xl overflow-hidden border border-stone-200/90 hover:border-[#55132D] shadow-2xs hover:shadow-md cursor-pointer transition-all"
+                >
+                  {/* Video Stream Preview */}
+                  {isOnline ? (
+                    <video
+                      autoPlay
+                      loop
+                      muted
+                      playsInline
+                      key={cam.id}
+                      src={cam.videoUrl || '/matabari-cam01.mp4'}
+                      poster={cam.previewImage || '/matabari-premises-1.jpg'}
+                      className="w-full h-full object-cover group-hover:scale-102 transition-all duration-300"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex flex-col items-center justify-center bg-stone-50 text-stone-500 p-4 text-center">
+                      <AlertCircle className="w-8 h-8 text-rose-500 mb-1" />
+                      <span className="font-bold text-xs text-stone-800">SIGNAL OFFLINE</span>
+                      <span className="text-[10px] text-stone-400 mt-0.5">Maintenance check required</span>
+                    </div>
+                  )}
+
+                  {/* Top On-Screen Telemetry Overlay */}
+                  <div className={`absolute top-0 inset-x-0 p-3 flex items-center justify-between text-xs z-10 ${
+                    isOnline
+                      ? 'bg-gradient-to-b from-black/75 via-black/30 to-transparent text-white'
+                      : 'bg-white/95 border-b border-stone-200 text-stone-800'
+                  }`}>
                     <div className="flex items-center gap-2 min-w-0">
                       <span
-                        className={`w-2 h-2 rounded-full flex-shrink-0 ${
+                        className={`w-2 h-2 rounded-full shrink-0 ${
                           isOnline ? 'bg-emerald-400 animate-pulse' : 'bg-rose-500'
                         }`}
                       />
-                      <span className="font-mono font-bold text-amber-300">{cam.id}</span>
-                      <span className="text-stone-300 font-semibold truncate">{cam.name}</span>
-                    </div>
-
-                    <div className="flex items-center gap-1.5 flex-shrink-0">
-                      <span
-                        className={`px-1.5 py-0.2 rounded text-[9.5px] font-bold uppercase tracking-wider ${
-                          isOnline
-                            ? 'bg-emerald-950 text-emerald-300 border border-emerald-800'
-                            : 'bg-rose-950 text-rose-300 border border-rose-800'
-                        }`}
-                      >
-                        {cam.status}
+                      <span className={`font-mono font-bold text-xs ${isOnline ? 'text-amber-300' : 'text-[#55132D]'}`}>
+                        {cam.id}
+                      </span>
+                      <span className={`font-medium truncate text-xs ${isOnline ? 'text-stone-100' : 'text-stone-800'}`}>
+                        {cam.name}
                       </span>
                     </div>
-                  </div>
 
-                  {/* Video Stream Preview Frame */}
-                  <div className="relative aspect-[16/10] bg-stone-950 overflow-hidden cursor-pointer" onClick={() => handleOpenDrawer(cam)}>
-                    {isOnline ? (
-                      <video
-                        autoPlay
-                        loop
-                        muted
-                        playsInline
-                        key={cam.id}
-                        src={cam.videoUrl || '/matabari-cam01.mp4'}
-                        poster={cam.previewImage || '/matabari-premises-1.jpg'}
-                        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-102 opacity-95"
-                      />
-                    ) : (
-                      <div className="w-full h-full flex flex-col items-center justify-center bg-stone-900 text-stone-400 p-4 text-center">
-                        <AlertCircle className="w-7 h-7 text-rose-500 mb-1" />
-                        <span className="font-bold text-[11px] text-white">CAMERA FEED OFFLINE</span>
-                        <span className="text-[10px] text-stone-400">Signal paused for maintenance testing</span>
-                      </div>
-                    )}
-
-                    {/* Disclaimer Overlay Badges */}
-                    <div className="absolute top-2 left-2 z-10 flex items-center gap-1.5">
-                      {isOnline ? (
-                        <span className="px-2 py-0.5 rounded bg-black/80 backdrop-blur-xs text-[9px] font-bold text-white border border-white/20 uppercase tracking-wider flex items-center gap-1.5">
-                          <span className="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse" />
-                          <span>LIVE FEED</span>
-                        </span>
-                      ) : (
-                        <span className="px-2 py-0.5 rounded bg-black/80 text-[9px] font-bold text-rose-400 border border-rose-500/30 uppercase tracking-wider">
-                          FEED OFFLINE
-                        </span>
-                      )}
-                      <span className="px-1.5 py-0.5 rounded bg-black/70 text-[9px] font-mono text-stone-300 border border-white/15">
+                    <div className="flex items-center gap-2 shrink-0">
+                      <span className={`px-1.5 py-0.5 rounded text-[10px] font-mono border ${
+                        isOnline
+                          ? 'bg-black/50 text-stone-200 border-white/10'
+                          : 'bg-stone-100 text-stone-700 border-stone-200'
+                      }`}>
                         {cam.resolution?.split(' ')[0] || '1080p'}
                       </span>
-                    </div>
-
-                    {/* Expand Action Button */}
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleOpenDrawer(cam);
-                      }}
-                      className="absolute top-2 right-2 p-1.5 rounded bg-black/70 text-white hover:bg-[#55132D] transition-colors shadow-sm"
-                      title="Inspect Camera Details & Incidents"
-                    >
-                      <Maximize2 className="w-3.5 h-3.5" />
-                    </button>
-
-                    {/* Bottom Frame Details */}
-                    <div className="absolute bottom-2 left-2 right-2 z-10 flex items-center justify-between text-[10px] font-mono text-white bg-black/80 backdrop-blur-xs px-2.5 py-1 rounded border border-white/10">
-                      <div className="flex items-center gap-1.5 truncate">
-                        <MapPin className="w-3 h-3 text-[#E2BC6B] flex-shrink-0" />
-                        <span className="truncate">{cam.zoneName}</span>
-                      </div>
-                      <div className="flex items-center gap-1 text-[9px] text-stone-300 pl-2 flex-shrink-0">
-                        <Clock className="w-2.5 h-2.5 text-stone-400" />
-                        <span>{cam.snapshotTimestamp?.split(',')[1]?.trim() || cam.snapshotTimestamp}</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Camera Description */}
-                  <div className="p-3 text-xs">
-                    <p className="text-stone-600 line-clamp-2 leading-relaxed">
-                      {cam.description}
-                    </p>
-                  </div>
-                </div>
-
-                {/* Footer Operations Bar */}
-                <div className="px-3 py-2.5 bg-[#FAF8F5] border-t border-[#E8E2D8] flex items-center justify-between text-xs">
-                  <div className="flex items-center gap-2">
-                    {activeIncidentCount > 0 ? (
-                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-200">
-                        <AlertTriangle className="w-2.5 h-2.5 text-amber-700" />
-                        <span>{activeIncidentCount} Incident{activeIncidentCount !== 1 ? 's' : ''}</span>
-                      </span>
-                    ) : (
-                      <span className="inline-flex items-center gap-1 text-[10px] font-medium text-emerald-700">
-                        <CheckCircle2 className="w-3 h-3 text-emerald-600" />
-                        <span>Nominal</span>
-                      </span>
-                    )}
-
-                    <button
-                      type="button"
-                      onClick={() => toggleCameraStatus(cam.id)}
-                      className={`text-[10.5px] font-semibold px-2 py-0.5 rounded transition-colors ${
+                      <div className={`p-1 rounded transition-colors border ${
                         isOnline
-                          ? 'bg-stone-200 hover:bg-stone-300 text-stone-700'
-                          : 'bg-emerald-700 hover:bg-emerald-800 text-white'
-                      }`}
-                      title="Toggle Camera Online/Offline status"
-                    >
-                      {isOnline ? 'Toggle Offline' : 'Restore Online'}
-                    </button>
+                          ? 'bg-black/50 text-white hover:bg-white/20 border-white/10'
+                          : 'bg-stone-100 text-stone-600 hover:bg-stone-200 border-stone-200'
+                      }`}>
+                        <Maximize2 className="w-3 h-3" />
+                      </div>
+                    </div>
                   </div>
 
-                  <button
-                    type="button"
-                    onClick={() => handleOpenDrawer(cam)}
-                    className="font-bold text-[#55132D] hover:underline flex items-center gap-1 text-xs"
-                  >
-                    <span>Inspect</span>
-                    <ArrowRight className="w-3 h-3" />
-                  </button>
+                  {/* Bottom On-Screen Status & Action Overlay */}
+                  <div className={`absolute bottom-0 inset-x-0 p-3 flex items-center justify-between text-xs z-10 ${
+                    isOnline
+                      ? 'bg-gradient-to-t from-black/80 via-black/35 to-transparent text-white'
+                      : 'bg-white/95 border-t border-stone-200 text-stone-800'
+                  }`}>
+                    <div>
+                      {activeIncidentCount > 0 ? (
+                        <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-amber-500 text-white text-[10.5px] font-bold shadow-2xs">
+                          <AlertTriangle className="w-3 h-3 text-white" />
+                          <span>{activeIncidentCount} Incident{activeIncidentCount !== 1 ? 's' : ''}</span>
+                        </span>
+                      ) : (
+                        <span className={`inline-flex items-center gap-1 text-[11px] font-medium ${
+                          isOnline ? 'text-emerald-300' : 'text-stone-600'
+                        }`}>
+                          <CheckCircle2 className="w-3 h-3 text-emerald-400" />
+                          <span>Normal</span>
+                        </span>
+                      )}
+                    </div>
+
+                    <span className={`font-semibold text-xs flex items-center gap-1 transition-colors ${
+                      isOnline
+                        ? 'text-stone-200 group-hover:text-amber-300'
+                        : 'text-stone-600 group-hover:text-[#55132D]'
+                    }`}>
+                      <span>Inspect</span>
+                      <ArrowRight className="w-3 h-3" />
+                    </span>
+                  </div>
                 </div>
-              </div>
-            );
-          })
-        )}
+              );
+            })
+          )}
+        </div>
       </div>
 
       {/* ========================================================
           5. CAMERA DETAIL & INCIDENT MANAGEMENT DRAWER / MODAL
          ======================================================== */}
       {activeCamera && (
-        <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-xs flex items-center justify-center p-3 sm:p-5 overflow-y-auto animate-in fade-in duration-200">
+        <div className="fixed inset-0 z-50 bg-stone-900/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-5 overflow-y-auto animate-in fade-in duration-200">
           <div className="bg-white rounded-2xl shadow-2xl border border-stone-200 max-w-4xl w-full max-h-[92vh] flex flex-col overflow-hidden my-auto">
             {/* Drawer Header */}
             <div className="px-5 py-3.5 bg-[#55132D] text-white flex items-center justify-between border-b border-[#B68A36]/30 flex-shrink-0">
@@ -474,7 +447,7 @@ export default function CctvMonitoring() {
             {/* Scrollable Content Body */}
             <div className="overflow-y-auto p-5 space-y-5 text-xs flex-1">
               {/* Large Video Surveillance Stream Frame */}
-              <div className="relative aspect-video rounded-xl overflow-hidden bg-black border border-[#E8E2D8] shadow-inner">
+              <div className="relative aspect-video rounded-xl overflow-hidden bg-stone-100 border border-stone-200 shadow-inner">
                 {activeCamera.status === 'Online' ? (
                   <video
                     autoPlay
@@ -487,9 +460,9 @@ export default function CctvMonitoring() {
                     className="w-full h-full object-cover"
                   />
                 ) : (
-                  <div className="w-full h-full flex flex-col items-center justify-center bg-stone-900 text-stone-400 p-6 text-center">
+                  <div className="w-full h-full flex flex-col items-center justify-center bg-stone-50 text-stone-500 p-6 text-center">
                     <AlertCircle className="w-10 h-10 text-rose-500 mb-2" />
-                    <span className="font-bold text-sm text-white">CAMERA FEED OFFLINE</span>
+                    <span className="font-bold text-sm text-stone-800">CAMERA FEED OFFLINE</span>
                     <span className="text-xs text-stone-400 mt-1">Signal paused for maintenance testing</span>
                   </div>
                 )}

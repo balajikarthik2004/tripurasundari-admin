@@ -27,7 +27,7 @@ import VerificationBadge from '../components/content-management/shared/Verificat
 import ImageUploadPreview from '../components/content-management/shared/ImageUploadPreview';
 import PublicWebsitePreviewModal from '../components/content-management/shared/PublicWebsitePreviewModal';
 
-export default function EventsFestivals() {
+export default function EventsFestivals({ isEmbedded = false }) {
   const {
     events,
     addEvent,
@@ -78,7 +78,12 @@ export default function EventsFestivals() {
   const filteredEvents = useMemo(() => {
     return events.filter((evt) => {
       const matchCat = categoryFilter === 'ALL' || evt.category === categoryFilter;
-      const matchStatus = statusFilter === 'ALL' || evt.status === statusFilter;
+      const matchStatus =
+        statusFilter === 'ALL'
+          ? true
+          : statusFilter === 'FEATURED'
+          ? evt.featured
+          : evt.status === statusFilter;
       const matchSearch =
         evt.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
         evt.shortDescription.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -155,32 +160,30 @@ export default function EventsFestivals() {
   };
 
   const tabs = [
-    { id: 'all_events', label: 'All Public Events', count: events.length },
-    { id: 'calendar', label: 'Festival Calendar Timeline' },
-    { id: 'featured', label: 'Homepage Featured Events', count: featuredEvents.length },
-    { id: 'categories', label: 'Event Categories', count: eventCategories.length },
-    { id: 'overview', label: 'Overview & Distribution' },
+    { id: 'all_events', label: 'Events', count: events.length },
+    { id: 'calendar', label: 'Festival Calendar' },
+    { id: 'categories', label: 'Categories', count: eventCategories.length },
   ];
 
   return (
     <div className="space-y-5 pb-8">
       {/* Header */}
-      <ContentPageHeader
-        title="Public Events & Religious Festivals"
-        subtitle="Curate the devotee-facing calendar of Utsavs, Kartik Purnima, Diwali Mela, and sacred astrological tithis."
-        actions={
-          <div className="flex items-center gap-2">
-            <button
-              onClick={handleOpenCreateModal}
-              className="px-3.5 py-1.5 bg-[#55132D] hover:bg-[#681B37] text-white text-xs font-semibold rounded-lg shadow-xs flex items-center gap-1.5 transition-colors whitespace-nowrap shrink-0"
-            >
-              <Plus className="w-3.5 h-3.5" />
-              <span>Create Public Event</span>
-            </button>
-          </div>
-        }
-      />
-
+      {!isEmbedded && (
+        <ContentPageHeader
+          title="Public Events & Religious Festivals"
+          actions={
+            <div className="flex items-center gap-2">
+              <button
+                onClick={handleOpenCreateModal}
+                className="px-3.5 py-1.5 bg-[#55132D] hover:bg-[#681B37] text-white text-xs font-semibold rounded-lg shadow-xs flex items-center gap-1.5 transition-colors whitespace-nowrap shrink-0"
+              >
+                <Plus className="w-3.5 h-3.5" />
+                <span>Create Public Event</span>
+              </button>
+            </div>
+          }
+        />
+      )}
       {/* Metrics */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3.5">
         <div className="bg-white rounded-xl border border-stone-200 p-4 shadow-xs">
@@ -213,7 +216,7 @@ export default function EventsFestivals() {
               Hero Slots
             </span>
           </div>
-          <div className="text-2xl font-bold font-mono text-[#800000]">{featuredEvents.length}</div>
+          <div className="text-2xl font-bold font-mono text-[#55132D]">{featuredEvents.length}</div>
           <span className="text-[11px] text-stone-500">Pinned banner items</span>
         </div>
       </div>
@@ -234,14 +237,14 @@ export default function EventsFestivals() {
                   placeholder="Search event title or venue..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-8 pr-3 py-1.5 text-xs border border-stone-300 rounded-lg bg-stone-50 focus:outline-none focus:border-[#800000] w-60"
+                  className="pl-8 pr-3 py-1.5 text-xs border border-stone-300 rounded-lg bg-stone-50 focus:outline-none focus:border-[#55132D] w-60"
                 />
               </div>
 
               <select
                 value={categoryFilter}
                 onChange={(e) => setCategoryFilter(e.target.value)}
-                className="text-xs border border-stone-300 rounded-lg px-2.5 py-1.5 bg-stone-50 focus:outline-none focus:border-[#800000]"
+                className="text-xs border border-stone-300 rounded-lg px-2.5 py-1.5 bg-stone-50 focus:outline-none focus:border-[#55132D]"
               >
                 <option value="ALL">All Categories</option>
                 {eventCategories.map((c) => (
@@ -254,11 +257,12 @@ export default function EventsFestivals() {
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
-                className="text-xs border border-stone-300 rounded-lg px-2.5 py-1.5 bg-stone-50 focus:outline-none focus:border-[#800000]"
+                className="text-xs border border-stone-300 rounded-lg px-2.5 py-1.5 bg-stone-50 focus:outline-none focus:border-[#55132D]"
               >
                 <option value="ALL">All Statuses</option>
                 <option value="Published">Published</option>
                 <option value="Scheduled">Scheduled</option>
+                <option value="FEATURED">Featured on Home ({featuredEvents.length})</option>
                 <option value="Draft">Draft</option>
                 <option value="Archived">Archived</option>
               </select>
@@ -336,7 +340,7 @@ export default function EventsFestivals() {
                       </button>
                       <button
                         onClick={() => handleOpenEditModal(evt)}
-                        className="text-[11px] text-[#800000] hover:underline font-semibold"
+                        className="text-[11px] text-[#55132D] hover:underline font-semibold"
                       >
                         Edit
                       </button>
@@ -365,7 +369,7 @@ export default function EventsFestivals() {
             </div>
             <button
               onClick={handleOpenCreateModal}
-              className="px-3 py-1.5 bg-[#800000] hover:bg-[#660000] text-white text-xs font-semibold rounded-lg flex items-center gap-1.5 transition-colors"
+              className="px-3 py-1.5 bg-[#55132D] hover:bg-[#681B37] text-white text-xs font-semibold rounded-lg flex items-center gap-1.5 transition-colors"
             >
               <Plus className="w-3.5 h-3.5" />
               Schedule Event
@@ -376,11 +380,11 @@ export default function EventsFestivals() {
             {events.map((evt) => (
               <div
                 key={evt.id}
-                className="bg-white rounded-xl border border-stone-200 p-4 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4 hover:border-[#800000]/40 transition-all"
+                className="bg-white rounded-xl border border-stone-200 p-4 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4 hover:border-[#55132D]/40 transition-all"
               >
                 <div className="flex items-start gap-3.5">
                   <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 text-center min-w-[70px] shrink-0">
-                    <span className="text-[10px] uppercase font-bold text-[#800000] block">
+                    <span className="text-[10px] uppercase font-bold text-[#55132D] block">
                       {evt.startDate.split(' ')[1]}
                     </span>
                     <span className="text-xl font-bold font-mono text-stone-900 block leading-tight">
@@ -410,7 +414,7 @@ export default function EventsFestivals() {
                       </span>
                       <span>•</span>
                       <span className="flex items-center gap-1">
-                        <MapPin className="w-3 h-3 text-[#800000]" /> {evt.venue}
+                        <MapPin className="w-3 h-3 text-[#55132D]" /> {evt.venue}
                       </span>
                     </div>
                   </div>
@@ -421,11 +425,11 @@ export default function EventsFestivals() {
                     onClick={() => openPreview('event', evt)}
                     className="px-3 py-1.5 bg-stone-100 hover:bg-stone-200 text-stone-700 text-xs font-semibold rounded-lg flex items-center gap-1"
                   >
-                    <Eye className="w-3.5 h-3.5 text-[#800000]" /> Preview Devotee Card
+                    <Eye className="w-3.5 h-3.5 text-[#55132D]" /> Preview Devotee Card
                   </button>
                   <button
                     onClick={() => handleOpenEditModal(evt)}
-                    className="px-3 py-1.5 bg-[#800000] hover:bg-[#660000] text-white text-xs font-semibold rounded-lg"
+                    className="px-3 py-1.5 bg-[#55132D] hover:bg-[#681B37] text-white text-xs font-semibold rounded-lg"
                   >
                     Edit Event
                   </button>
@@ -436,106 +440,45 @@ export default function EventsFestivals() {
         </div>
       )}
 
-      {/* TAB 3: FEATURED EVENTS */}
-      {activeTab === 'featured' && (
-        <div className="space-y-4">
-          <div className="bg-white rounded-xl border border-stone-200 p-4 shadow-xs">
-            <h3 className="text-sm font-bold text-stone-900">Public Portal Homepage Featured Celebrations</h3>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {featuredEvents.map((evt) => (
-              <div
-                key={evt.id}
-                className="bg-white rounded-xl border-2 border-[#800000]/30 overflow-hidden shadow-xs flex flex-col justify-between"
-              >
-                <div className="relative aspect-video max-h-48 bg-stone-900">
-                  <img
-                    src={evt.coverImage || '/src/assets/images/temple.jpg'}
-                    alt={evt.title}
-                    className="w-full h-full object-cover opacity-85"
-                  />
-                  <div className="absolute top-2.5 right-2.5 bg-amber-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1 shadow-sm">
-                    <Sparkles className="w-3 h-3" /> Featured Banner
-                  </div>
-                  <div className="absolute bottom-2.5 left-2.5 bg-black/70 backdrop-blur-xs text-white text-[10px] font-mono px-2 py-0.5 rounded">
-                    {evt.startDate} {evt.endDate !== evt.startDate && `– ${evt.endDate}`}
-                  </div>
-                </div>
-
-                <div className="p-4 space-y-2 text-xs flex-1 flex flex-col justify-between">
-                  <div>
-                    <span className="text-[10px] font-bold text-[#800000] uppercase tracking-wider block">
-                      {evt.category}
-                    </span>
-                    <h4 className="text-sm font-bold text-stone-900 mt-0.5">{evt.title}</h4>
-                    <p className="text-stone-600 line-clamp-2 mt-1">{evt.shortDescription}</p>
-                  </div>
-
-                  <div className="pt-3 border-t border-stone-150 flex items-center justify-between">
-                    <button
-                      onClick={() => toggleEventFeatured(evt.id)}
-                      className="text-stone-500 hover:text-red-600 text-[11px] font-medium"
-                    >
-                      Remove from Featured
-                    </button>
-                    <button
-                      onClick={() => openPreview('event', evt)}
-                      className="px-2.5 py-1 bg-[#800000] text-white text-[10px] font-semibold rounded"
-                    >
-                      Simulate Public Card
-                    </button>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* TAB 4: CATEGORIES */}
+      {/* TAB 3: CATEGORIES & OPERATIONAL LINKAGES */}
       {activeTab === 'categories' && (
-        <div className="bg-white rounded-xl border border-stone-200 p-4 shadow-xs space-y-4">
-          <div className="flex items-center justify-between border-b border-stone-200 pb-3">
-            <div>
-              <h3 className="text-sm font-bold text-stone-900">Configured CMS Event Categories</h3>
+        <div className="space-y-6">
+          <div className="bg-white rounded-xl border border-stone-200/90 p-5 shadow-subtle space-y-4">
+            <div className="flex items-center justify-between border-b border-stone-200 pb-3">
+              <div>
+                <h3 className="section-heading">Configured CMS Event Categories</h3>
+                <p className="supporting-text">Official classification of festivals and sacred rituals</p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5">
+              {eventCategories.map((cat) => (
+                <div key={cat.id} className="p-3.5 bg-stone-50 rounded-xl border border-stone-200 space-y-1">
+                  <span className="font-mono text-[11px] text-stone-400 font-bold">{cat.id}</span>
+                  <h4 className="text-xs font-bold text-stone-900">{cat.name}</h4>
+                  <p className="supporting-text">{cat.description}</p>
+                  <div className="pt-2 flex justify-between items-center text-[11px]">
+                    <span className="text-emerald-700 font-semibold">{cat.status}</span>
+                    <span className="text-stone-400">
+                      {events.filter((e) => e.category === cat.name).length} events linked
+                    </span>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5">
-            {eventCategories.map((cat) => (
-              <div key={cat.id} className="p-3.5 bg-stone-50 rounded-xl border border-stone-200 space-y-1">
-                <span className="font-mono text-[10px] text-stone-400 font-bold">{cat.id}</span>
-                <h4 className="text-xs font-bold text-stone-900">{cat.name}</h4>
-                <p className="text-[11px] text-stone-500">{cat.description}</p>
-                <div className="pt-2 flex justify-between items-center text-[10px]">
-                  <span className="text-emerald-700 font-semibold">{cat.status}</span>
-                  <span className="text-stone-400">
-                    {events.filter((e) => e.category === cat.name).length} events linked
-                  </span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* TAB 5: OVERVIEW & DISTRIBUTION */}
-      {activeTab === 'overview' && (
-        <div className="bg-white rounded-xl border border-stone-200 p-5 shadow-xs space-y-4">
-          <h3 className="text-sm font-bold text-stone-900">Events Publishing Overview</h3>
-
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-            <div className="p-3.5 bg-stone-50 rounded-xl border border-stone-150 space-y-2">
-              <h4 className="font-bold text-stone-800">Operational Linkages</h4>
-              <p className="text-stone-600 text-[11px] leading-relaxed">
-                Diwali Mela 2026 is connected with internal operational logistics under Mela Management (ID: <code>MELA-2026-01</code>), ensuring public announcements and queue schedules reflect live command directives.
+            <div className="p-4 bg-white rounded-xl border border-stone-200/90 shadow-subtle space-y-2">
+              <h4 className="font-bold text-stone-900">Operational Logistics Linkage</h4>
+              <p className="text-stone-600 text-xs leading-relaxed">
+                Diwali Mela 2026 is connected with internal operational logistics under Mela Management (ID: <code className="font-mono bg-stone-100 px-1 py-0.5 rounded text-[#55132D]">MELA-2026-01</code>), ensuring public announcements and queue schedules reflect live command directives.
               </p>
             </div>
 
-            <div className="p-3.5 bg-stone-50 rounded-xl border border-stone-150 space-y-2">
-              <h4 className="font-bold text-stone-800">Verification & Sanction Status</h4>
-              <p className="text-stone-600 text-[11px] leading-relaxed">
+            <div className="p-4 bg-white rounded-xl border border-stone-200/90 shadow-subtle space-y-2">
+              <h4 className="font-bold text-stone-900">Verification & Astrological Sanction</h4>
+              <p className="text-stone-600 text-xs leading-relaxed">
                 All festival dates are synchronized with the official Tripura Shakta Sampradaya Panjika. Special midnight timings require Priest Council consent prior to public syndication.
               </p>
             </div>
@@ -571,7 +514,7 @@ export default function EventsFestivals() {
                   placeholder="e.g. Kartik Purnima Maha Deeparadhana 2026"
                   value={eventForm.title}
                   onChange={(e) => setEventForm({ ...eventForm, title: e.target.value })}
-                  className="w-full border border-stone-300 rounded-lg px-3 py-2 bg-stone-50 focus:outline-none focus:border-[#800000]"
+                  className="w-full border border-stone-300 rounded-lg px-3 py-2 bg-stone-50 focus:outline-none focus:border-[#55132D]"
                 />
               </div>
 
@@ -581,7 +524,7 @@ export default function EventsFestivals() {
                   <select
                     value={eventForm.category}
                     onChange={(e) => setEventForm({ ...eventForm, category: e.target.value })}
-                    className="w-full border border-stone-300 rounded-lg px-3 py-2 bg-stone-50 focus:outline-none focus:border-[#800000]"
+                    className="w-full border border-stone-300 rounded-lg px-3 py-2 bg-stone-50 focus:outline-none focus:border-[#55132D]"
                   >
                     {eventCategories.map((c) => (
                       <option key={c.id} value={c.name}>
@@ -599,7 +542,7 @@ export default function EventsFestivals() {
                     placeholder="e.g. Matabari Temple Complex"
                     value={eventForm.venue}
                     onChange={(e) => setEventForm({ ...eventForm, venue: e.target.value })}
-                    className="w-full border border-stone-300 rounded-lg px-3 py-2 bg-stone-50 focus:outline-none focus:border-[#800000]"
+                    className="w-full border border-stone-300 rounded-lg px-3 py-2 bg-stone-50 focus:outline-none focus:border-[#55132D]"
                   />
                 </div>
               </div>
@@ -612,7 +555,7 @@ export default function EventsFestivals() {
                     placeholder="e.g. 10 Nov 2026"
                     value={eventForm.startDate}
                     onChange={(e) => setEventForm({ ...eventForm, startDate: e.target.value })}
-                    className="w-full border border-stone-300 rounded-lg px-3 py-2 bg-stone-50 focus:outline-none focus:border-[#800000]"
+                    className="w-full border border-stone-300 rounded-lg px-3 py-2 bg-stone-50 focus:outline-none focus:border-[#55132D]"
                   />
                 </div>
                 <div>
@@ -622,7 +565,7 @@ export default function EventsFestivals() {
                     placeholder="e.g. 12 Nov 2026"
                     value={eventForm.endDate}
                     onChange={(e) => setEventForm({ ...eventForm, endDate: e.target.value })}
-                    className="w-full border border-stone-300 rounded-lg px-3 py-2 bg-stone-50 focus:outline-none focus:border-[#800000]"
+                    className="w-full border border-stone-300 rounded-lg px-3 py-2 bg-stone-50 focus:outline-none focus:border-[#55132D]"
                   />
                 </div>
               </div>
@@ -635,7 +578,7 @@ export default function EventsFestivals() {
                   placeholder="Summary displayed on cards and calendar..."
                   value={eventForm.shortDescription}
                   onChange={(e) => setEventForm({ ...eventForm, shortDescription: e.target.value })}
-                  className="w-full border border-stone-300 rounded-lg px-3 py-2 bg-stone-50 focus:outline-none focus:border-[#800000]"
+                  className="w-full border border-stone-300 rounded-lg px-3 py-2 bg-stone-50 focus:outline-none focus:border-[#55132D]"
                 />
               </div>
 
@@ -646,7 +589,7 @@ export default function EventsFestivals() {
                   placeholder="Detailed schedule, pujas, cultural recitals..."
                   value={eventForm.detailedDescription}
                   onChange={(e) => setEventForm({ ...eventForm, detailedDescription: e.target.value })}
-                  className="w-full border border-stone-300 rounded-lg px-3 py-2 bg-stone-50 focus:outline-none focus:border-[#800000]"
+                  className="w-full border border-stone-300 rounded-lg px-3 py-2 bg-stone-50 focus:outline-none focus:border-[#55132D]"
                 />
               </div>
 
@@ -657,7 +600,7 @@ export default function EventsFestivals() {
                   placeholder="e.g.&#10;Lighting of 1,00,000 earthen lamps&#10;Midnight Kali Puja on Amavasya&#10;Free Annadanam for visiting yatris"
                   value={eventForm.highlightsText}
                   onChange={(e) => setEventForm({ ...eventForm, highlightsText: e.target.value })}
-                  className="w-full border border-stone-300 rounded-lg px-3 py-2 bg-stone-50 focus:outline-none focus:border-[#800000]"
+                  className="w-full border border-stone-300 rounded-lg px-3 py-2 bg-stone-50 focus:outline-none focus:border-[#55132D]"
                 />
               </div>
 
@@ -668,7 +611,7 @@ export default function EventsFestivals() {
                   placeholder="e.g. Expect peak rush after 05:00 PM. Utilize Lot A parking."
                   value={eventForm.visitorInstructions}
                   onChange={(e) => setEventForm({ ...eventForm, visitorInstructions: e.target.value })}
-                  className="w-full border border-stone-300 rounded-lg px-3 py-2 bg-stone-50 focus:outline-none focus:border-[#800000]"
+                  className="w-full border border-stone-300 rounded-lg px-3 py-2 bg-stone-50 focus:outline-none focus:border-[#55132D]"
                 />
               </div>
 
@@ -678,7 +621,7 @@ export default function EventsFestivals() {
                   <select
                     value={eventForm.status}
                     onChange={(e) => setEventForm({ ...eventForm, status: e.target.value })}
-                    className="w-full border border-stone-300 rounded-lg px-3 py-2 bg-stone-50 focus:outline-none focus:border-[#800000]"
+                    className="w-full border border-stone-300 rounded-lg px-3 py-2 bg-stone-50 focus:outline-none focus:border-[#55132D]"
                   >
                     <option value="Draft">Draft</option>
                     <option value="Scheduled">Scheduled</option>
@@ -693,7 +636,7 @@ export default function EventsFestivals() {
                     id="featuredToggle"
                     checked={eventForm.featured}
                     onChange={(e) => setEventForm({ ...eventForm, featured: e.target.checked })}
-                    className="w-4 h-4 text-[#800000] rounded focus:ring-[#800000]"
+                    className="w-4 h-4 text-[#55132D] rounded focus:ring-[#55132D]"
                   />
                   <label htmlFor="featuredToggle" className="font-semibold text-stone-800 cursor-pointer">
                     Pin as Featured on Home
@@ -711,7 +654,7 @@ export default function EventsFestivals() {
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-[#800000] hover:bg-[#660000] text-white font-semibold rounded-lg shadow-sm"
+                  className="px-4 py-2 bg-[#55132D] hover:bg-[#681B37] text-white font-semibold rounded-lg shadow-sm"
                 >
                   {editingEvent ? 'Save Event Changes' : 'Publish / Save Event'}
                 </button>

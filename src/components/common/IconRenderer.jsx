@@ -26,12 +26,16 @@ import {
   HelpCircle,
   FileCheck,
   AlertTriangle,
+  Utensils,
+  Hotel,
 } from 'lucide-react';
 
 const ICON_MAP = {
   LayoutDashboard,
   CalendarCheck,
   Flame,
+  Utensils,
+  Hotel,
   Users,
   HeartHandshake,
   ShoppingBag,

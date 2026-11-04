@@ -1,38 +1,51 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Flame, ArrowRight } from 'lucide-react';
-import { UPCOMING_FESTIVAL } from '../../data/festivalData';
+import { Sparkles, ChevronRight } from 'lucide-react';
+import { FESTIVAL_INFO } from '../../data/dashboardData';
 
 export default function DashboardHero() {
   const navigate = useNavigate();
-  const { name, dates, daysLeft, managementPath } = UPCOMING_FESTIVAL;
 
   return (
-    <div className="bg-white rounded-xl border border-[#E8E2D8] shadow-subtle px-5 py-3 sm:py-3.5 flex flex-col md:flex-row md:items-center md:justify-between gap-3 relative overflow-hidden">
-      {/* Left: Clean Greeting */}
-      <div className="min-w-0">
-        <h2 className="font-heading text-lg sm:text-xl font-bold text-[#55132D] tracking-tight leading-none">
-          Good Morning, Admin
-        </h2>
+    <div className="rounded-2xl bg-gradient-to-r from-[#55132D] via-[#481026] to-[#360B1C] text-white px-5 py-4 shadow-sm border border-[#E8E2D8]/30 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      {/* Left: Greeting & Operational Status */}
+      <div className="flex items-center gap-3.5 min-w-0">
+        <div className="relative shrink-0">
+          <div className="w-11 h-11 rounded-xl overflow-hidden border border-[#E2BC6B]/50 bg-stone-900/40 p-0.5 shadow-xs">
+            <img
+              src="/temple-admin-crest.png"
+              alt="Temple Crest"
+              className="w-full h-full object-cover rounded-lg"
+            />
+          </div>
+          <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-emerald-400 border-2 border-[#55132D]" title="Sanctum Active" />
+        </div>
+
+        <div className="flex flex-wrap items-center gap-2.5">
+          <h2 className="text-lg sm:text-xl font-bold text-white tracking-tight leading-tight font-serif">
+            Good Morning, Administrator
+          </h2>
+          <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-400/30">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+            Sanctum Active
+          </span>
+        </div>
       </div>
 
-      {/* Right: Upcoming Festival Notice */}
-      <div
-        onClick={() => navigate(managementPath)}
-        className="flex items-center gap-2.5 px-3 py-1.5 rounded-lg bg-[#FAF8F5] border border-[#E8E2D8] hover:border-[#55132D]/30 transition-all cursor-pointer group flex-shrink-0 self-start md:self-auto"
+      {/* Right: Festival Action Pill */}
+      <button
+        type="button"
+        onClick={() => navigate(FESTIVAL_INFO.path)}
+        className="inline-flex items-center gap-2.5 px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-xs text-white transition-all cursor-pointer shrink-0 self-start sm:self-auto group shadow-2xs"
       >
-        <span className="p-1 rounded-md bg-amber-50 text-amber-700 flex-shrink-0">
-          <Flame className="w-3.5 h-3.5 fill-amber-500" />
-        </span>
-        <div className="text-xs">
-          <span className="font-bold text-[#55132D]">{name}</span>
-          <span className="text-stone-500 ml-1.5 font-medium">({dates})</span>
-        </div>
-        <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-900 ml-1">
-          {daysLeft}d left
-        </span>
-        <ArrowRight className="w-3.5 h-3.5 text-stone-400 group-hover:text-[#55132D] group-hover:translate-x-0.5 transition-all" />
-      </div>
+        <Sparkles className="w-4 h-4 text-[#E2BC6B] group-hover:rotate-12 transition-transform" />
+        <span className="font-semibold text-[#E2BC6B]">{FESTIVAL_INFO.name}</span>
+        <span className="text-white/40">·</span>
+        <span className="text-stone-300">{FESTIVAL_INFO.dates}</span>
+        <span className="text-white/40">·</span>
+        <span className="text-amber-300 font-bold">{FESTIVAL_INFO.daysLeft}d left</span>
+        <ChevronRight className="w-3.5 h-3.5 text-stone-400 group-hover:translate-x-0.5 transition-transform" />
+      </button>
     </div>
   );
 }

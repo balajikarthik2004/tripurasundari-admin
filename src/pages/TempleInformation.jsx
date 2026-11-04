@@ -1,620 +1,763 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState } from 'react';
 import {
   Landmark,
   BookOpen,
   Image as ImageIcon,
-  FileText,
-  CheckCircle,
-  Clock,
-  AlertTriangle,
-  Plus,
+  Sparkles,
+  Bell,
   Eye,
-  Edit3,
-  Trash2,
-  Filter,
-  Save,
   Globe,
   Upload,
-  ArrowUp,
-  ArrowDown,
+  Plus,
+  Trash2,
+  Edit3,
+  CheckCircle2,
+  Clock,
+  MapPin,
+  Phone,
+  Save,
+  Filter,
   X,
-  Sparkles,
-  Info
+  AlertTriangle,
+  Info,
 } from 'lucide-react';
 import { useContentManagement } from '../context/ContentManagementContext';
 import ContentPageHeader from '../components/content-management/shared/ContentPageHeader';
 import ContentTabs from '../components/content-management/shared/ContentTabs';
-import ContentStatusBadge from '../components/content-management/shared/ContentStatusBadge';
-import VerificationBadge from '../components/content-management/shared/VerificationBadge';
-import ImageUploadPreview from '../components/content-management/shared/ImageUploadPreview';
 import PublicWebsitePreviewModal from '../components/content-management/shared/PublicWebsitePreviewModal';
 
 export default function TempleInformation() {
   const {
     templeProfile,
     updateTempleProfile,
-    historySections,
-    addHistorySection,
-    updateHistorySection,
-    deleteHistorySection,
-    deities,
-    addDeity,
-    updateDeity,
-    deleteDeity,
     galleryItems,
     addGalleryItem,
     updateGalleryItem,
     deleteGalleryItem,
-    websitePages,
     openPreview,
     showToast,
   } = useContentManagement();
 
-  const [activeTab, setActiveTab] = useState('overview');
-  const [profileForm, setProfileForm] = useState(templeProfile);
-  const [selectedGalleryCat, setSelectedGalleryCat] = useState('ALL');
+  // 5 Navigation Bar Options
+  const [activeTab, setActiveTab] = useState('profile');
 
-  // Modals state
-  const [isAddHistoryModalOpen, setIsAddHistoryModalOpen] = useState(false);
-  const [isAddDeityModalOpen, setIsAddDeityModalOpen] = useState(false);
-  const [isAddGalleryModalOpen, setIsAddGalleryModalOpen] = useState(false);
-
-  // New item forms
-  const [historyForm, setHistoryForm] = useState({
-    title: '',
-    category: 'Historical Background',
-    slug: '',
-    content: '',
-    verificationStatus: 'Draft',
-    status: 'Draft',
+  // Tab 1: Profile State
+  const [profileForm, setProfileForm] = useState({
+    ...templeProfile,
+    foundationEra: templeProfile.foundationEra || '1501 CE by Maharaja Dhanya Manikya',
+    darshanHours: templeProfile.darshanHours || '05:30 AM – 09:00 PM (Continuous)',
+    bhogSchedule: templeProfile.bhogSchedule || '11:30 AM – 03:00 PM (Daily Mahaprasad)',
+    coverImageUrl: templeProfile.coverImageUrl || '/matabari-premises-1.jpg',
   });
 
-  const [deityForm, setDeityForm] = useState({
-    name: '',
-    significance: '',
-    material: 'Sacred Black Chlorite Stone',
-    dimensions: '',
-    posture: '',
-    description: '',
-    adornment: '',
-    verificationStatus: 'Draft',
-    status: 'Draft',
-  });
+  // Tab 2: Deities State
+  const [deitiesList, setDeitiesList] = useState([
+    {
+      id: 'DEITY-01',
+      name: 'Mata Tripura Sundari (Soroshi)',
+      role: 'Presiding Sovereign Deity (Boro Ma & Chhoto Ma)',
+      murti: '5-ft Black Chlorite Stone Vigraha',
+      timings: '05:30 AM, 12:30 PM & 06:30 PM',
+      priest: 'Pt. Ramendra Sharma (Head Pujari)',
+      status: 'Published',
+    },
+    {
+      id: 'DEITY-02',
+      name: 'Sri Chandi Mandap',
+      role: 'Sacred Havan & Chandi Paath Enclosure',
+      murti: 'Akhanda Yajna Kunda & Silver Trishul',
+      timings: '08:00 AM (Pratah Chandi Paath)',
+      priest: 'Pt. Kalyan Chakraborty',
+      status: 'Published',
+    },
+    {
+      id: 'DEITY-03',
+      name: 'Lord Kalyaneswar Shiva Lingam',
+      role: 'North Ghat Sacred Guardian Shrine',
+      murti: 'Svayambhu Black Basalt Linga',
+      timings: 'Daily Snana & Somwar Rudrabhishek',
+      priest: 'Pt. Bhabesh Shastri',
+      status: 'Published',
+    },
+    {
+      id: 'DEITY-04',
+      name: 'Bhairav Ksetrapala Shrine',
+      role: 'Peetha Perimeter Guardian Protector',
+      murti: 'Terracotta & Stone Vigraha',
+      timings: 'Dhoop Aarti & Raksha Archana',
+      priest: 'Temple Seva Dal Lead',
+      status: 'Published',
+    },
+  ]);
 
-  const [galleryForm, setGalleryForm] = useState({
-    title: '',
-    category: 'Main Temple',
-    description: '',
-    altText: '',
-    imageUrl: '/src/assets/images/temple.jpg',
-    status: 'Published',
-  });
+  // Tab 3: Heritage & History State
+  const [historyMilestones, setHistoryMilestones] = useState([
+    {
+      id: 'HIST-01',
+      year: '1501 CE',
+      title: 'Peetha Sthapana & Consecration',
+      description:
+        'Maharaja Dhanya Manikya installed the holy deity of Tripura Sundari after receiving a nocturnal divine command.',
+      highlight: 'Char-chala vaulted architecture fusing Bengali style with indigenous Tripuri royal motifs.',
+      status: 'Published',
+    },
+    {
+      id: 'HIST-02',
+      year: '1650 CE',
+      title: 'Excavation of Sacred Kalyan Sagar',
+      description:
+        'Maharaja Kalyan Manikya excavated the 6.4-acre holy lake south of the temple.',
+      highlight: 'Permanent sanctuary for venerable Bostami freshwater black softshell turtles.',
+      status: 'Published',
+    },
+    {
+      id: 'HIST-03',
+      year: '1700s',
+      title: 'Sanctum Fortification & Restoration',
+      description:
+        'Reconstructed with earthquake-resistant solid brick masonry by Maharaja Rama Manikya.',
+      highlight: 'Preserved the historic sanctum dome with antique terracotta ornamental friezes.',
+      status: 'Published',
+    },
+    {
+      id: 'HIST-04',
+      year: 'Present',
+      title: '51 Sacred Shakti Peethas Recognition',
+      description:
+        'Venerated across India as the sacred spot where Sati’s right foot (Dakshina Pada) fell.',
+      highlight: 'Welcoming over 2.5 million devotees and pilgrims annually.',
+      status: 'Published',
+    },
+  ]);
 
-  // Derived Metrics
-  const totalSections = historySections.length + deities.length + websitePages.length;
-  const publishedSections =
-    historySections.filter((h) => h.status === 'Published').length +
-    deities.filter((d) => d.status === 'Published').length +
-    websitePages.filter((p) => p.status === 'Published').length;
-  const draftSections =
-    historySections.filter((h) => h.status === 'Draft').length +
-    deities.filter((d) => d.status === 'Draft').length +
-    websitePages.filter((p) => p.status === 'Draft').length;
-  const reviewRequiredCount = historySections.filter((h) => h.verificationStatus === 'Requires Review').length;
+  // Tab 4: Gallery Filter
+  const [selectedGalleryCategory, setSelectedGalleryCategory] = useState('ALL');
 
+  // Tab 5: Public Announcements State
+  const [announcements, setAnnouncements] = useState([
+    {
+      id: 'ANN-01',
+      title: 'Diwali Mahotsav 2026 Special Darshan Timings',
+      category: 'Festival Notice',
+      priority: 'High',
+      content:
+        '24-hour continuous darshan corridors open from Nov 11 to Nov 15. Free shoe cloakrooms active at West Gopuram.',
+      validity: 'Valid through Nov 16, 2026',
+      status: 'Live',
+    },
+    {
+      id: 'ANN-02',
+      title: 'Kalyan Sagar Ghat Water Safety Notice',
+      category: 'Safety Advisory',
+      priority: 'Medium',
+      content:
+        'Devotees must stay behind safety chains on submerged steps. Feeding sacred turtles restricted to pure puffed rice (muri).',
+      validity: 'Continuous Protocol',
+      status: 'Live',
+    },
+    {
+      id: 'ANN-03',
+      title: 'Daily Free Annadanam Lunch Service Hours',
+      category: 'Prasad Service',
+      priority: 'Medium',
+      content:
+        'Mahaprasad coupon distribution starts 09:30 AM at East Counter. Dining batches operate continuously from 11:30 AM to 03:00 PM.',
+      validity: 'Daily Service',
+      status: 'Live',
+    },
+    {
+      id: 'ANN-04',
+      title: 'Senior Citizen & Divyangjan Wheelchair Assistance',
+      category: 'Accessibility',
+      priority: 'Medium',
+      content:
+        'Free battery-operated shuttle carts running from West Bus Terminal to Sanctum North Ramp with dedicated volunteer assistance.',
+      validity: 'Daily Service',
+      status: 'Live',
+    },
+  ]);
+
+  // Modals & Editing State
+  const [deityModal, setDeityModal] = useState({ isOpen: false, item: null, isEdit: false });
+  const [milestoneModal, setMilestoneModal] = useState({ isOpen: false, item: null, isEdit: false });
+  const [announcementModal, setAnnouncementModal] = useState({ isOpen: false, item: null, isEdit: false });
+  const [galleryModal, setGalleryModal] = useState({ isOpen: false, item: null, isEdit: false });
+  const [coverPhotoModal, setCoverPhotoModal] = useState(false);
+
+  // Profile Save
   const handleProfileSave = (publish = false) => {
     updateTempleProfile({
       ...profileForm,
       status: publish ? 'Published' : profileForm.status,
     });
-    if (publish) {
-      showToast('Temple profile published to public portal simulation.');
+    showToast(
+      publish
+        ? 'Temple profile published to devotee portal successfully.'
+        : 'Profile draft saved successfully.'
+    );
+  };
+
+  // --- Deity Handlers ---
+  const openAddDeity = () => {
+    setDeityModal({
+      isOpen: true,
+      isEdit: false,
+      item: {
+        id: `DEITY-0${deitiesList.length + 1}`,
+        name: '',
+        role: '',
+        murti: '',
+        timings: '',
+        priest: '',
+        status: 'Published',
+      },
+    });
+  };
+
+  const openEditDeity = (deity) => {
+    setDeityModal({ isOpen: true, isEdit: true, item: { ...deity } });
+  };
+
+  const saveDeityModal = () => {
+    if (!deityModal.item?.name.trim()) {
+      showToast('Please enter deity name', 'error');
+      return;
+    }
+    if (deityModal.isEdit) {
+      setDeitiesList((prev) =>
+        prev.map((d) => (d.id === deityModal.item.id ? deityModal.item : d))
+      );
+      showToast('Deity shrine updated for devotee portal.');
+    } else {
+      setDeitiesList((prev) => [...prev, deityModal.item]);
+      showToast('New deity shrine added.');
+    }
+    setDeityModal({ isOpen: false, item: null, isEdit: false });
+  };
+
+  const toggleDeityStatus = (id) => {
+    setDeitiesList((prev) =>
+      prev.map((d) =>
+        d.id === id
+          ? { ...d, status: d.status === 'Published' ? 'Draft' : 'Published' }
+          : d
+      )
+    );
+    showToast('Deity portal visibility updated.');
+  };
+
+  const deleteDeity = (id) => {
+    if (window.confirm('Remove this deity entry from devotee portal?')) {
+      setDeitiesList((prev) => prev.filter((d) => d.id !== id));
+      showToast('Deity entry removed.');
     }
   };
 
-  const handleCreateHistory = (e) => {
-    e.preventDefault();
-    if (!historyForm.title || !historyForm.content) return;
-    addHistorySection({
-      ...historyForm,
-      slug: historyForm.slug || historyForm.title.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+  // --- Milestone Handlers ---
+  const openAddMilestone = () => {
+    setMilestoneModal({
+      isOpen: true,
+      isEdit: false,
+      item: {
+        id: `HIST-0${historyMilestones.length + 1}`,
+        year: '',
+        title: '',
+        description: '',
+        highlight: '',
+        status: 'Published',
+      },
     });
-    setHistoryForm({
-      title: '',
-      category: 'Historical Background',
-      slug: '',
-      content: '',
-      verificationStatus: 'Draft',
-      status: 'Draft',
-    });
-    setIsAddHistoryModalOpen(false);
   };
 
-  const handleCreateDeity = (e) => {
-    e.preventDefault();
-    if (!deityForm.name || !deityForm.description) return;
-    addDeity(deityForm);
-    setDeityForm({
-      name: '',
-      significance: '',
-      material: 'Sacred Black Chlorite Stone',
-      dimensions: '',
-      posture: '',
-      description: '',
-      adornment: '',
-      verificationStatus: 'Draft',
-      status: 'Draft',
-    });
-    setIsAddDeityModalOpen(false);
+  const openEditMilestone = (milestone) => {
+    setMilestoneModal({ isOpen: true, isEdit: true, item: { ...milestone } });
   };
 
-  const handleCreateGalleryItem = (e) => {
-    e.preventDefault();
-    if (!galleryForm.title) return;
-    addGalleryItem(galleryForm);
-    setGalleryForm({
-      title: '',
-      category: 'Main Temple',
-      description: '',
-      altText: '',
-      imageUrl: '/src/assets/images/temple.jpg',
-      status: 'Published',
-    });
-    setIsAddGalleryModalOpen(false);
+  const saveMilestoneModal = () => {
+    if (!milestoneModal.item?.title.trim()) {
+      showToast('Please enter chronicle title', 'error');
+      return;
+    }
+    if (milestoneModal.isEdit) {
+      setHistoryMilestones((prev) =>
+        prev.map((m) => (m.id === milestoneModal.item.id ? milestoneModal.item : m))
+      );
+      showToast('Chronicle updated for devotee portal.');
+    } else {
+      setHistoryMilestones((prev) => [...prev, milestoneModal.item]);
+      showToast('New chronicle added.');
+    }
+    setMilestoneModal({ isOpen: false, item: null, isEdit: false });
   };
 
+  const toggleHistoryStatus = (id) => {
+    setHistoryMilestones((prev) =>
+      prev.map((h) =>
+        h.id === id
+          ? { ...h, status: h.status === 'Published' ? 'Draft' : 'Published' }
+          : h
+      )
+    );
+    showToast('Historical milestone portal visibility updated.');
+  };
+
+  const deleteMilestone = (id) => {
+    if (window.confirm('Remove this historical milestone?')) {
+      setHistoryMilestones((prev) => prev.filter((m) => m.id !== id));
+      showToast('Milestone removed.');
+    }
+  };
+
+  // --- Announcement Handlers ---
+  const openAddAnnouncement = () => {
+    setAnnouncementModal({
+      isOpen: true,
+      isEdit: false,
+      item: {
+        id: `ANN-0${announcements.length + 1}`,
+        title: '',
+        category: 'Festival Notice',
+        priority: 'High',
+        content: '',
+        validity: 'Continuous Protocol',
+        status: 'Live',
+      },
+    });
+  };
+
+  const openEditAnnouncement = (ann) => {
+    setAnnouncementModal({ isOpen: true, isEdit: true, item: { ...ann } });
+  };
+
+  const saveAnnouncementModal = () => {
+    if (!announcementModal.item?.title.trim()) {
+      showToast('Please enter announcement title', 'error');
+      return;
+    }
+    if (announcementModal.isEdit) {
+      setAnnouncements((prev) =>
+        prev.map((a) => (a.id === announcementModal.item.id ? announcementModal.item : a))
+      );
+      showToast('Announcement updated for devotee portal.');
+    } else {
+      setAnnouncements((prev) => [...prev, announcementModal.item]);
+      showToast('New notice posted to devotee portal.');
+    }
+    setAnnouncementModal({ isOpen: false, item: null, isEdit: false });
+  };
+
+  const toggleAnnouncementStatus = (id) => {
+    setAnnouncements((prev) =>
+      prev.map((a) =>
+        a.id === id ? { ...a, status: a.status === 'Live' ? 'Draft' : 'Live' } : a
+      )
+    );
+    showToast('Notice live broadcast status updated.');
+  };
+
+  const deleteAnnouncement = (id) => {
+    if (window.confirm('Remove this announcement notice?')) {
+      setAnnouncements((prev) => prev.filter((a) => a.id !== id));
+      showToast('Announcement removed.');
+    }
+  };
+
+  // --- Gallery Handlers ---
+  const openAddPhoto = () => {
+    setGalleryModal({
+      isOpen: true,
+      isEdit: false,
+      item: {
+        title: '',
+        category: 'Main Temple',
+        imageUrl: '/matabari-premises-1.jpg',
+        description: '',
+        status: 'Published',
+      },
+    });
+  };
+
+  const openEditPhoto = (photo) => {
+    setGalleryModal({ isOpen: true, isEdit: true, item: { ...photo } });
+  };
+
+  const saveGalleryModal = () => {
+    if (!galleryModal.item?.title.trim()) {
+      showToast('Please enter photo title', 'error');
+      return;
+    }
+    if (galleryModal.isEdit) {
+      updateGalleryItem(galleryModal.item.id, galleryModal.item);
+      showToast('Photo details updated.');
+    } else {
+      addGalleryItem({
+        ...galleryModal.item,
+        uploadDate: 'Today',
+      });
+      showToast('New photo added to devotee gallery.');
+    }
+    setGalleryModal({ isOpen: false, item: null, isEdit: false });
+  };
+
+  // 5 Navigation Bar Options
   const tabs = [
-    { id: 'overview', label: 'CMS Overview' },
-    { id: 'profile', label: 'Temple Profile' },
-    { id: 'history', label: 'History & Heritage', count: historySections.length, alert: reviewRequiredCount > 0 },
-    { id: 'deities', label: 'Deity Information', count: deities.length },
-    { id: 'gallery', label: 'Gallery Archive', count: galleryItems.length },
-    { id: 'pages', label: 'Website Pages', count: websitePages.length },
+    { id: 'profile', label: 'Temple Profile', icon: Landmark },
+    { id: 'deities', label: 'Deities & Shrines', icon: Sparkles, count: deitiesList.length },
+    { id: 'heritage', label: 'Heritage & History', icon: BookOpen, count: historyMilestones.length },
+    { id: 'gallery', label: 'Photo Gallery', icon: ImageIcon, count: galleryItems.length },
+    { id: 'announcements', label: 'Announcements', icon: Bell, count: announcements.length },
   ];
 
   return (
-    <div className="space-y-5 pb-8">
-      {/* Header */}
+    <div className="space-y-4 pb-8 select-none">
+      {/* 1. Page Header */}
       <ContentPageHeader
-        title="Temple Information & Public Identity"
-        subtitle="Manage public-facing chronicles, 1501 CE heritage archives, sanctum deities and multimedia gallery for devotee portal."
+        title="Temple Content"
         actions={
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="flex items-center gap-2">
             <button
               onClick={() => openPreview('temple-profile', profileForm)}
-              className="px-3 py-1.5 bg-stone-100 hover:bg-stone-200 text-stone-800 text-xs font-semibold rounded-lg flex items-center gap-1.5 transition-colors border border-stone-200 whitespace-nowrap shrink-0"
+              className="px-3.5 py-2 bg-stone-100 hover:bg-stone-200 text-stone-800 text-xs font-bold rounded-xl border border-stone-200 flex items-center gap-1.5 transition-colors cursor-pointer shadow-2xs"
             >
               <Eye className="w-3.5 h-3.5 text-[#55132D]" />
-              <span>Preview Public Portal</span>
+              <span>Preview Devotee Portal</span>
             </button>
             <button
               onClick={() => handleProfileSave(true)}
-              className="px-3.5 py-1.5 bg-[#55132D] hover:bg-[#681B37] text-white text-xs font-semibold rounded-lg shadow-xs flex items-center gap-1.5 transition-colors whitespace-nowrap shrink-0"
+              className="px-4 py-2 bg-[#55132D] hover:bg-[#681B37] text-white text-xs font-bold rounded-xl shadow-2xs flex items-center gap-1.5 transition-colors cursor-pointer"
             >
-              <Globe className="w-3.5 h-3.5" />
-              <span>Publish Profile</span>
+              <Globe className="w-3.5 h-3.5 text-[#E2BC6B]" />
+              <span>Publish All to Portal</span>
             </button>
           </div>
         }
       />
 
-      {/* Metric Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3.5">
-        <div className="bg-white rounded-xl border border-stone-200 p-4 shadow-xs">
-          <span className="text-[10px] uppercase font-bold text-stone-400 block mb-1">Total Sections</span>
-          <div className="text-2xl font-bold font-mono text-stone-900">{totalSections}</div>
-          <span className="text-[11px] text-stone-500">History, Deities & Pages</span>
+      {/* Synchronized Devotee Portal Notice Banner */}
+      <div className="flex items-center justify-between text-xs px-4 py-2.5 rounded-xl bg-amber-50/80 border border-amber-200/90 text-amber-900 shadow-2xs">
+        <div className="flex items-center gap-2">
+          <Info className="w-4 h-4 text-amber-700 shrink-0" />
+          <span>
+            <strong>Devotee Portal CMS:</strong> All temple profiles, sanctum deities, historical chronicles, photo galleries, and announcements configured here directly update the public devotee mobile and web portal.
+          </span>
         </div>
-
-        <div className="bg-white rounded-xl border border-stone-200 p-4 shadow-xs">
-          <div className="flex items-center justify-between mb-1">
-            <span className="text-[10px] uppercase font-bold text-stone-400">Published Status</span>
-            <span className="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-emerald-50 text-emerald-700">
-              {Math.round((publishedSections / totalSections) * 100)}% Live
-            </span>
-          </div>
-          <div className="text-2xl font-bold font-mono text-emerald-700">{publishedSections}</div>
-          <span className="text-[11px] text-stone-500">Visible on public portal</span>
-        </div>
-
-        <div className="bg-white rounded-xl border border-stone-200 p-4 shadow-xs">
-          <div className="flex items-center justify-between mb-1">
-            <span className="text-[10px] uppercase font-bold text-stone-400">Review Queue</span>
-          </div>
-          <div className="text-2xl font-bold font-mono text-amber-700">{reviewRequiredCount}</div>
-          <span className="text-[11px] text-stone-500">Awaiting historical audit</span>
-        </div>
-
-        <div className="bg-white rounded-xl border border-stone-200 p-4 shadow-xs">
-          <span className="text-[10px] uppercase font-bold text-stone-400 block mb-1">Last Portal Sync</span>
-          <div className="text-base font-bold text-stone-900 truncate">{templeProfile.lastUpdated}</div>
-          <span className="text-[11px] text-stone-500 font-mono">By: {templeProfile.updatedBy}</span>
-        </div>
+        <span className="hidden sm:inline-block font-mono text-[11px] font-semibold text-amber-800 bg-amber-100/80 px-2.5 py-0.5 rounded-md">
+          Live sync: matabari.tripura.gov.in
+        </span>
       </div>
 
-      {/* Tabs */}
+      {/* 2. 5 Clean Navigation Bar Options */}
       <ContentTabs activeTab={activeTab} onTabChange={setActiveTab} tabs={tabs} />
 
-      {/* TAB 1: OVERVIEW */}
-      {activeTab === 'overview' && (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-          <div className="lg:col-span-2 bg-white rounded-xl border border-stone-200 p-4 shadow-xs space-y-4">
-            <div className="flex items-center justify-between">
-              <h3 className="text-sm font-bold text-stone-900">Recently Updated Portal Articles</h3>
-            </div>
-
-            <div className="space-y-2.5">
-              {historySections.map((sec) => (
-                <div
-                  key={sec.id}
-                  className="p-3 bg-stone-50 rounded-xl border border-stone-150 flex items-center justify-between gap-3 hover:border-stone-300 transition-colors"
-                >
-                  <div className="min-w-0">
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="font-mono text-[10px] text-stone-400 font-bold">{sec.id}</span>
-                      <h4 className="text-xs font-bold text-stone-800 truncate">{sec.title}</h4>
-                      <ContentStatusBadge status={sec.status} />
-                      <VerificationBadge status={sec.verificationStatus} />
-                    </div>
-                    <p className="text-[11px] text-stone-500 truncate max-w-lg">{sec.content}</p>
-                  </div>
-
-                  <div className="flex items-center gap-1.5 shrink-0">
-                    <button
-                      onClick={() => openPreview('temple-profile', profileForm)}
-                      className="p-1 text-stone-500 hover:text-[#800000]"
-                      title="Preview article"
-                    >
-                      <Eye className="w-3.5 h-3.5" />
-                    </button>
-                    <button
-                      onClick={() => setActiveTab('history')}
-                      className="text-[11px] text-[#800000] font-semibold hover:underline"
-                    >
-                      Edit
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Quick Actions & Status card */}
-          <div className="bg-white rounded-xl border border-stone-200 p-4 shadow-xs space-y-4 flex flex-col justify-between">
-            <div>
-              <h3 className="text-sm font-bold text-stone-900 mb-3">Content Publication Summary</h3>
-
-              <div className="space-y-2 text-xs">
-                <div className="flex justify-between p-2 bg-emerald-50/60 rounded-lg border border-emerald-150">
-                  <span className="text-emerald-900 font-medium">Published / Live Content</span>
-                  <span className="font-bold text-emerald-900 font-mono">{publishedSections} items</span>
-                </div>
-                <div className="flex justify-between p-2 bg-amber-50/60 rounded-lg border border-amber-150">
-                  <span className="text-amber-900 font-medium">Draft / Pending Approval</span>
-                  <span className="font-bold text-amber-900 font-mono">{draftSections} items</span>
-                </div>
-                <div className="flex justify-between p-2 bg-blue-50/60 rounded-lg border border-blue-150">
-                  <span className="text-blue-900 font-medium">Media Gallery Photos</span>
-                  <span className="font-bold text-blue-900 font-mono">{galleryItems.length} photos</span>
-                </div>
-              </div>
-            </div>
-
-            <div className="pt-3 border-t border-stone-150 space-y-2">
-              <button
-                onClick={() => setIsAddHistoryModalOpen(true)}
-                className="w-full py-2 bg-[#800000] hover:bg-[#660000] text-white text-xs font-semibold rounded-lg flex items-center justify-center gap-1.5 transition-colors"
-              >
-                <Plus className="w-3.5 h-3.5" />
-                Add History Section
-              </button>
-              <button
-                onClick={() => setIsAddGalleryModalOpen(true)}
-                className="w-full py-2 bg-stone-100 hover:bg-stone-200 text-stone-800 text-xs font-semibold rounded-lg flex items-center justify-center gap-1.5 transition-colors"
-              >
-                <Upload className="w-3.5 h-3.5 text-stone-600" />
-                Upload Gallery Photo
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* TAB 2: TEMPLE PROFILE EDITOR */}
+      {/* ======================================================== */}
+      {/* OPTION 1: TEMPLE PROFILE */}
+      {/* ======================================================== */}
       {activeTab === 'profile' && (
-        <div className="bg-white rounded-xl border border-stone-200 p-5 shadow-xs space-y-5">
-          <div className="flex items-center justify-between border-b border-stone-200 pb-3">
-            <div>
-              <h3 className="text-sm font-bold text-stone-900">Core Temple Public Profile</h3>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 items-stretch">
+          {/* Left 2 Cols: Structured Identity & Operational Details */}
+          <div className="lg:col-span-2 bg-white rounded-2xl border border-stone-200/90 p-5 shadow-2xs space-y-4">
+            <div className="flex items-center justify-between border-b border-stone-150 pb-3">
+              <div>
+                <h3 className="text-base font-bold font-serif text-stone-900 tracking-tight">
+                  Core Identity & Operational Schedule
+                </h3>
+                <p className="text-[11px] text-stone-500 mt-0.5">
+                  Directly editable fields displayed on devotee portal hero & footer
+                </p>
+              </div>
+              <span className="px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200 text-[10.5px] font-bold">
+                ● Published / Live
+              </span>
             </div>
-            <div className="flex items-center gap-2">
-              <ContentStatusBadge status={templeProfile.status} />
-              <VerificationBadge status={templeProfile.verificationStatus} />
-            </div>
-          </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
-            {/* Left 2 Cols: Form Fields */}
-            <div className="lg:col-span-2 space-y-3.5 text-xs">
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block font-semibold text-stone-700 mb-1">Official Temple Name *</label>
-                  <input
-                    type="text"
-                    value={profileForm.templeName}
-                    onChange={(e) => setProfileForm({ ...profileForm, templeName: e.target.value })}
-                    className="w-full border border-stone-300 rounded-lg px-3 py-2 bg-stone-50 focus:outline-none focus:border-[#800000]"
-                  />
-                </div>
-                <div>
-                  <label className="block font-semibold text-stone-700 mb-1">Local / Regional Title</label>
-                  <input
-                    type="text"
-                    value={profileForm.localName}
-                    onChange={(e) => setProfileForm({ ...profileForm, localName: e.target.value })}
-                    className="w-full border border-stone-300 rounded-lg px-3 py-2 bg-stone-50 focus:outline-none focus:border-[#800000]"
-                  />
-                </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 text-xs">
+              <div>
+                <label className="block font-semibold text-stone-700 mb-1">
+                  Official Temple Name
+                </label>
+                <input
+                  type="text"
+                  value={profileForm.templeName}
+                  onChange={(e) =>
+                    setProfileForm({ ...profileForm, templeName: e.target.value })
+                  }
+                  className="w-full px-3 py-2 rounded-xl border border-stone-200 bg-stone-50/70 text-stone-900 font-medium focus:outline-none focus:ring-1 focus:ring-[#55132D]"
+                />
               </div>
 
               <div>
-                <label className="block font-semibold text-stone-700 mb-1">Shakti Peetha Theological Status</label>
+                <label className="block font-semibold text-stone-700 mb-1">
+                  Local / Regional Title
+                </label>
+                <input
+                  type="text"
+                  value={profileForm.localName}
+                  onChange={(e) =>
+                    setProfileForm({ ...profileForm, localName: e.target.value })
+                  }
+                  className="w-full px-3 py-2 rounded-xl border border-stone-200 bg-stone-50/70 text-stone-900 font-medium focus:outline-none focus:ring-1 focus:ring-[#55132D]"
+                />
+              </div>
+
+              <div>
+                <label className="block font-semibold text-stone-700 mb-1">
+                  Theological Shakti Peetha Status
+                </label>
                 <input
                   type="text"
                   value={profileForm.shaktiPeethaStatus}
-                  onChange={(e) => setProfileForm({ ...profileForm, shaktiPeethaStatus: e.target.value })}
-                  className="w-full border border-stone-300 rounded-lg px-3 py-2 bg-stone-50 focus:outline-none focus:border-[#800000]"
+                  onChange={(e) =>
+                    setProfileForm({ ...profileForm, shaktiPeethaStatus: e.target.value })
+                  }
+                  className="w-full px-3 py-2 rounded-xl border border-stone-200 bg-stone-50/70 text-stone-900 font-medium focus:outline-none focus:ring-1 focus:ring-[#55132D]"
                 />
               </div>
 
               <div>
-                <label className="block font-semibold text-stone-700 mb-1">Brief Description (Homepage Snippet)</label>
-                <textarea
-                  rows={2}
-                  value={profileForm.shortDescription}
-                  onChange={(e) => setProfileForm({ ...profileForm, shortDescription: e.target.value })}
-                  className="w-full border border-stone-300 rounded-lg px-3 py-2 bg-stone-50 focus:outline-none focus:border-[#800000]"
+                <label className="block font-semibold text-stone-700 mb-1">
+                  Foundation Consecration Era
+                </label>
+                <input
+                  type="text"
+                  value={profileForm.foundationEra}
+                  onChange={(e) =>
+                    setProfileForm({ ...profileForm, foundationEra: e.target.value })
+                  }
+                  className="w-full px-3 py-2 rounded-xl border border-stone-200 bg-stone-50/70 text-stone-900 font-medium focus:outline-none focus:ring-1 focus:ring-[#55132D]"
                 />
               </div>
 
               <div>
-                <label className="block font-semibold text-stone-700 mb-1">Full Descriptive Chronicle</label>
-                <textarea
-                  rows={4}
-                  value={profileForm.fullDescription}
-                  onChange={(e) => setProfileForm({ ...profileForm, fullDescription: e.target.value })}
-                  className="w-full border border-stone-300 rounded-lg px-3 py-2 bg-stone-50 focus:outline-none focus:border-[#800000] leading-relaxed"
+                <label className="block font-semibold text-stone-700 mb-1">
+                  Daily Public Darshan Hours (Shown to Devotees)
+                </label>
+                <input
+                  type="text"
+                  value={profileForm.darshanHours}
+                  onChange={(e) =>
+                    setProfileForm({ ...profileForm, darshanHours: e.target.value })
+                  }
+                  className="w-full px-3 py-2 rounded-xl border border-stone-200 bg-stone-50/70 text-stone-900 font-medium focus:outline-none focus:ring-1 focus:ring-[#55132D]"
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-3 pt-2 border-t border-stone-200">
-                <div>
-                  <label className="block font-semibold text-stone-700 mb-1">Public Helpline Number</label>
-                  <input
-                    type="text"
-                    value={profileForm.contactDetails?.helplinePhone || ''}
-                    onChange={(e) =>
-                      setProfileForm({
-                        ...profileForm,
-                        contactDetails: { ...profileForm.contactDetails, helplinePhone: e.target.value },
-                      })
-                    }
-                    className="w-full border border-stone-300 rounded-lg px-3 py-2 bg-stone-50 focus:outline-none focus:border-[#800000]"
-                  />
-                </div>
-                <div>
-                  <label className="block font-semibold text-stone-700 mb-1">Official Website URL</label>
-                  <input
-                    type="text"
-                    value={profileForm.officialWebsite}
-                    onChange={(e) => setProfileForm({ ...profileForm, officialWebsite: e.target.value })}
-                    className="w-full border border-stone-300 rounded-lg px-3 py-2 bg-stone-50 font-mono text-[11px] focus:outline-none focus:border-[#800000]"
-                  />
-                </div>
+              <div>
+                <label className="block font-semibold text-stone-700 mb-1">
+                  Daily Free Annadanam Bhog Schedule
+                </label>
+                <input
+                  type="text"
+                  value={profileForm.bhogSchedule}
+                  onChange={(e) =>
+                    setProfileForm({ ...profileForm, bhogSchedule: e.target.value })
+                  }
+                  className="w-full px-3 py-2 rounded-xl border border-stone-200 bg-stone-50/70 text-stone-900 font-medium focus:outline-none focus:ring-1 focus:ring-[#55132D]"
+                />
+              </div>
+
+              <div>
+                <label className="block font-semibold text-stone-700 mb-1">
+                  Public Helpline Number
+                </label>
+                <input
+                  type="text"
+                  value={profileForm.contactDetails?.helplinePhone || '+91 3821 222238'}
+                  onChange={(e) =>
+                    setProfileForm({
+                      ...profileForm,
+                      contactDetails: {
+                        ...profileForm.contactDetails,
+                        helplinePhone: e.target.value,
+                      },
+                    })
+                  }
+                  className="w-full px-3 py-2 rounded-xl border border-stone-200 bg-stone-50/70 text-stone-900 font-medium focus:outline-none focus:ring-1 focus:ring-[#55132D]"
+                />
+              </div>
+
+              <div>
+                <label className="block font-semibold text-stone-700 mb-1">
+                  Official Portal Website URL
+                </label>
+                <input
+                  type="text"
+                  value={profileForm.officialWebsite}
+                  onChange={(e) =>
+                    setProfileForm({ ...profileForm, officialWebsite: e.target.value })
+                  }
+                  className="w-full px-3 py-2 rounded-xl border border-stone-200 bg-stone-50/70 text-stone-900 font-mono text-[11px] focus:outline-none focus:ring-1 focus:ring-[#55132D]"
+                />
               </div>
             </div>
 
-            {/* Right 1 Col: Media & Actions */}
-            <div className="space-y-4">
-              <ImageUploadPreview
-                imageUrl={profileForm.mainImage}
-                onImageChange={(newUrl) => setProfileForm({ ...profileForm, mainImage: newUrl })}
-                label="Primary Temple Cover Image"
-                recommendedSize="1200 × 675 px (Landscape)"
+            <div>
+              <label className="block font-semibold text-stone-700 mb-1 text-xs">
+                Devotee Homepage Overview Summary (Public introduction)
+              </label>
+              <textarea
+                rows={3}
+                value={profileForm.shortDescription}
+                onChange={(e) =>
+                  setProfileForm({ ...profileForm, shortDescription: e.target.value })
+                }
+                className="w-full px-3 py-2 rounded-xl border border-stone-200 bg-stone-50/70 text-stone-800 text-xs focus:outline-none focus:ring-1 focus:ring-[#55132D] leading-relaxed"
               />
+            </div>
+          </div>
 
-              <div className="bg-stone-50 p-3 rounded-xl border border-stone-200 text-xs space-y-2">
-                <span className="font-bold text-stone-800 block text-[11px]">Publishing Controls:</span>
-                <p className="text-[11px] text-stone-500">
-                  Saving updates local demonstration state. Live website reflects updates immediately in simulator.
-                </p>
+          {/* Right 1 Col: Cover Media & Publishing Control — Equal Height */}
+          <div className="bg-white rounded-2xl border border-stone-200/90 p-5 shadow-2xs flex flex-col justify-between h-full">
+            <div className="space-y-3 flex-1 flex flex-col">
+              <div className="flex items-center justify-between border-b border-stone-150 pb-3">
+                <span className="font-bold font-serif text-stone-900 text-base tracking-tight">
+                  Primary Portal Cover Visual
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setCoverPhotoModal(true)}
+                  className="px-2.5 py-1 text-[11px] font-bold text-[#55132D] bg-[#55132D]/10 hover:bg-[#55132D] hover:text-white rounded-lg transition-colors flex items-center gap-1 cursor-pointer"
+                >
+                  <Edit3 className="w-3 h-3" />
+                  <span>Change Cover</span>
+                </button>
+              </div>
 
-                <div className="pt-2 flex flex-col gap-2">
-                  <button
-                    type="button"
-                    onClick={() => handleProfileSave(false)}
-                    className="w-full py-2 bg-stone-200 hover:bg-stone-300 text-stone-800 font-semibold rounded-lg flex items-center justify-center gap-1.5 transition-colors"
-                  >
-                    <Save className="w-3.5 h-3.5" /> Save Changes as Draft
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => handleProfileSave(true)}
-                    className="w-full py-2 bg-[#800000] hover:bg-[#660000] text-white font-semibold rounded-lg flex items-center justify-center gap-1.5 transition-colors shadow-sm"
-                  >
-                    <Globe className="w-3.5 h-3.5" /> Publish to Public Website
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => openPreview('temple-profile', profileForm)}
-                    className="w-full py-2 bg-stone-100 hover:bg-stone-200 text-stone-700 font-semibold rounded-lg flex items-center justify-center gap-1.5 transition-colors border border-stone-200"
-                  >
-                    <Eye className="w-3.5 h-3.5 text-[#800000]" /> Open Devotee Preview
-                  </button>
+              <div className="relative flex-1 min-h-[220px] rounded-xl overflow-hidden border border-stone-200 bg-stone-100 group">
+                <img
+                  src={profileForm.coverImageUrl}
+                  alt="Mata Tripura Sundari Temple"
+                  className="w-full h-full object-cover group-hover:scale-102 transition-transform duration-300"
+                />
+                <div className="absolute top-2.5 left-2.5 bg-black/60 backdrop-blur-xs text-white text-[10px] font-bold px-2.5 py-0.5 rounded-md">
+                  Active Cover Visual
                 </div>
               </div>
-            </div>
-          </div>
-        </div>
-      )}
 
-      {/* TAB 3: HISTORY & HERITAGE */}
-      {activeTab === 'history' && (
-        <div className="space-y-4">
-          <div className="bg-white rounded-xl border border-stone-200 p-4 shadow-xs flex flex-wrap items-center justify-between gap-3">
-            <div>
-              <h3 className="text-sm font-bold text-stone-900">Historical & Theological Chronicles</h3>
+              <div className="text-[11px] text-stone-500 bg-stone-50 rounded-xl p-2.5 border border-stone-200/80">
+                <span className="font-semibold text-stone-700 block mb-0.5">Homepage Hero Visual</span>
+                Displayed across devotee mobile web portal, digital visitor passes, and darshan booking confirmations.
+              </div>
             </div>
-            <button
-              onClick={() => setIsAddHistoryModalOpen(true)}
-              className="px-3 py-1.5 bg-[#800000] hover:bg-[#660000] text-white text-xs font-semibold rounded-lg flex items-center gap-1.5 transition-colors"
-            >
-              <Plus className="w-3.5 h-3.5" />
-              Add History Section
-            </button>
-          </div>
 
-          <div className="space-y-3">
-            {historySections.map((sec, idx) => (
-              <div
-                key={sec.id}
-                className="bg-white rounded-xl border border-stone-200 p-4 shadow-xs flex flex-col md:flex-row gap-4 justify-between hover:border-stone-300 transition-all"
+            <div className="space-y-2 pt-3 border-t border-stone-150 text-xs mt-3">
+              <button
+                type="button"
+                onClick={() => handleProfileSave(true)}
+                className="w-full py-2.5 bg-[#55132D] hover:bg-[#681B37] text-white font-bold rounded-xl transition-colors shadow-2xs flex items-center justify-center gap-1.5 cursor-pointer"
               >
-                <div className="flex-1 space-y-2 text-xs">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <span className="font-mono text-xs font-bold text-stone-900 bg-stone-100 px-2 py-0.5 rounded">
-                      #{idx + 1} • {sec.id}
-                    </span>
-                    <span className="text-[10px] font-semibold text-[#800000] bg-[#800000]/10 px-2 py-0.5 rounded">
-                      {sec.category}
-                    </span>
-                    <ContentStatusBadge status={sec.status} />
-                    <VerificationBadge status={sec.verificationStatus} />
-                  </div>
-
-                  <h4 className="text-sm font-bold text-stone-900">{sec.title}</h4>
-                  <p className="text-stone-700 leading-relaxed text-xs">{sec.content}</p>
-
-                  <div className="flex items-center gap-3 text-[11px] text-stone-500 pt-1">
-                    <span>Slug: /{sec.slug}</span>
-                    <span>•</span>
-                    <span>Author/Source: {sec.author}</span>
-                    <span>•</span>
-                    <span>Updated: {sec.lastUpdated}</span>
-                  </div>
-                </div>
-
-                {/* Right controls */}
-                <div className="flex flex-row md:flex-col items-end justify-between gap-2 shrink-0 border-t md:border-t-0 md:border-l border-stone-150 pt-2 md:pt-0 md:pl-4">
-                  <div className="flex items-center gap-1.5">
-                    <select
-                      value={sec.verificationStatus}
-                      onChange={(e) => updateHistorySection(sec.id, { verificationStatus: e.target.value })}
-                      className="text-[10px] border border-stone-300 rounded px-2 py-1 bg-stone-50 focus:outline-none focus:border-[#800000]"
-                    >
-                      <option value="Draft">Draft</option>
-                      <option value="Requires Review">Requires Review</option>
-                      <option value="Verified">Verified</option>
-                    </select>
-
-                    <button
-                      onClick={() =>
-                        updateHistorySection(sec.id, {
-                          status: sec.status === 'Published' ? 'Draft' : 'Published',
-                        })
-                      }
-                      className={`text-[10px] font-semibold px-2 py-1 rounded transition-colors ${
-                        sec.status === 'Published'
-                          ? 'bg-stone-100 text-stone-700 hover:bg-stone-200'
-                          : 'bg-emerald-600 hover:bg-emerald-700 text-white'
-                      }`}
-                    >
-                      {sec.status === 'Published' ? 'Unpublish' : 'Publish'}
-                    </button>
-                  </div>
-
-                  <button
-                    onClick={() => deleteHistorySection(sec.id)}
-                    className="text-stone-400 hover:text-red-600 p-1 rounded"
-                    title="Delete section"
-                  >
-                    <Trash2 className="w-3.5 h-3.5" />
-                  </button>
-                </div>
-              </div>
-            ))}
+                <Globe className="w-3.5 h-3.5 text-[#E2BC6B]" />
+                <span>Publish Profile to Public Portal</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => handleProfileSave(false)}
+                className="w-full py-2.5 bg-stone-100 hover:bg-stone-200 text-stone-800 font-bold rounded-xl border border-stone-200 transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
+              >
+                <Save className="w-3.5 h-3.5" />
+                <span>Save Draft</span>
+              </button>
+            </div>
           </div>
         </div>
       )}
 
-      {/* TAB 4: DEITY INFORMATION */}
+      {/* ======================================================== */}
+      {/* OPTION 2: DEITIES & SHRINES */}
+      {/* ======================================================== */}
       {activeTab === 'deities' && (
-        <div className="space-y-4">
-          <div className="bg-white rounded-xl border border-stone-200 p-4 shadow-xs flex flex-wrap items-center justify-between gap-3">
+        <div className="space-y-3.5">
+          <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-sm font-bold text-stone-900">Enshrined Deities of Matabari</h3>
+              <h3 className="text-sm font-bold font-serif text-stone-900 tracking-tight">
+                Enshrined Deities & Shrines ({deitiesList.length})
+              </h3>
+              <p className="text-xs text-stone-500 font-medium">
+                Documented sanctum murtis, daily aarti schedules & seva pujaris for devotee guidance
+              </p>
             </div>
             <button
-              onClick={() => setIsAddDeityModalOpen(true)}
-              className="px-3 py-1.5 bg-[#800000] hover:bg-[#660000] text-white text-xs font-semibold rounded-lg flex items-center gap-1.5 transition-colors"
+              onClick={openAddDeity}
+              className="px-3.5 py-1.5 bg-[#55132D] hover:bg-[#681B37] text-white text-xs font-bold rounded-xl shadow-2xs flex items-center gap-1.5 transition-colors cursor-pointer"
             >
-              <Plus className="w-3.5 h-3.5" />
-              Add Companion Murti
+              <Plus className="w-3.5 h-3.5 text-[#E2BC6B]" />
+              <span>Add Deity Shrine</span>
             </button>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {deities.map((deity) => (
+            {deitiesList.map((deity) => (
               <div
                 key={deity.id}
-                className="bg-white rounded-xl border border-stone-200 p-5 shadow-xs flex flex-col justify-between space-y-3"
+                className="bg-white rounded-2xl border border-stone-200/90 p-4.5 shadow-2xs space-y-3 hover:border-stone-300 transition-all flex flex-col justify-between"
               >
-                <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="font-mono text-xs font-bold text-stone-900 bg-stone-100 px-2 py-0.5 rounded">
+                <div className="space-y-2 text-xs">
+                  <div className="flex items-center justify-between">
+                    <span className="font-mono text-[10px] font-bold text-stone-500 bg-stone-100 px-2 py-0.5 rounded-md">
                       {deity.id}
                     </span>
-                    <div className="flex items-center gap-1.5">
-                      <ContentStatusBadge status={deity.status} />
-                      <VerificationBadge status={deity.verificationStatus} />
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => toggleDeityStatus(deity.id)}
+                        className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full transition-colors cursor-pointer border ${
+                          deity.status === 'Published'
+                            ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
+                            : 'bg-stone-100 text-stone-600 border-stone-200'
+                        }`}
+                        title="Click to toggle Devotee Portal visibility"
+                      >
+                        ● {deity.status === 'Published' ? 'Live on Portal' : 'Draft (Hidden)'}
+                      </button>
+                      <button
+                        onClick={() => openEditDeity(deity)}
+                        className="p-1 hover:bg-stone-100 text-stone-600 hover:text-[#55132D] rounded transition-colors cursor-pointer"
+                        title="Edit Deity details"
+                      >
+                        <Edit3 className="w-3.5 h-3.5" />
+                      </button>
+                      <button
+                        onClick={() => deleteDeity(deity.id)}
+                        className="p-1 hover:bg-rose-50 text-stone-400 hover:text-rose-600 rounded transition-colors cursor-pointer"
+                        title="Delete Deity entry"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
                     </div>
                   </div>
 
-                  <h4 className="text-base font-bold font-serif text-stone-900 mb-0.5">{deity.name}</h4>
-                  <p className="text-xs text-[#800000] font-semibold mb-3">{deity.significance}</p>
+                  <div>
+                    <h4 className="text-sm font-bold font-serif text-stone-900">
+                      {deity.name}
+                    </h4>
+                    <p className="text-[11.5px] text-[#55132D] font-medium mt-0.5">
+                      {deity.role}
+                    </p>
+                  </div>
 
-                  <p className="text-xs text-stone-700 leading-relaxed mb-3">{deity.description}</p>
-
-                  <div className="bg-stone-50 p-3 rounded-lg border border-stone-150 space-y-1.5 text-xs text-stone-600 mb-2">
+                  <div className="bg-stone-50 p-3 rounded-xl border border-stone-150 space-y-1.5 text-[11px] text-stone-600">
                     <div className="flex justify-between">
-                      <span className="text-stone-400">Sacred Material:</span>
-                      <span className="font-semibold text-stone-800">{deity.material}</span>
+                      <span className="text-stone-500">Sacred Murti:</span>
+                      <span className="font-semibold text-stone-800">{deity.murti}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-stone-400">Dimensions:</span>
-                      <span className="font-mono font-medium text-stone-800">{deity.dimensions}</span>
+                      <span className="text-stone-500">Puja Schedule:</span>
+                      <span className="font-medium text-stone-800">{deity.timings}</span>
                     </div>
-                    <div>
-                      <span className="text-stone-400 block text-[11px] mb-0.5">Canonical Adornment:</span>
-                      <p className="text-[11px] text-stone-700 leading-tight">{deity.adornment}</p>
+                    <div className="flex justify-between">
+                      <span className="text-stone-500">Pujari In-charge:</span>
+                      <span className="font-semibold text-[#55132D]">{deity.priest}</span>
                     </div>
                   </div>
                 </div>
 
-                <div className="pt-2 border-t border-stone-150 flex items-center justify-between text-xs">
-                  <span className="text-[11px] text-stone-400">Updated: {deity.lastUpdated}</span>
-                  <div className="flex items-center gap-1.5">
-                    <button
-                      onClick={() =>
-                        updateDeity(deity.id, {
-                          status: deity.status === 'Published' ? 'Draft' : 'Published',
-                        })
-                      }
-                      className="px-2.5 py-1 bg-stone-100 hover:bg-stone-200 text-stone-700 text-[10px] font-semibold rounded"
-                    >
-                      {deity.status === 'Published' ? 'Unpublish' : 'Publish'}
-                    </button>
-                  </div>
+                <div className="pt-2.5 border-t border-stone-150 flex items-center justify-between text-xs">
+                  <span className="text-[10.5px] text-stone-400">Published to public deity directory</span>
+                  <button
+                    onClick={() => openEditDeity(deity)}
+                    className="text-[#55132D] text-xs font-bold hover:underline cursor-pointer flex items-center gap-1"
+                  >
+                    <span>Edit Shrine Details</span>
+                    <Edit3 className="w-3 h-3" />
+                  </button>
                 </div>
               </div>
             ))}
@@ -622,88 +765,195 @@ export default function TempleInformation() {
         </div>
       )}
 
-      {/* TAB 5: GALLERY ARCHIVE */}
-      {activeTab === 'gallery' && (
-        <div className="space-y-4">
-          <div className="bg-white rounded-xl border border-stone-200 p-3.5 flex flex-wrap items-center justify-between gap-3 shadow-xs">
-            <div className="flex flex-wrap items-center gap-2.5">
-              <span className="text-xs font-semibold text-stone-600 flex items-center gap-1">
-                <Filter className="w-3.5 h-3.5 text-stone-400" /> Filter Category:
-              </span>
-              <select
-                value={selectedGalleryCat}
-                onChange={(e) => setSelectedGalleryCat(e.target.value)}
-                className="text-xs border border-stone-300 rounded-lg px-2.5 py-1.5 bg-stone-50 focus:outline-none focus:border-[#800000]"
-              >
-                <option value="ALL">All Categories ({galleryItems.length})</option>
-                <option value="Main Temple">Main Temple</option>
-                <option value="Temple Architecture">Temple Architecture</option>
-                <option value="Deity">Deity</option>
-                <option value="Kalyan Sagar">Kalyan Sagar</option>
-                <option value="Festivals">Festivals</option>
-                <option value="Temple Premises">Temple Premises</option>
-                <option value="Cultural Activities">Cultural Activities</option>
-              </select>
+      {/* ======================================================== */}
+      {/* OPTION 3: HERITAGE & HISTORY */}
+      {/* ======================================================== */}
+      {activeTab === 'heritage' && (
+        <div className="space-y-3.5">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-sm font-bold font-serif text-stone-900 tracking-tight">
+                Historical Chronicles & Heritage Milestones ({historyMilestones.length})
+              </h3>
+              <p className="text-xs text-stone-500 font-medium">
+                Epigraphic records and architectural chronicles published on devotee portal history section
+              </p>
             </div>
-
             <button
-              onClick={() => setIsAddGalleryModalOpen(true)}
-              className="px-3 py-1.5 bg-[#800000] hover:bg-[#660000] text-white text-xs font-semibold rounded-lg flex items-center gap-1.5 transition-colors"
+              onClick={openAddMilestone}
+              className="px-3.5 py-1.5 bg-[#55132D] hover:bg-[#681B37] text-white text-xs font-bold rounded-xl shadow-2xs flex items-center gap-1.5 transition-colors cursor-pointer"
             >
-              <Upload className="w-3.5 h-3.5" />
-              Upload Image
+              <Plus className="w-3.5 h-3.5 text-[#E2BC6B]" />
+              <span>Add Chronicle</span>
             </button>
           </div>
 
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {historyMilestones.map((milestone) => (
+              <div
+                key={milestone.id}
+                className="bg-white rounded-2xl border border-stone-200/90 p-4.5 shadow-2xs space-y-2.5 flex flex-col justify-between"
+              >
+                <div className="space-y-2 text-xs">
+                  <div className="flex items-center justify-between">
+                    <span className="px-2.5 py-0.5 rounded-lg bg-[#55132D]/10 text-[#55132D] font-serif font-bold text-xs">
+                      {milestone.year}
+                    </span>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => toggleHistoryStatus(milestone.id)}
+                        className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full transition-colors cursor-pointer border ${
+                          milestone.status === 'Published'
+                            ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
+                            : 'bg-stone-100 text-stone-600 border-stone-200'
+                        }`}
+                        title="Click to toggle Devotee Portal visibility"
+                      >
+                        ● {milestone.status === 'Published' ? 'Live on Portal' : 'Draft (Hidden)'}
+                      </button>
+                      <button
+                        onClick={() => openEditMilestone(milestone)}
+                        className="p-1 hover:bg-stone-100 text-stone-600 hover:text-[#55132D] rounded transition-colors cursor-pointer"
+                        title="Edit milestone chronicle"
+                      >
+                        <Edit3 className="w-3.5 h-3.5" />
+                      </button>
+                      <button
+                        onClick={() => deleteMilestone(milestone.id)}
+                        className="p-1 hover:bg-rose-50 text-stone-400 hover:text-rose-600 rounded transition-colors cursor-pointer"
+                        title="Delete milestone"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  </div>
+
+                  <h4 className="text-sm font-bold font-serif text-stone-900">
+                    {milestone.title}
+                  </h4>
+
+                  <p className="text-[11.5px] text-stone-700 leading-relaxed">
+                    {milestone.description}
+                  </p>
+
+                  <div className="bg-stone-50 p-2.5 rounded-xl border border-stone-150 text-[10.5px] text-stone-600 font-medium">
+                    {milestone.highlight}
+                  </div>
+                </div>
+
+                <div className="pt-2.5 border-t border-stone-150 flex items-center justify-between text-xs">
+                  <span className="text-[10.5px] text-stone-400">Chronicle ID: {milestone.id}</span>
+                  <button
+                    onClick={() => openEditMilestone(milestone)}
+                    className="text-[#55132D] text-xs font-bold hover:underline cursor-pointer flex items-center gap-1"
+                  >
+                    <span>Edit Chronicle</span>
+                    <Edit3 className="w-3 h-3" />
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* ======================================================== */}
+      {/* OPTION 4: PHOTO GALLERY */}
+      {/* ======================================================== */}
+      {activeTab === 'gallery' && (
+        <div className="space-y-4">
+          {/* Filter Bar */}
+          <div className="bg-white rounded-2xl border border-stone-200/90 p-3 flex flex-wrap items-center justify-between gap-3 shadow-2xs text-xs">
+            <div className="flex flex-wrap items-center gap-1.5">
+              {['ALL', 'Main Temple', 'Temple Architecture', 'Kalyan Sagar', 'Festivals'].map(
+                (cat) => (
+                  <button
+                    key={cat}
+                    onClick={() => setSelectedGalleryCategory(cat)}
+                    className={`px-3 py-1.5 rounded-xl font-semibold transition-all cursor-pointer ${
+                      selectedGalleryCategory === cat
+                        ? 'bg-[#55132D] text-white shadow-2xs'
+                        : 'bg-stone-100 text-stone-700 hover:bg-stone-200'
+                    }`}
+                  >
+                    {cat === 'ALL' ? 'All Photos' : cat}
+                  </button>
+                )
+              )}
+            </div>
+
+            <button
+              onClick={openAddPhoto}
+              className="px-3.5 py-1.5 bg-[#55132D] hover:bg-[#681B37] text-white font-bold rounded-xl shadow-2xs flex items-center gap-1.5 transition-colors cursor-pointer"
+            >
+              <Upload className="w-3.5 h-3.5 text-[#E2BC6B]" />
+              <span>Add / Upload Photo</span>
+            </button>
+          </div>
+
+          {/* Clean 4-Column Image Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {galleryItems
-              .filter((g) => selectedGalleryCat === 'ALL' || g.category === selectedGalleryCat)
+              .filter(
+                (g) =>
+                  selectedGalleryCategory === 'ALL' ||
+                  g.category === selectedGalleryCategory
+              )
               .map((item) => (
                 <div
                   key={item.id}
-                  className="bg-white rounded-xl border border-stone-200 overflow-hidden shadow-xs flex flex-col justify-between group hover:border-[#800000]/40 transition-all"
+                  className="bg-white rounded-2xl border border-stone-200/90 overflow-hidden shadow-2xs flex flex-col justify-between group hover:border-[#55132D] transition-all"
                 >
-                  <div className="relative aspect-video bg-stone-900 overflow-hidden">
+                  <div className="relative aspect-[16/10] bg-stone-100 overflow-hidden">
                     <img
                       src={item.imageUrl}
-                      alt={item.altText}
-                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                      alt={item.title}
+                      className="w-full h-full object-cover group-hover:scale-103 transition-transform duration-300"
                     />
-                    <div className="absolute top-2 left-2 bg-black/70 backdrop-blur-xs text-white text-[9px] px-2 py-0.5 rounded">
+                    <div className="absolute top-2 left-2 bg-black/60 backdrop-blur-xs text-white text-[9.5px] font-bold px-2 py-0.5 rounded-md">
                       {item.category}
                     </div>
-                    {item.featured && (
-                      <div className="absolute top-2 right-2 bg-amber-500 text-white text-[9px] font-bold px-1.5 py-0.5 rounded flex items-center gap-0.5">
-                        <Sparkles className="w-2.5 h-2.5" /> Featured
-                      </div>
-                    )}
                   </div>
 
                   <div className="p-3 space-y-1.5 flex-1 flex flex-col justify-between text-xs">
                     <div>
-                      <h4 className="font-bold text-stone-900 text-xs leading-snug line-clamp-1">{item.title}</h4>
-                      <p className="text-[11px] text-stone-500 line-clamp-2 mt-0.5">{item.description}</p>
+                      <h4 className="font-bold text-stone-900 text-xs truncate">
+                        {item.title}
+                      </h4>
+                      <p className="text-[10.5px] text-stone-500 truncate mt-0.5">
+                        {item.description}
+                      </p>
                     </div>
 
-                    <div className="pt-2 border-t border-stone-150 flex items-center justify-between text-[10px] text-stone-400">
+                    <div className="pt-2 border-t border-stone-150 flex items-center justify-between text-[10px] text-stone-500">
                       <span>{item.uploadDate}</span>
-                      <div className="flex items-center gap-1">
+                      <div className="flex items-center gap-1.5">
                         <button
                           onClick={() =>
                             updateGalleryItem(item.id, {
                               status: item.status === 'Published' ? 'Draft' : 'Published',
                             })
                           }
-                          className="text-[#800000] font-semibold hover:underline"
+                          className="text-[#55132D] font-bold hover:underline cursor-pointer"
+                          title="Toggle published status"
                         >
                           {item.status}
                         </button>
                         <span>•</span>
                         <button
-                          onClick={() => deleteGalleryItem(item.id)}
-                          className="hover:text-red-600"
+                          onClick={() => openEditPhoto(item)}
+                          className="text-stone-500 hover:text-[#55132D] cursor-pointer"
+                          title="Edit photo info"
                         >
-                          Delete
+                          <Edit3 className="w-3 h-3" />
+                        </button>
+                        <span>•</span>
+                        <button
+                          onClick={() => deleteGalleryItem(item.id)}
+                          className="text-stone-400 hover:text-rose-600 cursor-pointer"
+                          title="Delete photo"
+                        >
+                          <Trash2 className="w-3 h-3" />
                         </button>
                       </div>
                     </div>
@@ -714,316 +964,727 @@ export default function TempleInformation() {
         </div>
       )}
 
-      {/* TAB 6: WEBSITE PAGES */}
-      {activeTab === 'pages' && (
-        <div className="bg-white rounded-xl border border-stone-200 shadow-xs overflow-hidden">
-          <div className="p-4 border-b border-stone-200 flex items-center justify-between">
+      {/* ======================================================== */}
+      {/* OPTION 5: PUBLIC ANNOUNCEMENTS */}
+      {/* ======================================================== */}
+      {activeTab === 'announcements' && (
+        <div className="space-y-3.5">
+          <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-sm font-bold text-stone-900">Configured Public Portal Pages</h3>
+              <h3 className="text-sm font-bold font-serif text-stone-900 tracking-tight">
+                Live Devotee Announcements & Public Notices ({announcements.length})
+              </h3>
+              <p className="text-xs text-stone-500 font-medium">
+                Active alerts displayed in devotee portal header marquee and news feed
+              </p>
             </div>
-            <span className="text-xs font-mono font-bold text-[#800000] bg-[#800000]/10 px-2.5 py-1 rounded-full">
-              {websitePages.length} Pages Active
-            </span>
+            <button
+              onClick={openAddAnnouncement}
+              className="px-3.5 py-1.5 bg-[#55132D] hover:bg-[#681B37] text-white text-xs font-bold rounded-xl shadow-2xs flex items-center gap-1.5 transition-colors cursor-pointer"
+            >
+              <Plus className="w-3.5 h-3.5 text-[#E2BC6B]" />
+              <span>Post Announcement</span>
+            </button>
           </div>
 
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs">
-              <thead className="bg-stone-50 text-stone-600 uppercase font-semibold text-[10px] border-b border-stone-200">
-                <tr>
-                  <th className="py-3 px-4">Page Title</th>
-                  <th className="py-3 px-4">URL Slug</th>
-                  <th className="py-3 px-4">Template Style</th>
-                  <th className="py-3 px-4">Sections</th>
-                  <th className="py-3 px-4">Last Modified</th>
-                  <th className="py-3 px-4">Status</th>
-                  <th className="py-3 px-4 text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-stone-100 text-stone-700">
-                {websitePages.map((pg) => (
-                  <tr key={pg.id} className="hover:bg-stone-50/60">
-                    <td className="py-3 px-4 font-bold text-stone-900">{pg.title}</td>
-                    <td className="py-3 px-4 font-mono text-[11px] text-stone-600">/{pg.slug}</td>
-                    <td className="py-3 px-4 text-stone-600">{pg.template}</td>
-                    <td className="py-3 px-4 font-mono text-stone-800">{pg.sectionsCount} Blocks</td>
-                    <td className="py-3 px-4 text-stone-500 text-[11px]">{pg.lastModified}</td>
-                    <td className="py-3 px-4">
-                      <ContentStatusBadge status={pg.status} />
-                    </td>
-                    <td className="py-3 px-4 text-right space-x-2">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {announcements.map((ann) => (
+              <div
+                key={ann.id}
+                className="bg-white rounded-2xl border border-stone-200/90 p-4.5 shadow-2xs space-y-3 flex flex-col justify-between"
+              >
+                <div className="space-y-2 text-xs">
+                  <div className="flex items-center justify-between">
+                    <span className="px-2 py-0.5 rounded-full bg-blue-50 text-blue-800 border border-blue-200 text-[10px] font-bold">
+                      {ann.category}
+                    </span>
+                    <div className="flex items-center gap-2">
                       <button
-                        onClick={() => openPreview('temple-profile', profileForm)}
-                        className="text-[11px] text-[#800000] font-semibold hover:underline"
+                        onClick={() => toggleAnnouncementStatus(ann.id)}
+                        className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full transition-colors cursor-pointer border ${
+                          ann.status === 'Live'
+                            ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
+                            : 'bg-stone-100 text-stone-600 border-stone-200'
+                        }`}
+                        title="Click to toggle Devotee Portal visibility"
                       >
-                        Preview
+                        ● {ann.status === 'Live' ? 'Live on Portal' : 'Draft (Hidden)'}
                       </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+                      <button
+                        onClick={() => openEditAnnouncement(ann)}
+                        className="p-1 hover:bg-stone-100 text-stone-600 hover:text-[#55132D] rounded transition-colors cursor-pointer"
+                        title="Edit announcement notice"
+                      >
+                        <Edit3 className="w-3.5 h-3.5" />
+                      </button>
+                      <button
+                        onClick={() => deleteAnnouncement(ann.id)}
+                        className="p-1 hover:bg-rose-50 text-stone-400 hover:text-rose-600 rounded transition-colors cursor-pointer"
+                        title="Delete announcement notice"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  </div>
+
+                  <h4 className="text-sm font-bold font-serif text-stone-900">
+                    {ann.title}
+                  </h4>
+
+                  <p className="text-[11.5px] text-stone-700 leading-relaxed">
+                    {ann.content}
+                  </p>
+
+                  <div className="bg-stone-50 p-2.5 rounded-xl border border-stone-150 flex items-center justify-between text-[10.5px] text-stone-500 font-mono">
+                    <span>{ann.validity}</span>
+                    <span className="font-semibold text-stone-700">Notice ID: {ann.id}</span>
+                  </div>
+                </div>
+
+                <div className="pt-2.5 border-t border-stone-150 flex items-center justify-between text-xs">
+                  <span className="text-[10.5px] text-stone-400">Broadcast to devotee web portal</span>
+                  <button
+                    onClick={() => openEditAnnouncement(ann)}
+                    className="text-[#55132D] text-xs font-bold hover:underline cursor-pointer flex items-center gap-1"
+                  >
+                    <span>Edit Notice Content</span>
+                    <Edit3 className="w-3 h-3" />
+                  </button>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       )}
 
-      {/* MODAL: ADD HISTORY SECTION */}
-      {isAddHistoryModalOpen && (
+      {/* ======================================================== */}
+      {/* MODAL 1: ADD / EDIT DEITY SHRINE */}
+      {/* ======================================================== */}
+      {deityModal.isOpen && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl max-w-lg w-full overflow-hidden shadow-2xl border border-stone-200">
             <div className="px-5 py-4 bg-stone-50 border-b border-stone-200 flex items-center justify-between">
-              <div>
-                <h3 className="text-sm font-bold text-stone-900">Add History & Heritage Section</h3>
-                <p className="text-xs text-stone-500">Provide documented historical narrative.</p>
-              </div>
+              <h3 className="text-sm font-bold text-stone-900 font-serif">
+                {deityModal.isEdit ? 'Edit Deity Shrine' : 'Add New Deity Shrine'}
+              </h3>
               <button
-                onClick={() => setIsAddHistoryModalOpen(false)}
-                className="p-1 rounded-lg hover:bg-stone-200 text-stone-500"
+                onClick={() => setDeityModal({ isOpen: false, item: null, isEdit: false })}
+                className="p-1 hover:bg-stone-200 rounded-lg text-stone-500 cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
-            <form onSubmit={handleCreateHistory} className="p-5 space-y-3.5 text-xs">
+            <div className="p-5 space-y-3.5 text-xs max-h-[75vh] overflow-y-auto">
               <div>
-                <label className="block font-semibold text-stone-700 mb-1">Section Title *</label>
+                <label className="block font-semibold text-stone-700 mb-1">
+                  Deity / Shrine Name *
+                </label>
                 <input
                   type="text"
-                  required
-                  placeholder="e.g. Royal Coinage & Stone Epigraphs of Dhanya Manikya"
-                  value={historyForm.title}
-                  onChange={(e) => setHistoryForm({ ...historyForm, title: e.target.value })}
-                  className="w-full border border-stone-300 rounded-lg px-3 py-2 bg-stone-50 focus:outline-none focus:border-[#800000]"
+                  value={deityModal.item?.name || ''}
+                  onChange={(e) =>
+                    setDeityModal({
+                      ...deityModal,
+                      item: { ...deityModal.item, name: e.target.value },
+                    })
+                  }
+                  placeholder="e.g. Mata Tripura Sundari (Chhoto Ma)"
+                  className="w-full px-3 py-2 border border-stone-300 rounded-xl bg-stone-50 focus:outline-none focus:border-[#55132D]"
+                />
+              </div>
+
+              <div>
+                <label className="block font-semibold text-stone-700 mb-1">
+                  Theological Significance / Role
+                </label>
+                <input
+                  type="text"
+                  value={deityModal.item?.role || ''}
+                  onChange={(e) =>
+                    setDeityModal({
+                      ...deityModal,
+                      item: { ...deityModal.item, role: e.target.value },
+                    })
+                  }
+                  placeholder="e.g. Presiding Sovereign Deity"
+                  className="w-full px-3 py-2 border border-stone-300 rounded-xl bg-stone-50 focus:outline-none focus:border-[#55132D]"
+                />
+              </div>
+
+              <div>
+                <label className="block font-semibold text-stone-700 mb-1">
+                  Sacred Murti Description
+                </label>
+                <input
+                  type="text"
+                  value={deityModal.item?.murti || ''}
+                  onChange={(e) =>
+                    setDeityModal({
+                      ...deityModal,
+                      item: { ...deityModal.item, murti: e.target.value },
+                    })
+                  }
+                  placeholder="e.g. 5-ft Black Chlorite Stone Vigraha"
+                  className="w-full px-3 py-2 border border-stone-300 rounded-xl bg-stone-50 focus:outline-none focus:border-[#55132D]"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block font-semibold text-stone-700 mb-1">Category</label>
-                  <select
-                    value={historyForm.category}
-                    onChange={(e) => setHistoryForm({ ...historyForm, category: e.target.value })}
-                    className="w-full border border-stone-300 rounded-lg px-3 py-2 bg-stone-50 focus:outline-none focus:border-[#800000]"
-                  >
-                    <option value="Religious Significance">Religious Significance</option>
-                    <option value="Historical Background">Historical Background</option>
-                    <option value="Architecture">Architecture</option>
-                    <option value="Cultural Heritage">Cultural Heritage</option>
-                  </select>
+                  <label className="block font-semibold text-stone-700 mb-1">
+                    Daily Puja Schedule
+                  </label>
+                  <input
+                    type="text"
+                    value={deityModal.item?.timings || ''}
+                    onChange={(e) =>
+                      setDeityModal({
+                        ...deityModal,
+                        item: { ...deityModal.item, timings: e.target.value },
+                      })
+                    }
+                    placeholder="e.g. 05:30 AM & 06:30 PM"
+                    className="w-full px-3 py-2 border border-stone-300 rounded-xl bg-stone-50 focus:outline-none focus:border-[#55132D]"
+                  />
                 </div>
                 <div>
-                  <label className="block font-semibold text-stone-700 mb-1">Verification Status</label>
-                  <select
-                    value={historyForm.verificationStatus}
-                    onChange={(e) => setHistoryForm({ ...historyForm, verificationStatus: e.target.value })}
-                    className="w-full border border-stone-300 rounded-lg px-3 py-2 bg-stone-50 focus:outline-none focus:border-[#800000]"
-                  >
-                    <option value="Draft">Draft / Unverified</option>
-                    <option value="Requires Review">Requires Review</option>
-                    <option value="Verified">Verified Official</option>
-                  </select>
+                  <label className="block font-semibold text-stone-700 mb-1">
+                    Pujari In-charge
+                  </label>
+                  <input
+                    type="text"
+                    value={deityModal.item?.priest || ''}
+                    onChange={(e) =>
+                      setDeityModal({
+                        ...deityModal,
+                        item: { ...deityModal.item, priest: e.target.value },
+                      })
+                    }
+                    placeholder="e.g. Head Pujari"
+                    className="w-full px-3 py-2 border border-stone-300 rounded-xl bg-stone-50 focus:outline-none focus:border-[#55132D]"
+                  />
                 </div>
               </div>
 
               <div>
-                <label className="block font-semibold text-stone-700 mb-1">Historical Narrative Content *</label>
-                <textarea
-                  rows={4}
-                  required
-                  placeholder="Provide historical facts, temple lore, or epigraphic citations..."
-                  value={historyForm.content}
-                  onChange={(e) => setHistoryForm({ ...historyForm, content: e.target.value })}
-                  className="w-full border border-stone-300 rounded-lg px-3 py-2 bg-stone-50 focus:outline-none focus:border-[#800000]"
-                />
+                <label className="block font-semibold text-stone-700 mb-1">
+                  Portal Visibility Status
+                </label>
+                <select
+                  value={deityModal.item?.status || 'Published'}
+                  onChange={(e) =>
+                    setDeityModal({
+                      ...deityModal,
+                      item: { ...deityModal.item, status: e.target.value },
+                    })
+                  }
+                  className="w-full px-3 py-2 border border-stone-300 rounded-xl bg-stone-50 focus:outline-none focus:border-[#55132D]"
+                >
+                  <option value="Published">Published (Live on Devotee Portal)</option>
+                  <option value="Draft">Draft (Hidden from Devotees)</option>
+                </select>
               </div>
+            </div>
 
-              <div className="pt-3 border-t border-stone-200 flex items-center justify-end gap-2">
-                <button
-                  type="button"
-                  onClick={() => setIsAddHistoryModalOpen(false)}
-                  className="px-3 py-2 border border-stone-300 text-stone-700 font-semibold rounded-lg hover:bg-stone-100"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-4 py-2 bg-[#800000] hover:bg-[#660000] text-white font-semibold rounded-lg shadow-sm"
-                >
-                  Save Section
-                </button>
-              </div>
-            </form>
+            <div className="px-5 py-3.5 bg-stone-50 border-t border-stone-200 flex justify-end gap-2 text-xs">
+              <button
+                type="button"
+                onClick={() => setDeityModal({ isOpen: false, item: null, isEdit: false })}
+                className="px-4 py-2 border border-stone-300 rounded-xl text-stone-700 font-semibold hover:bg-stone-100 cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={saveDeityModal}
+                className="px-4 py-2 bg-[#55132D] text-white font-semibold rounded-xl hover:bg-[#681B37] cursor-pointer"
+              >
+                Save Deity Shrine
+              </button>
+            </div>
           </div>
         </div>
       )}
 
-      {/* MODAL: ADD DEITY */}
-      {isAddDeityModalOpen && (
+      {/* ======================================================== */}
+      {/* MODAL 2: ADD / EDIT HISTORICAL CHRONICLE */}
+      {/* ======================================================== */}
+      {milestoneModal.isOpen && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl max-w-lg w-full overflow-hidden shadow-2xl border border-stone-200">
             <div className="px-5 py-4 bg-stone-50 border-b border-stone-200 flex items-center justify-between">
-              <div>
-                <h3 className="text-sm font-bold text-stone-900">Add Companion Deity Record</h3>
-                <p className="text-xs text-stone-500">Document sanctum murtis with verifiable details.</p>
-              </div>
+              <h3 className="text-sm font-bold text-stone-900 font-serif">
+                {milestoneModal.isEdit ? 'Edit Historical Chronicle' : 'Add New Historical Chronicle'}
+              </h3>
               <button
-                onClick={() => setIsAddDeityModalOpen(false)}
-                className="p-1 rounded-lg hover:bg-stone-200 text-stone-500"
+                onClick={() => setMilestoneModal({ isOpen: false, item: null, isEdit: false })}
+                className="p-1 hover:bg-stone-200 rounded-lg text-stone-500 cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
-            <form onSubmit={handleCreateDeity} className="p-5 space-y-3.5 text-xs">
-              <div>
-                <label className="block font-semibold text-stone-700 mb-1">Deity Title / Name *</label>
-                <input
-                  type="text"
-                  required
-                  placeholder="e.g. Chhotima (Maa Tripura Sundari Companion)"
-                  value={deityForm.name}
-                  onChange={(e) => setDeityForm({ ...deityForm, name: e.target.value })}
-                  className="w-full border border-stone-300 rounded-lg px-3 py-2 bg-stone-50 focus:outline-none focus:border-[#800000]"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
+            <div className="p-5 space-y-3.5 text-xs max-h-[75vh] overflow-y-auto">
+              <div className="grid grid-cols-3 gap-3">
                 <div>
-                  <label className="block font-semibold text-stone-700 mb-1">Theological Role</label>
+                  <label className="block font-semibold text-stone-700 mb-1">
+                    Year / Era *
+                  </label>
                   <input
                     type="text"
-                    placeholder="e.g. Royal Camp Deity"
-                    value={deityForm.significance}
-                    onChange={(e) => setDeityForm({ ...deityForm, significance: e.target.value })}
-                    className="w-full border border-stone-300 rounded-lg px-3 py-2 bg-stone-50 focus:outline-none focus:border-[#800000]"
+                    value={milestoneModal.item?.year || ''}
+                    onChange={(e) =>
+                      setMilestoneModal({
+                        ...milestoneModal,
+                        item: { ...milestoneModal.item, year: e.target.value },
+                      })
+                    }
+                    placeholder="e.g. 1501 CE"
+                    className="w-full px-3 py-2 border border-stone-300 rounded-xl bg-stone-50 focus:outline-none focus:border-[#55132D]"
                   />
                 </div>
-                <div>
-                  <label className="block font-semibold text-stone-700 mb-1">Dimensions</label>
+                <div className="col-span-2">
+                  <label className="block font-semibold text-stone-700 mb-1">
+                    Chronicle Title *
+                  </label>
                   <input
                     type="text"
-                    placeholder="e.g. Approx 2 feet"
-                    value={deityForm.dimensions}
-                    onChange={(e) => setDeityForm({ ...deityForm, dimensions: e.target.value })}
-                    className="w-full border border-stone-300 rounded-lg px-3 py-2 bg-stone-50 focus:outline-none focus:border-[#800000]"
+                    value={milestoneModal.item?.title || ''}
+                    onChange={(e) =>
+                      setMilestoneModal({
+                        ...milestoneModal,
+                        item: { ...milestoneModal.item, title: e.target.value },
+                      })
+                    }
+                    placeholder="e.g. Peetha Sthapana & Consecration"
+                    className="w-full px-3 py-2 border border-stone-300 rounded-xl bg-stone-50 focus:outline-none focus:border-[#55132D]"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block font-semibold text-stone-700 mb-1">Historical & Sacred Narrative *</label>
+                <label className="block font-semibold text-stone-700 mb-1">
+                  Historical Chronicle Narrative (Shown to Devotees)
+                </label>
                 <textarea
                   rows={3}
-                  required
-                  placeholder="Royal lineage background, worship traditions..."
-                  value={deityForm.description}
-                  onChange={(e) => setDeityForm({ ...deityForm, description: e.target.value })}
-                  className="w-full border border-stone-300 rounded-lg px-3 py-2 bg-stone-50 focus:outline-none focus:border-[#800000]"
+                  value={milestoneModal.item?.description || ''}
+                  onChange={(e) =>
+                    setMilestoneModal({
+                      ...milestoneModal,
+                      item: { ...milestoneModal.item, description: e.target.value },
+                    })
+                  }
+                  placeholder="Detailed chronicle narrative for devotee website..."
+                  className="w-full px-3 py-2 border border-stone-300 rounded-xl bg-stone-50 focus:outline-none focus:border-[#55132D] leading-relaxed"
                 />
               </div>
 
-              <div className="pt-3 border-t border-stone-200 flex items-center justify-end gap-2">
-                <button
-                  type="button"
-                  onClick={() => setIsAddDeityModalOpen(false)}
-                  className="px-3 py-2 border border-stone-300 text-stone-700 font-semibold rounded-lg hover:bg-stone-100"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-4 py-2 bg-[#800000] hover:bg-[#660000] text-white font-semibold rounded-lg shadow-sm"
-                >
-                  Save Record
-                </button>
+              <div>
+                <label className="block font-semibold text-stone-700 mb-1">
+                  Architectural / Inscriptional Highlight
+                </label>
+                <input
+                  type="text"
+                  value={milestoneModal.item?.highlight || ''}
+                  onChange={(e) =>
+                    setMilestoneModal({
+                      ...milestoneModal,
+                      item: { ...milestoneModal.item, highlight: e.target.value },
+                    })
+                  }
+                  placeholder="e.g. Char-chala vaulted architecture fusing Bengali style..."
+                  className="w-full px-3 py-2 border border-stone-300 rounded-xl bg-stone-50 focus:outline-none focus:border-[#55132D]"
+                />
               </div>
-            </form>
+
+              <div>
+                <label className="block font-semibold text-stone-700 mb-1">
+                  Portal Visibility Status
+                </label>
+                <select
+                  value={milestoneModal.item?.status || 'Published'}
+                  onChange={(e) =>
+                    setMilestoneModal({
+                      ...milestoneModal,
+                      item: { ...milestoneModal.item, status: e.target.value },
+                    })
+                  }
+                  className="w-full px-3 py-2 border border-stone-300 rounded-xl bg-stone-50 focus:outline-none focus:border-[#55132D]"
+                >
+                  <option value="Published">Published (Live on Devotee Portal)</option>
+                  <option value="Draft">Draft (Hidden from Devotees)</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="px-5 py-3.5 bg-stone-50 border-t border-stone-200 flex justify-end gap-2 text-xs">
+              <button
+                type="button"
+                onClick={() => setMilestoneModal({ isOpen: false, item: null, isEdit: false })}
+                className="px-4 py-2 border border-stone-300 rounded-xl text-stone-700 font-semibold hover:bg-stone-100 cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={saveMilestoneModal}
+                className="px-4 py-2 bg-[#55132D] text-white font-semibold rounded-xl hover:bg-[#681B37] cursor-pointer"
+              >
+                Save Chronicle
+              </button>
+            </div>
           </div>
         </div>
       )}
 
-      {/* MODAL: ADD GALLERY ITEM */}
-      {isAddGalleryModalOpen && (
+      {/* ======================================================== */}
+      {/* MODAL 3: ADD / EDIT ANNOUNCEMENT NOTICE */}
+      {/* ======================================================== */}
+      {announcementModal.isOpen && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl max-w-lg w-full overflow-hidden shadow-2xl border border-stone-200">
+            <div className="px-5 py-4 bg-stone-50 border-b border-stone-200 flex items-center justify-between">
+              <h3 className="text-sm font-bold text-stone-900 font-serif">
+                {announcementModal.isEdit ? 'Edit Devotee Announcement' : 'Post New Devotee Announcement'}
+              </h3>
+              <button
+                onClick={() => setAnnouncementModal({ isOpen: false, item: null, isEdit: false })}
+                className="p-1 hover:bg-stone-200 rounded-lg text-stone-500 cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="p-5 space-y-3.5 text-xs max-h-[75vh] overflow-y-auto">
+              <div>
+                <label className="block font-semibold text-stone-700 mb-1">
+                  Notice Headline *
+                </label>
+                <input
+                  type="text"
+                  value={announcementModal.item?.title || ''}
+                  onChange={(e) =>
+                    setAnnouncementModal({
+                      ...announcementModal,
+                      item: { ...announcementModal.item, title: e.target.value },
+                    })
+                  }
+                  placeholder="e.g. Diwali Mahotsav 2026 Special Darshan Timings"
+                  className="w-full px-3 py-2 border border-stone-300 rounded-xl bg-stone-50 focus:outline-none focus:border-[#55132D]"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block font-semibold text-stone-700 mb-1">
+                    Notice Category
+                  </label>
+                  <select
+                    value={announcementModal.item?.category || 'Festival Notice'}
+                    onChange={(e) =>
+                      setAnnouncementModal({
+                        ...announcementModal,
+                        item: { ...announcementModal.item, category: e.target.value },
+                      })
+                    }
+                    className="w-full px-3 py-2 border border-stone-300 rounded-xl bg-stone-50 focus:outline-none focus:border-[#55132D]"
+                  >
+                    <option value="Festival Notice">Festival Notice</option>
+                    <option value="Safety Advisory">Safety Advisory</option>
+                    <option value="Prasad Service">Prasad Service</option>
+                    <option value="Accessibility">Accessibility</option>
+                    <option value="General Advisory">General Advisory</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block font-semibold text-stone-700 mb-1">
+                    Priority Alert
+                  </label>
+                  <select
+                    value={announcementModal.item?.priority || 'High'}
+                    onChange={(e) =>
+                      setAnnouncementModal({
+                        ...announcementModal,
+                        item: { ...announcementModal.item, priority: e.target.value },
+                      })
+                    }
+                    className="w-full px-3 py-2 border border-stone-300 rounded-xl bg-stone-50 focus:outline-none focus:border-[#55132D]"
+                  >
+                    <option value="High">High (Banner Marquee)</option>
+                    <option value="Medium">Medium (Standard Feed)</option>
+                    <option value="Normal">Normal</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="block font-semibold text-stone-700 mb-1">
+                  Notice Content & Devotee Instructions
+                </label>
+                <textarea
+                  rows={3}
+                  value={announcementModal.item?.content || ''}
+                  onChange={(e) =>
+                    setAnnouncementModal({
+                      ...announcementModal,
+                      item: { ...announcementModal.item, content: e.target.value },
+                    })
+                  }
+                  placeholder="Provide precise details, gate instructions, and timings for pilgrims..."
+                  className="w-full px-3 py-2 border border-stone-300 rounded-xl bg-stone-50 focus:outline-none focus:border-[#55132D] leading-relaxed"
+                />
+              </div>
+
+              <div>
+                <label className="block font-semibold text-stone-700 mb-1">
+                  Validity Period / Range
+                </label>
+                <input
+                  type="text"
+                  value={announcementModal.item?.validity || ''}
+                  onChange={(e) =>
+                    setAnnouncementModal({
+                      ...announcementModal,
+                      item: { ...announcementModal.item, validity: e.target.value },
+                    })
+                  }
+                  placeholder="e.g. Valid through Nov 16, 2026"
+                  className="w-full px-3 py-2 border border-stone-300 rounded-xl bg-stone-50 focus:outline-none focus:border-[#55132D]"
+                />
+              </div>
+
+              <div>
+                <label className="block font-semibold text-stone-700 mb-1">
+                  Broadcast Status
+                </label>
+                <select
+                  value={announcementModal.item?.status || 'Live'}
+                  onChange={(e) =>
+                    setAnnouncementModal({
+                      ...announcementModal,
+                      item: { ...announcementModal.item, status: e.target.value },
+                    })
+                  }
+                  className="w-full px-3 py-2 border border-stone-300 rounded-xl bg-stone-50 focus:outline-none focus:border-[#55132D]"
+                >
+                  <option value="Live">Live (Broadcasted to Devotee Portal)</option>
+                  <option value="Draft">Draft (Hidden from Devotees)</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="px-5 py-3.5 bg-stone-50 border-t border-stone-200 flex justify-end gap-2 text-xs">
+              <button
+                type="button"
+                onClick={() => setAnnouncementModal({ isOpen: false, item: null, isEdit: false })}
+                className="px-4 py-2 border border-stone-300 rounded-xl text-stone-700 font-semibold hover:bg-stone-100 cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={saveAnnouncementModal}
+                className="px-4 py-2 bg-[#55132D] text-white font-semibold rounded-xl hover:bg-[#681B37] cursor-pointer"
+              >
+                Broadcast Announcement
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ======================================================== */}
+      {/* MODAL 4: ADD / EDIT GALLERY PHOTO */}
+      {/* ======================================================== */}
+      {galleryModal.isOpen && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl max-w-lg w-full overflow-hidden shadow-2xl border border-stone-200">
+            <div className="px-5 py-4 bg-stone-50 border-b border-stone-200 flex items-center justify-between">
+              <h3 className="text-sm font-bold text-stone-900 font-serif">
+                {galleryModal.isEdit ? 'Edit Photo Details' : 'Upload / Add Photo to Gallery'}
+              </h3>
+              <button
+                onClick={() => setGalleryModal({ isOpen: false, item: null, isEdit: false })}
+                className="p-1 hover:bg-stone-200 rounded-lg text-stone-500 cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="p-5 space-y-3.5 text-xs max-h-[75vh] overflow-y-auto">
+              <div>
+                <label className="block font-semibold text-stone-700 mb-1">
+                  Photo Caption / Title *
+                </label>
+                <input
+                  type="text"
+                  value={galleryModal.item?.title || ''}
+                  onChange={(e) =>
+                    setGalleryModal({
+                      ...galleryModal,
+                      item: { ...galleryModal.item, title: e.target.value },
+                    })
+                  }
+                  placeholder="e.g. Sanctum Char-chala Dome at Sunset"
+                  className="w-full px-3 py-2 border border-stone-300 rounded-xl bg-stone-50 focus:outline-none focus:border-[#55132D]"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block font-semibold text-stone-700 mb-1">
+                    Gallery Category
+                  </label>
+                  <select
+                    value={galleryModal.item?.category || 'Main Temple'}
+                    onChange={(e) =>
+                      setGalleryModal({
+                        ...galleryModal,
+                        item: { ...galleryModal.item, category: e.target.value },
+                      })
+                    }
+                    className="w-full px-3 py-2 border border-stone-300 rounded-xl bg-stone-50 focus:outline-none focus:border-[#55132D]"
+                  >
+                    <option value="Main Temple">Main Temple</option>
+                    <option value="Temple Architecture">Temple Architecture</option>
+                    <option value="Kalyan Sagar">Kalyan Sagar</option>
+                    <option value="Festivals">Festivals</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block font-semibold text-stone-700 mb-1">
+                    Image File / Preset
+                  </label>
+                  <select
+                    value={galleryModal.item?.imageUrl || '/matabari-premises-1.jpg'}
+                    onChange={(e) =>
+                      setGalleryModal({
+                        ...galleryModal,
+                        item: { ...galleryModal.item, imageUrl: e.target.value },
+                      })
+                    }
+                    className="w-full px-3 py-2 border border-stone-300 rounded-xl bg-stone-50 focus:outline-none focus:border-[#55132D]"
+                  >
+                    <option value="/matabari-premises-1.jpg">Temple Courtyard Archways</option>
+                    <option value="/matabari-premises-2.jpg">Outer Sanctum Corridors</option>
+                    <option value="/matabari-temple-main.png">Historic Sanctum Dome</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="block font-semibold text-stone-700 mb-1">
+                  Description / Devotee Context
+                </label>
+                <textarea
+                  rows={2}
+                  value={galleryModal.item?.description || ''}
+                  onChange={(e) =>
+                    setGalleryModal({
+                      ...galleryModal,
+                      item: { ...galleryModal.item, description: e.target.value },
+                    })
+                  }
+                  placeholder="Devotee description shown on gallery lightbox..."
+                  className="w-full px-3 py-2 border border-stone-300 rounded-xl bg-stone-50 focus:outline-none focus:border-[#55132D]"
+                />
+              </div>
+            </div>
+
+            <div className="px-5 py-3.5 bg-stone-50 border-t border-stone-200 flex justify-end gap-2 text-xs">
+              <button
+                type="button"
+                onClick={() => setGalleryModal({ isOpen: false, item: null, isEdit: false })}
+                className="px-4 py-2 border border-stone-300 rounded-xl text-stone-700 font-semibold hover:bg-stone-100 cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={saveGalleryModal}
+                className="px-4 py-2 bg-[#55132D] text-white font-semibold rounded-xl hover:bg-[#681B37] cursor-pointer"
+              >
+                Save Photo Entry
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ======================================================== */}
+      {/* MODAL 5: CHANGE PORTAL COVER PHOTO */}
+      {/* ======================================================== */}
+      {coverPhotoModal && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl max-w-md w-full overflow-hidden shadow-2xl border border-stone-200">
             <div className="px-5 py-4 bg-stone-50 border-b border-stone-200 flex items-center justify-between">
-              <div>
-                <h3 className="text-sm font-bold text-stone-900">Upload Gallery Image</h3>
-                <p className="text-xs text-stone-500">Select local image and assign public metadata.</p>
-              </div>
+              <h3 className="text-sm font-bold text-stone-900 font-serif">
+                Select Portal Cover Visual
+              </h3>
               <button
-                onClick={() => setIsAddGalleryModalOpen(false)}
-                className="p-1 rounded-lg hover:bg-stone-200 text-stone-500"
+                onClick={() => setCoverPhotoModal(false)}
+                className="p-1 hover:bg-stone-200 rounded-lg text-stone-500 cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
-            <form onSubmit={handleCreateGalleryItem} className="p-5 space-y-3.5 text-xs">
-              <ImageUploadPreview
-                imageUrl={galleryForm.imageUrl}
-                onImageChange={(url, name) =>
-                  setGalleryForm({
-                    ...galleryForm,
-                    imageUrl: url,
-                    title: galleryForm.title || name.replace(/\.[^/.]+$/, ''),
-                  })
-                }
-                altText={galleryForm.altText}
-                onAltTextChange={(val) => setGalleryForm({ ...galleryForm, altText: val })}
-              />
+            <div className="p-5 space-y-3.5 text-xs">
+              <p className="text-stone-600">
+                Choose the primary landscape cover visual displayed on the Devotee Portal homepage and digital passes:
+              </p>
 
-              <div>
-                <label className="block font-semibold text-stone-700 mb-1">Image Caption / Title *</label>
-                <input
-                  type="text"
-                  required
-                  placeholder="e.g. Evening Sandhya Aarti Illumination"
-                  value={galleryForm.title}
-                  onChange={(e) => setGalleryForm({ ...galleryForm, title: e.target.value })}
-                  className="w-full border border-stone-300 rounded-lg px-3 py-2 bg-stone-50 focus:outline-none focus:border-[#800000]"
-                />
+              <div className="grid grid-cols-1 gap-2.5">
+                {[
+                  { name: 'Inner Sanctum Heritage Courtyard', url: '/matabari-premises-1.jpg' },
+                  { name: 'Outer Temple Corridors & Perimeter', url: '/matabari-premises-2.jpg' },
+                  { name: 'Historic Bengali Char-chala Sanctum', url: '/matabari-temple-main.png' },
+                ].map((preset) => (
+                  <button
+                    key={preset.url}
+                    type="button"
+                    onClick={() => {
+                      setProfileForm({ ...profileForm, coverImageUrl: preset.url });
+                      setCoverPhotoModal(false);
+                      showToast('Cover visual updated. Click "Publish Profile" to apply live.');
+                    }}
+                    className={`flex items-center gap-3 p-2.5 rounded-xl border text-left transition-all cursor-pointer ${
+                      profileForm.coverImageUrl === preset.url
+                        ? 'border-[#55132D] bg-[#55132D]/5 ring-1 ring-[#55132D]'
+                        : 'border-stone-200 hover:bg-stone-50'
+                    }`}
+                  >
+                    <img
+                      src={preset.url}
+                      alt={preset.name}
+                      className="w-16 h-11 object-cover rounded-lg border border-stone-200 shrink-0"
+                    />
+                    <div>
+                      <div className="font-bold text-stone-900">{preset.name}</div>
+                      <div className="text-[10.5px] text-stone-400 font-mono">{preset.url}</div>
+                    </div>
+                  </button>
+                ))}
               </div>
+            </div>
 
-              <div>
-                <label className="block font-semibold text-stone-700 mb-1">Category</label>
-                <select
-                  value={galleryForm.category}
-                  onChange={(e) => setGalleryForm({ ...galleryForm, category: e.target.value })}
-                  className="w-full border border-stone-300 rounded-lg px-3 py-2 bg-stone-50 focus:outline-none focus:border-[#800000]"
-                >
-                  <option value="Main Temple">Main Temple</option>
-                  <option value="Temple Architecture">Temple Architecture</option>
-                  <option value="Deity">Deity</option>
-                  <option value="Kalyan Sagar">Kalyan Sagar</option>
-                  <option value="Festivals">Festivals</option>
-                  <option value="Temple Premises">Temple Premises</option>
-                  <option value="Cultural Activities">Cultural Activities</option>
-                </select>
-              </div>
-
-              <div className="pt-3 border-t border-stone-200 flex items-center justify-end gap-2">
-                <button
-                  type="button"
-                  onClick={() => setIsAddGalleryModalOpen(false)}
-                  className="px-3 py-2 border border-stone-300 text-stone-700 font-semibold rounded-lg hover:bg-stone-100"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-4 py-2 bg-[#800000] hover:bg-[#660000] text-white font-semibold rounded-lg shadow-sm"
-                >
-                  Confirm Upload
-                </button>
-              </div>
-            </form>
+            <div className="px-5 py-3.5 bg-stone-50 border-t border-stone-200 flex justify-end">
+              <button
+                type="button"
+                onClick={() => setCoverPhotoModal(false)}
+                className="px-4 py-2 border border-stone-300 rounded-xl text-stone-700 font-semibold hover:bg-stone-100 cursor-pointer text-xs"
+              >
+                Close
+              </button>
+            </div>
           </div>
         </div>
       )}
 
-      {/* Global Preview Modal */}
+      {/* Devotee Portal Preview Modal */}
       <PublicWebsitePreviewModal />
     </div>
   );
 }
-

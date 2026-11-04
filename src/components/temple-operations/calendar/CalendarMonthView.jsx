@@ -1,11 +1,5 @@
 import React, { useMemo } from 'react';
-import {
-  ChevronLeft,
-  ChevronRight,
-  Calendar as CalendarIcon,
-  Landmark,
-  Circle,
-} from 'lucide-react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useTempleCalendar } from '../../../context/TempleCalendarContext';
 
 export default function CalendarMonthView() {
@@ -15,10 +9,8 @@ export default function CalendarMonthView() {
     setSelectedDate,
     goToPrev,
     goToNext,
-    goToToday,
-    dutyAssignments,
-    festivals,
-    tasks,
+    dutyOfficersMap,
+    setIsDetailDrawerOpen,
   } = useTempleCalendar();
 
   const year = currentDate.getFullYear();
@@ -37,7 +29,7 @@ export default function CalendarMonthView() {
 
     const cells = [];
 
-    // Prev month padding
+    // Prev month padding (if any)
     for (let i = firstDayIndex - 1; i >= 0; i--) {
       const dayNum = prevMonthDaysCount - i;
       const prevDate = new Date(year, month - 1, dayNum);
@@ -61,7 +53,7 @@ export default function CalendarMonthView() {
       });
     }
 
-    // Next month padding to complete 35 grid cells
+    // Next month padding to complete 35 grid cells (5 full weeks)
     const remaining = (7 - (cells.length % 7)) % 7;
     for (let n = 1; n <= remaining; n++) {
       const nextDate = new Date(year, month + 1, n);
@@ -77,142 +69,125 @@ export default function CalendarMonthView() {
   }, [year, month]);
 
   const weekDayHeaders = [
-    { label: 'Sun', isWeekend: true },
-    { label: 'Mon', isWeekend: false },
-    { label: 'Tue', isWeekend: false },
-    { label: 'Wed', isWeekend: false },
-    { label: 'Thu', isWeekend: false },
-    { label: 'Fri', isWeekend: false },
-    { label: 'Sat', isWeekend: true },
+    'Sunday',
+    'Monday',
+    'Tuesday',
+    'Wednesday',
+    'Thursday',
+    'Friday',
+    'Saturday',
   ];
 
+  const handleCellClick = (dateStr) => {
+    setSelectedDate(dateStr);
+    setIsDetailDrawerOpen(true);
+  };
+
   return (
-    <div className="bg-white rounded-2xl border border-stone-200/90 shadow-2xs overflow-hidden h-[680px] flex flex-col justify-between">
-      {/* 1. Calendar Header Bar: Month Navigation & Category Legend */}
-      <div className="px-5 py-3.5 border-b border-stone-200/90 flex items-center justify-between text-xs text-stone-700 bg-stone-50/80 gap-3 shrink-0">
-        {/* Left: Month Navigator & Title */}
-        <div className="flex items-center gap-2 shrink-0">
+    <div className="bg-white rounded-2xl border border-stone-300 shadow-2xs overflow-hidden flex flex-col">
+      {/* 1. Month Navigation Header with Arrows at Two Corners & Category Legend */}
+      <div className="px-5 py-3.5 flex items-center justify-between border-b border-stone-300 bg-white">
+        {/* Left Corner: Left Arrow & Month Year */}
+        <div className="flex items-center gap-3">
           <button
             onClick={goToPrev}
-            className="p-1.5 hover:bg-stone-100 rounded-lg text-stone-700 transition-colors border border-stone-200 bg-white shadow-2xs"
+            className="p-2 rounded-xl border border-stone-300 bg-white hover:bg-stone-50 text-stone-700 transition-colors shadow-2xs cursor-pointer"
             title="Previous Month"
           >
-            <ChevronLeft className="w-3.5 h-3.5" />
+            <ChevronLeft className="w-4 h-4" />
           </button>
-          <button
-            onClick={goToNext}
-            className="p-1.5 hover:bg-stone-100 rounded-lg text-stone-700 transition-colors border border-stone-200 bg-white shadow-2xs"
-            title="Next Month"
-          >
-            <ChevronRight className="w-3.5 h-3.5" />
-          </button>
-
-          <span className="font-bold font-serif text-base text-stone-900 ml-1.5 min-w-[125px]">
+          <h2 className="text-xl font-bold font-serif text-stone-900 tracking-tight">
             {formattedMonthYear}
-          </span>
-
-          <button
-            onClick={goToToday}
-            className="ml-1 px-3 py-1 bg-white hover:bg-stone-100 text-stone-800 text-xs font-semibold rounded-lg border border-stone-200 transition-colors flex items-center gap-1.5 shadow-2xs"
-          >
-            <CalendarIcon className="w-3 h-3 text-stone-500" />
-            <span>Today</span>
-          </button>
+          </h2>
         </div>
 
-        {/* Right: Category Legend (Evenly Spaced Across the Right Side) */}
-        <div className="flex items-center gap-3 sm:gap-4.5 font-medium text-xs text-stone-600 shrink-0 ml-auto">
-          <span className="flex items-center gap-1.5 whitespace-nowrap">
-            <span className="w-2.5 h-2.5 rounded-full bg-[#55132D]" />
-            <span>Staff Duties</span>
-          </span>
-          <span className="flex items-center gap-1.5 whitespace-nowrap">
-            <span className="w-2.5 h-2.5 rounded-full bg-[#B68A36]" />
-            <span>Rituals</span>
-          </span>
-          <span className="flex items-center gap-1.5 whitespace-nowrap">
-            <span className="w-2.5 h-2.5 rounded-full bg-[#EA580C]" />
-            <span>Festivals</span>
-          </span>
-          <span className="flex items-center gap-1.5 whitespace-nowrap">
-            <span className="w-2.5 h-2.5 rounded-full border border-[#2563EB] bg-blue-100" />
-            <span>Admin Tasks</span>
-          </span>
+        {/* Right Corner: Category Legend & Right Arrow at Far Right Corner */}
+        <div className="flex items-center gap-6">
+          {/* Legend */}
+          <div className="flex items-center gap-5 text-xs font-medium text-stone-700">
+            <span className="flex items-center gap-1.5">
+              <span className="w-2.5 h-2.5 rounded-full bg-[#EA580C]" />
+              <span>Festivals</span>
+            </span>
+            <span className="flex items-center gap-1.5">
+              <span className="w-2.5 h-2.5 rounded-full bg-[#2563EB]" />
+              <span>Notes</span>
+            </span>
+            <span className="flex items-center gap-1.5">
+              <span className="w-2.5 h-2.5 rounded-full bg-[#55132D]" />
+              <span>Duty officer</span>
+            </span>
+          </div>
+
+          {/* Right Corner: Next Month Arrow */}
+          <button
+            onClick={goToNext}
+            className="p-2 rounded-xl border border-stone-300 bg-white hover:bg-stone-50 text-stone-700 transition-colors shadow-2xs cursor-pointer"
+            title="Next Month"
+          >
+            <ChevronRight className="w-4 h-4" />
+          </button>
         </div>
       </div>
 
-      {/* 2. Weekday Column Headers with Clean Dividing Lines */}
-      <div className="grid grid-cols-7 border-b border-stone-200 divide-x divide-stone-200 bg-stone-100/70 text-center text-xs shrink-0">
-        {weekDayHeaders.map((day, idx) => (
-          <div
-            key={idx}
-            className={`py-2.5 text-xs font-bold tracking-wider uppercase ${
-              day.isWeekend ? 'text-amber-900' : 'text-stone-700'
-            }`}
-          >
-            {day.label}
+      {/* 2. Weekday Column Headers with Crisp Dividing Lines */}
+      <div className="grid grid-cols-7 border-b border-stone-300 divide-x divide-stone-300 text-xs font-medium text-stone-700 bg-stone-50/50">
+        {weekDayHeaders.map((day) => (
+          <div key={day} className="px-4 py-2.5 text-stone-700 font-semibold">
+            {day}
           </div>
         ))}
       </div>
 
-      {/* 3. Monthly Days Grid with Clear, Breathable Cells */}
-      <div className="grid grid-cols-7 divide-x divide-y divide-stone-200 flex-1">
+      {/* 3. Month Days Grid with Enhanced Cell Lines Opacity */}
+      <div className="grid grid-cols-7 divide-x divide-y divide-stone-300 bg-white">
         {calendarCells.map((cell) => {
           const { dateStr, dayNum, isCurrentMonth } = cell;
           const isSelected = selectedDate === dateStr;
-          const isToday = dateStr === '2026-11-01';
+          // November 4 is "Today" in the demo
+          const isToday = isCurrentMonth && dayNum === 4;
 
-          // Shift counts
-          const hasShifts =
-            ['2026-11-01', '2026-11-05', '2026-11-09', '2026-11-17', '2026-11-23'].includes(
-              dateStr
-            ) || dutyAssignments.some((d) => d.date === dateStr);
+          const officer = isCurrentMonth && dutyOfficersMap ? dutyOfficersMap[dayNum] : null;
 
-          // Rituals
-          const isKartikPurnima = dateStr === '2026-11-01';
-          const isRamaEkadashi = dateStr === '2026-11-06';
-          const isUtpannaEkadashi = dateStr === '2026-11-21';
-
-          // Tasks
-          const isStaffReview = dateStr === '2026-11-03';
-          const isFacilityCheck = dateStr === '2026-11-10';
-          const isVolunteerBriefing = dateStr === '2026-11-19';
-          const isParkingReview = dateStr === '2026-11-25';
-
-          // Diwali Mela Span (Nov 11 - 14 in Row 2)
-          const isDiwaliStart = dateStr === '2026-11-11';
-          const isDiwaliMid1 = dateStr === '2026-11-12';
-          const isDiwaliMid2 = dateStr === '2026-11-13';
-          const isDiwaliSpanEnd = dateStr === '2026-11-14';
-          const isDiwaliSpan = isDiwaliStart || isDiwaliMid1 || isDiwaliMid2 || isDiwaliSpanEnd;
-          const isDiwaliLastDay = dateStr === '2026-11-15';
+          // Specific Events & Notes Matching Reference Screenshot
+          const isKartikPurnima = isCurrentMonth && dayNum === 1;
+          const isStaffReview = isCurrentMonth && dayNum === 3;
+          const isRamaEkadashi = isCurrentMonth && dayNum === 6;
+          const isFacilityCheck = isCurrentMonth && dayNum === 10;
+          const isDiwali11 = isCurrentMonth && dayNum === 11;
+          const isDiwali12 = isCurrentMonth && dayNum === 12;
+          const isDiwali13 = isCurrentMonth && dayNum === 13;
+          const isDiwali14 = isCurrentMonth && dayNum === 14;
+          const isDiwali15 = isCurrentMonth && dayNum === 15;
+          const isVolunteerMeeting = isCurrentMonth && dayNum === 19;
+          const isUtpannaEkadashi = isCurrentMonth && dayNum === 21;
+          const isParkingReview = isCurrentMonth && dayNum === 25;
+          const isMonthEndReport = isCurrentMonth && dayNum === 28;
 
           return (
             <div
               key={dateStr}
-              onClick={() => setSelectedDate(dateStr)}
-              className={`min-h-[110px] p-2.5 flex flex-col justify-between transition-all cursor-pointer relative ${
+              onClick={() => handleCellClick(dateStr)}
+              className={`h-[128px] p-2.5 flex flex-col justify-between transition-colors cursor-pointer relative group ${
                 !isCurrentMonth
-                  ? 'bg-stone-50/70 text-stone-400'
+                  ? 'bg-stone-50/40 text-stone-300'
+                  : isToday
+                  ? 'bg-[#FAF5F0]/80'
                   : isSelected
-                  ? 'bg-amber-500/10 ring-2 ring-inset ring-[#55132D]'
-                  : 'bg-white hover:bg-stone-50'
+                  ? 'bg-amber-500/5 ring-2 ring-inset ring-[#55132D]'
+                  : 'bg-white hover:bg-stone-50/70'
               }`}
             >
               {/* Day Number */}
-              <div className="flex items-center justify-between mb-1">
+              <div className="flex items-center justify-between">
                 {isToday ? (
-                  <span className="w-5.5 h-5.5 rounded-full bg-[#55132D] text-white flex items-center justify-center font-bold font-number text-xs shadow-2xs">
+                  <span className="w-6 h-6 rounded-full bg-[#55132D] text-white flex items-center justify-center font-bold text-xs shadow-2xs">
                     {dayNum}
                   </span>
                 ) : (
                   <span
-                    className={`text-xs font-bold font-number ${
-                      isSelected
-                        ? 'text-[#55132D] font-black'
-                        : isCurrentMonth
-                        ? 'text-stone-900'
-                        : 'text-stone-400'
+                    className={`text-xs font-semibold ${
+                      !isCurrentMonth ? 'text-stone-300' : 'text-stone-900'
                     }`}
                   >
                     {dayNum}
@@ -220,83 +195,112 @@ export default function CalendarMonthView() {
                 )}
               </div>
 
-              {/* Day Events Stack */}
-              <div className="space-y-1.5 my-1 flex-1 flex flex-col justify-center">
-                {/* 1. Shift indicator */}
-                {isCurrentMonth && hasShifts && !isDiwaliSpan && (
-                  <div className="flex items-center gap-1.5 text-xs font-bold text-[#55132D]">
-                    <span className="w-2 h-2 rounded-full bg-[#55132D] flex-shrink-0" />
-                    <span>3 Shifts</span>
-                  </div>
-                )}
-
-                {/* 2. Rituals */}
-                {isCurrentMonth && isKartikPurnima && (
-                  <div className="px-2 py-0.5 rounded text-[11px] font-bold bg-amber-100/90 text-amber-950 border border-amber-300 truncate">
+              {/* Event & Note Content in Cell Body */}
+              <div className="flex-1 my-1 flex flex-col justify-center space-y-1 overflow-hidden">
+                {/* Day 1: Kartik Purnima */}
+                {isKartikPurnima && (
+                  <span className="px-2.5 py-0.5 rounded-full bg-[#FFEDD5] text-[#9A3412] font-semibold text-[11px] self-start inline-block truncate max-w-full">
                     Kartik Purnima
-                  </div>
+                  </span>
                 )}
-                {isCurrentMonth && isRamaEkadashi && (
-                  <div className="px-2 py-0.5 rounded text-[11px] font-bold bg-amber-100/90 text-amber-950 border border-amber-300 truncate">
+
+                {/* Day 3: Staff review */}
+                {isStaffReview && (
+                  <span className="px-2.5 py-0.5 rounded-full bg-[#DBEAFE] text-[#1E40AF] font-semibold text-[11px] self-start inline-block truncate max-w-full">
+                    Staff review
+                  </span>
+                )}
+
+                {/* Day 6: Rama Ekadashi */}
+                {isRamaEkadashi && (
+                  <span className="px-2.5 py-0.5 rounded-full bg-[#FFEDD5] text-[#9A3412] font-semibold text-[11px] self-start inline-block truncate max-w-full">
                     Rama Ekadashi
+                  </span>
+                )}
+
+                {/* Day 10: Facility check */}
+                {isFacilityCheck && (
+                  <span className="px-2.5 py-0.5 rounded-full bg-[#DBEAFE] text-[#1E40AF] font-semibold text-[11px] self-start inline-block truncate max-w-full">
+                    Facility check
+                  </span>
+                )}
+
+                {/* Days 11-14: Continuous Spanned Diwali Mela Bar */}
+                {isDiwali11 && (
+                  <div className="space-y-1 w-full">
+                    <div className="bg-[#FFEDD5] text-[#9A3412] font-semibold text-[11px] py-0.5 px-2.5 rounded-l-md -mr-2.5 relative z-10 truncate whitespace-nowrap shadow-2xs">
+                      Diwali Mela · 11–15 Nov
+                    </div>
+                    <span className="px-2.5 py-0.5 rounded-full bg-[#DBEAFE] text-[#1E40AF] font-semibold text-[11px] self-start inline-block truncate max-w-full">
+                      Brief officers, 8 AM
+                    </span>
                   </div>
                 )}
-                {isCurrentMonth && isUtpannaEkadashi && (
-                  <div className="px-2 py-0.5 rounded text-[11px] font-bold bg-amber-100/90 text-amber-950 border border-amber-300 truncate">
+                {isDiwali12 && (
+                  <div className="bg-[#FFEDD5] h-[22px] -mx-2.5 relative z-10" />
+                )}
+                {isDiwali13 && (
+                  <div className="bg-[#FFEDD5] h-[22px] -mx-2.5 relative z-10" />
+                )}
+                {isDiwali14 && (
+                  <div className="bg-[#FFEDD5] h-[22px] rounded-r-md -ml-2.5 flex items-center justify-end pr-2 text-stone-600 font-bold text-xs relative z-10 shadow-2xs">
+                    →
+                  </div>
+                )}
+
+                {/* Day 15: Diwali Mela Day 5 */}
+                {isDiwali15 && (
+                  <span className="px-2.5 py-0.5 rounded-full bg-[#FFEDD5] text-[#9A3412] font-semibold text-[11px] self-start inline-block truncate max-w-full">
+                    Diwali Mela · Day 5
+                  </span>
+                )}
+
+                {/* Day 19: Volunteer meeting */}
+                {isVolunteerMeeting && (
+                  <span className="px-2.5 py-0.5 rounded-full bg-[#DBEAFE] text-[#1E40AF] font-semibold text-[11px] self-start inline-block truncate max-w-full">
+                    Volunteer meeting
+                  </span>
+                )}
+
+                {/* Day 21: Utpanna Ekadashi */}
+                {isUtpannaEkadashi && (
+                  <span className="px-2.5 py-0.5 rounded-full bg-[#FFEDD5] text-[#9A3412] font-semibold text-[11px] self-start inline-block truncate max-w-full">
                     Utpanna Ekadashi
-                  </div>
+                  </span>
                 )}
 
-                {/* 3. Tasks */}
-                {isCurrentMonth && isStaffReview && (
-                  <div className="px-2 py-0.5 rounded text-[11px] font-semibold bg-blue-50 text-blue-900 border border-blue-200 truncate flex items-center gap-1.5">
-                    <Circle className="w-2 h-2 text-blue-600 flex-shrink-0" />
-                    <span>Staff Review</span>
-                  </div>
-                )}
-                {isCurrentMonth && isFacilityCheck && (
-                  <div className="px-2 py-0.5 rounded text-[11px] font-semibold bg-blue-50 text-blue-900 border border-blue-200 truncate flex items-center gap-1.5">
-                    <Circle className="w-2 h-2 text-blue-600 flex-shrink-0" />
-                    <span>Facility Check</span>
-                  </div>
-                )}
-                {isCurrentMonth && isVolunteerBriefing && (
-                  <div className="px-2 py-0.5 rounded text-[11px] font-semibold bg-blue-50 text-blue-900 border border-blue-200 truncate flex items-center gap-1.5">
-                    <Circle className="w-2 h-2 text-blue-600 flex-shrink-0" />
-                    <span>Volunteer Briefing</span>
-                  </div>
-                )}
-                {isCurrentMonth && isParkingReview && (
-                  <div className="px-2 py-0.5 rounded text-[11px] font-semibold bg-blue-50 text-blue-900 border border-blue-200 truncate flex items-center gap-1.5">
-                    <Circle className="w-2 h-2 text-blue-600 flex-shrink-0" />
-                    <span>Parking Review</span>
-                  </div>
+                {/* Day 25: Parking review */}
+                {isParkingReview && (
+                  <span className="px-2.5 py-0.5 rounded-full bg-[#DBEAFE] text-[#1E40AF] font-semibold text-[11px] self-start inline-block truncate max-w-full">
+                    Parking review
+                  </span>
                 )}
 
-                {/* 4. Multi-Day Festival Bar (Nov 11 - 14 continuous span) */}
-                {isCurrentMonth && isDiwaliStart && (
-                  <div className="relative z-10 -mr-3 py-1 px-2.5 rounded-l bg-amber-100 text-amber-950 border border-r-0 border-amber-400 font-bold text-[11px] flex items-center gap-1.5 shadow-2xs whitespace-nowrap">
-                    <Landmark className="w-3.5 h-3.5 text-amber-700 flex-shrink-0" />
-                    <span>Diwali Mela 2026 (11–15 Nov)</span>
-                  </div>
-                )}
-                {isCurrentMonth && (isDiwaliMid1 || isDiwaliMid2) && (
-                  <div className="relative z-10 -ml-3 -mr-3 py-1 h-[26px] bg-amber-100 border-y border-amber-400" />
-                )}
-                {isCurrentMonth && isDiwaliSpanEnd && (
-                  <div className="relative z-10 -ml-3 py-1 px-2.5 rounded-r bg-amber-100 text-amber-950 border border-l-0 border-amber-400 font-bold text-[11px] flex items-center justify-end shadow-2xs">
-                    <span className="text-amber-800">→</span>
-                  </div>
-                )}
-
-                {/* Nov 15: Concluding Day */}
-                {isCurrentMonth && isDiwaliLastDay && (
-                  <div className="py-1 px-2 rounded bg-amber-100 text-amber-950 border border-amber-400 font-bold text-[11px] flex items-center gap-1.5 shadow-2xs truncate">
-                    <Landmark className="w-3.5 h-3.5 text-amber-700 flex-shrink-0" />
-                    <span className="truncate">Diwali Mela (Concludes)</span>
-                  </div>
+                {/* Day 28: Month-end report */}
+                {isMonthEndReport && (
+                  <span className="px-2.5 py-0.5 rounded-full bg-[#DBEAFE] text-[#1E40AF] font-semibold text-[11px] self-start inline-block truncate max-w-full">
+                    Month-end report
+                  </span>
                 )}
               </div>
+
+              {/* Duty Officer Badge Pinned to Bottom */}
+              {isCurrentMonth && (
+                <div className="pt-1">
+                  {officer ? (
+                    <div className="flex items-center gap-1.5 self-start text-[11px] text-stone-700 font-medium">
+                      <span className="w-4 h-4 rounded-full bg-[#55132D]/10 text-[#55132D] font-bold text-[9px] flex items-center justify-center shrink-0">
+                        {officer.initials}
+                      </span>
+                      <span className="truncate">{officer.name}</span>
+                    </div>
+                  ) : (
+                    <div className="px-2 py-0.5 rounded-full border border-dashed border-rose-400 bg-rose-50/60 text-[#B91C1C] text-[10.5px] font-medium self-start inline-block">
+                      Needs officer
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           );
         })}

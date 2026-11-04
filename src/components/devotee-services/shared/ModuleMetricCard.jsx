@@ -1,16 +1,31 @@
 import React from 'react';
 import { TrendingUp, TrendingDown } from 'lucide-react';
+import AnimatedCounter from '../../common/AnimatedCounter';
 
 export default function ModuleMetricCard({
   label,
+  title,
   value,
   subtitle,
   icon: Icon,
   trend,
   trendPositive = true,
-  iconBg = 'bg-[#55132D]/10 text-[#55132D]',
+  iconBg,
+  color,
   onClick,
 }) {
+  const displayLabel = label || title;
+  const colorMap = {
+    burgundy: 'bg-[#55132D]/10 text-[#55132D]',
+    gold: 'bg-amber-500/10 text-amber-700',
+    emerald: 'bg-emerald-500/10 text-emerald-700',
+    blue: 'bg-blue-500/10 text-blue-700',
+    amber: 'bg-amber-500/10 text-amber-700',
+    purple: 'bg-purple-500/10 text-purple-700',
+    rose: 'bg-rose-500/10 text-rose-700',
+  };
+  const resolvedIconBg = (color && colorMap[color]) || iconBg || 'bg-[#55132D]/10 text-[#55132D]';
+
   return (
     <div
       onClick={onClick}
@@ -19,9 +34,9 @@ export default function ModuleMetricCard({
       }`}
     >
       <div className="flex items-center justify-between text-sm text-stone-600 mb-2">
-        <span className="font-semibold text-stone-700 truncate pr-2">{label}</span>
+        <span className="font-semibold text-stone-700 truncate pr-2">{displayLabel}</span>
         {Icon && (
-          <span className={`p-1.5 rounded-lg ${iconBg} flex-shrink-0 transition-transform ${onClick ? 'group-hover:scale-105' : ''}`}>
+          <span className={`p-1.5 rounded-lg ${resolvedIconBg} flex-shrink-0 transition-transform ${onClick ? 'group-hover:scale-105' : ''}`}>
             <Icon className="w-4 h-4" />
           </span>
         )}
@@ -29,7 +44,7 @@ export default function ModuleMetricCard({
 
       <div>
         <div className="text-2xl sm:text-3xl font-bold font-number text-stone-900 tracking-tight flex items-center gap-2">
-          <span>{value}</span>
+          <AnimatedCounter value={value} />
         </div>
 
         {trend && (

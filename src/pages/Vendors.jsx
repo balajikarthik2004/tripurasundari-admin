@@ -16,17 +16,19 @@ import {
   MapPin,
   X,
   ExternalLink,
-  Sliders
+  Sliders,
+  AlertTriangle,
 } from 'lucide-react';
 import { useTempleOperations } from '../context/TempleOperationsContext';
 import OperationsPageHeader from '../components/temple-operations/shared/OperationsPageHeader';
 import OperationsMetricCard from '../components/temple-operations/shared/OperationsMetricCard';
 import OperationsTabs from '../components/temple-operations/shared/OperationsTabs';
 
-export default function Vendors() {
+export default function Vendors({ isEmbedded = false }) {
   const { vendors, addVendor, stalls, allocateStall, updateStallStatus } = useTempleOperations();
 
-  const [activeTab, setActiveTab] = useState('stalls');
+  const [activeTab, setActiveTab] = useState('overview');
+  const [subView, setSubView] = useState('stalls'); // 'stalls' or 'vendors'
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('ALL');
   const [isAddVendorOpen, setIsAddVendorOpen] = useState(false);
@@ -101,26 +103,27 @@ export default function Vendors() {
     setSelectedVendorId('');
   };
 
+  // Strictly 3 primary tabs as required
   const tabs = [
-    { id: 'stalls', label: 'Stalls & Premises Units', count: stalls.length },
-    { id: 'vendors', label: 'Authorized Vendor Directory', count: vendors.length },
-    { id: 'allocations', label: 'Lease & Allotment Register' },
-    { id: 'compliance', label: 'Safety & FSSAI Standards' },
+    { id: 'overview', label: 'Overview' },
+    { id: 'stalls-vendors', label: 'Vendors & Stalls' },
+    { id: 'lease-compliance', label: 'Lease & Compliance' },
   ];
 
   return (
-    <div className="space-y-5 pb-8">
-      {/* Header */}
-      <OperationsPageHeader
-        title="Vendors & Stalls Management"
-        subtitle="Licensing, stall allotments, lease registry and food hygiene compliance for temple perimeter merchants."
-        primaryActionLabel="Register New Vendor"
-        onPrimaryAction={() => setIsAddVendorOpen(true)}
-        primaryActionIcon={Plus}
-      />
+    <div className="space-y-6 pb-10">
+      {/* Header (Hidden when embedded) */}
+      {!isEmbedded && (
+        <OperationsPageHeader
+          title="Vendors & Stalls Management"
+          primaryActionLabel="Register New Vendor"
+          onPrimaryAction={() => setIsAddVendorOpen(true)}
+          primaryActionIcon={Plus}
+        />
+      )}
 
-      {/* Metric Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3.5">
+      {/* Metric Cards Row */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <OperationsMetricCard
           label="Registered Merchants"
           value={totalVendors}
@@ -150,330 +153,436 @@ export default function Vendors() {
       {/* Tabs */}
       <OperationsTabs activeTab={activeTab} onTabChange={setActiveTab} tabs={tabs} />
 
-      {/* TAB 1: STALLS GRID */}
-      {activeTab === 'stalls' && (
-        <div className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3.5">
-            {stalls.map((stall) => {
-              const isAllocated = stall.allocationStatus === 'Allocated';
-              return (
-                <div
-                  key={stall.id}
-                  className="bg-white rounded-xl border border-stone-200 p-4 shadow-xs flex flex-col justify-between hover:border-[#55132D]/40 transition-all"
+      {/* ========================================================
+          TAB 1: OVERVIEW
+         ======================================================== */}
+      {activeTab === 'overview' && (
+        <div className="space-y-6">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Left 2 Cols: Zone Occupancy & Commercial Health */}
+            <div className="lg:col-span-2 bg-white rounded-xl p-5 border border-stone-200/90 shadow-subtle space-y-4">
+              <div className="flex items-center justify-between pb-3 border-b border-stone-100">
+                <div>
+                  <h3 className="section-heading">Premises Zone Commercial Distribution</h3>
+                  <p className="supporting-text">Allocation status across outer parikrama and lake ghat areas</p>
+                </div>
+                <span className="text-xs font-semibold px-2.5 py-1 rounded bg-stone-100 text-stone-700">
+                  {stalls.length} Total Units
+                </span>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-1">
+                <div className="p-4 rounded-xl bg-stone-50 border border-stone-100 space-y-2">
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="font-semibold text-stone-700">North Approach</span>
+                    <span className="text-emerald-700 font-bold">100% Full</span>
+                  </div>
+                  <div className="text-xl font-bold font-serif text-stone-900">4 / 4 Units</div>
+                  <p className="supporting-text">Peda, Sweets & Souvenirs</p>
+                </div>
+
+                <div className="p-4 rounded-xl bg-stone-50 border border-stone-100 space-y-2">
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="font-semibold text-stone-700">South Parikrama</span>
+                    <span className="text-amber-700 font-bold">75% Full</span>
+                  </div>
+                  <div className="text-xl font-bold font-serif text-stone-900">3 / 4 Units</div>
+                  <p className="supporting-text">Puja Samagri & Flowers</p>
+                </div>
+
+                <div className="p-4 rounded-xl bg-stone-50 border border-stone-100 space-y-2">
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="font-semibold text-stone-700">Kalyan Sagar Ghat</span>
+                    <span className="text-blue-700 font-bold">Ecological Zone</span>
+                  </div>
+                  <div className="text-xl font-bold font-serif text-stone-900">2 / 2 Units</div>
+                  <p className="supporting-text">Turtle Feed & Pradakshina</p>
+                </div>
+              </div>
+
+              <div className="pt-3 border-t border-stone-100 flex items-center justify-between">
+                <span className="text-xs text-stone-600">
+                  Vacant stalls requiring allotment: <strong className="text-[#55132D]">{availableStalls.length} unit(s)</strong>
+                </span>
+                <button
+                  onClick={() => {
+                    setActiveTab('stalls-vendors');
+                    setSubView('stalls');
+                  }}
+                  className="text-xs font-semibold text-[#55132D] hover:underline"
                 >
-                  <div>
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="font-mono text-xs font-bold text-stone-900 bg-stone-100 px-2 py-0.5 rounded">
-                        {stall.number}
-                      </span>
-                      <span
-                        className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${
-                          isAllocated
-                            ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-                            : 'bg-stone-100 text-stone-600 border border-stone-200'
-                        }`}
-                      >
-                        {stall.allocationStatus}
-                      </span>
+                  View All Stalls →
+                </button>
+              </div>
+            </div>
+
+            {/* Right Col: Quick Merchant Spotlight */}
+            <div className="bg-white rounded-xl p-5 border border-stone-200/90 shadow-subtle flex flex-col justify-between">
+              <div>
+                <h4 className="section-heading mb-1">Top Temple Vendors</h4>
+                <p className="supporting-text mb-4">Highest compliance & lease reliability</p>
+
+                <div className="space-y-3">
+                  {vendors.slice(0, 3).map((v) => (
+                    <div key={v.id} className="p-2.5 bg-stone-50 rounded-lg border border-stone-100 text-xs">
+                      <div className="flex justify-between items-center mb-0.5">
+                        <span className="font-bold text-stone-900">{v.name}</span>
+                        <span className="text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded">Active</span>
+                      </div>
+                      <div className="supporting-text">{v.category} • {v.contactPerson}</div>
                     </div>
-
-                    <h4 className="text-xs font-bold text-stone-800 mb-1">{stall.category}</h4>
-                    <p className="text-[11px] text-stone-500 mb-2 flex items-center gap-1">
-                      <MapPin className="w-3 h-3 text-[#55132D]" /> {stall.zone}
-                    </p>
-
-                    <div className="bg-stone-50 p-2.5 rounded-lg border border-stone-150 space-y-1 text-[11px] mb-3">
-                      <div className="flex justify-between text-stone-600">
-                        <span>Dimensions:</span>
-                        <span className="font-medium text-stone-800">{stall.dimensions}</span>
-                      </div>
-                      <div className="flex justify-between text-stone-600">
-                        <span>Monthly Rent:</span>
-                        <span className="font-bold text-stone-900 font-mono">₹{stall.monthlyFee?.toLocaleString('en-IN')}</span>
-                      </div>
-                      <div className="flex justify-between text-stone-600">
-                        <span>Status:</span>
-                        <span className="font-medium text-stone-800">{stall.operationalStatus}</span>
-                      </div>
-                    </div>
-
-                    {isAllocated ? (
-                      <div className="p-2 bg-emerald-50/60 rounded border border-emerald-150 text-[11px] mb-2">
-                        <span className="text-[10px] text-emerald-800 block uppercase font-semibold">Leased to:</span>
-                        <p className="font-bold text-emerald-950 truncate">{stall.vendorName}</p>
-                      </div>
-                    ) : (
-                      <div className="p-2 bg-stone-50 rounded border border-dashed border-stone-300 text-[11px] text-stone-500 text-center mb-2 italic">
-                        Available for allocation
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="pt-2 border-t border-stone-150 flex items-center justify-between gap-2">
-                    <button
-                      onClick={() =>
-                        updateStallStatus(
-                          stall.id,
-                          stall.operationalStatus === 'Operational' ? 'Under Maintenance' : 'Operational'
-                        )
-                      }
-                      className="text-[10px] text-stone-600 hover:text-stone-900 font-medium"
-                    >
-                      {stall.operationalStatus === 'Operational' ? 'Mark Maint.' : 'Mark Active'}
-                    </button>
-
-                    {!isAllocated ? (
-                      <button
-                        onClick={() => {
-                          setSelectedStallForAllocation(stall);
-                          setIsAllocateModalOpen(true);
-                        }}
-                        className="px-2.5 py-1 bg-[#55132D] hover:bg-[#6B1939] text-white text-[10px] font-semibold rounded transition-colors"
-                      >
-                        Allot Stall
-                      </button>
-                    ) : (
-                      <span className="text-[10px] text-emerald-700 font-semibold flex items-center gap-1">
-                        <CheckCircle className="w-3 h-3" /> Allotted
-                      </span>
-                    )}
-                  </div>
+                  ))}
                 </div>
-              );
-            })}
-          </div>
-        </div>
-      )}
-
-      {/* TAB 2: VENDOR DIRECTORY */}
-      {activeTab === 'vendors' && (
-        <div className="bg-white rounded-xl border border-stone-200 shadow-xs overflow-hidden">
-          {/* Filter Bar */}
-          <div className="p-3.5 border-b border-stone-200 flex flex-wrap items-center justify-between gap-3">
-            <div className="flex flex-wrap items-center gap-2.5">
-              <div className="relative">
-                <Search className="w-3.5 h-3.5 text-stone-400 absolute left-2.5 top-1/2 -translate-y-1/2" />
-                <input
-                  type="text"
-                  placeholder="Search vendor or contact..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-8 pr-3 py-1.5 text-xs border border-stone-300 rounded-lg bg-stone-50 focus:outline-none focus:border-[#55132D] w-60"
-                />
               </div>
 
-              <select
-                value={selectedCategory}
-                onChange={(e) => setSelectedCategory(e.target.value)}
-                className="text-xs border border-stone-300 rounded-lg px-2.5 py-1.5 bg-stone-50 focus:outline-none focus:border-[#55132D]"
+              <button
+                onClick={() => {
+                  setActiveTab('stalls-vendors');
+                  setSubView('vendors');
+                }}
+                className="mt-4 pt-3 border-t border-stone-100 text-xs font-semibold text-[#55132D] hover:underline block text-center"
               >
-                {categories.map((c) => (
-                  <option key={c} value={c}>
-                    {c === 'ALL' ? 'All Trade Categories' : c}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div className="text-xs text-stone-500 font-medium">
-              Showing {filteredVendors.length} of {vendors.length} merchants
+                Browse Full Directory ({vendors.length}) →
+              </button>
             </div>
           </div>
+        </div>
+      )}
 
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs">
-              <thead className="bg-stone-50 text-stone-600 uppercase font-semibold text-[10px] border-b border-stone-200">
-                <tr>
-                  <th className="py-3 px-4">Vendor ID</th>
-                  <th className="py-3 px-4">Establishment Name</th>
-                  <th className="py-3 px-4">Proprietor</th>
-                  <th className="py-3 px-4">Category</th>
-                  <th className="py-3 px-4">Assigned Unit</th>
-                  <th className="py-3 px-4">License / FSSAI</th>
-                  <th className="py-3 px-4">Status</th>
-                  <th className="py-3 px-4 text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-stone-100 text-stone-700">
-                {filteredVendors.map((v) => (
-                  <tr key={v.id} className="hover:bg-stone-50/60 transition-colors">
-                    <td className="py-3 px-4 font-mono font-semibold text-stone-900">{v.id}</td>
-                    <td className="py-3 px-4">
-                      <div className="font-medium text-stone-900">{v.name}</div>
-                      <div className="text-[11px] text-stone-500 truncate max-w-xs">{v.description}</div>
-                    </td>
-                    <td className="py-3 px-4">
-                      <div className="font-medium text-stone-800">{v.contactPerson}</div>
-                      <div className="text-[11px] text-stone-500 flex items-center gap-1 font-mono">
-                        <Phone className="w-2.5 h-2.5 text-stone-400" /> +91 {v.mobile}
+      {/* ========================================================
+          TAB 2: VENDORS & STALLS
+         ======================================================== */}
+      {activeTab === 'stalls-vendors' && (
+        <div className="space-y-4">
+          {/* Sub-view Segmented Toggle */}
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-white p-2 rounded-xl border border-stone-200/90 shadow-subtle">
+            <div className="flex items-center gap-1.5 p-1 bg-stone-100 rounded-lg">
+              <button
+                onClick={() => setSubView('stalls')}
+                className={`px-4 py-1.5 text-xs font-semibold rounded-md transition-all ${
+                  subView === 'stalls'
+                    ? 'bg-white text-[#55132D] shadow-xs font-bold'
+                    : 'text-stone-600 hover:text-stone-900'
+                }`}
+              >
+                Stalls & Premises Units ({stalls.length})
+              </button>
+              <button
+                onClick={() => setSubView('vendors')}
+                className={`px-4 py-1.5 text-xs font-semibold rounded-md transition-all ${
+                  subView === 'vendors'
+                    ? 'bg-white text-[#55132D] shadow-xs font-bold'
+                    : 'text-stone-600 hover:text-stone-900'
+                }`}
+              >
+                Authorized Vendor Directory ({vendors.length})
+              </button>
+            </div>
+
+            {subView === 'vendors' && (
+              <button
+                onClick={() => setIsAddVendorOpen(true)}
+                className="px-3.5 py-1.5 text-xs font-semibold text-white bg-[#55132D] hover:bg-[#681B37] rounded-lg shadow-xs flex items-center justify-center gap-1.5"
+              >
+                <Plus className="w-4 h-4" />
+                <span>Register Vendor</span>
+              </button>
+            )}
+          </div>
+
+          {/* Sub-view A: Stalls Grid */}
+          {subView === 'stalls' && (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              {stalls.map((stall) => {
+                const isAllocated = stall.allocationStatus === 'Allocated';
+                return (
+                  <div
+                    key={stall.id}
+                    className="bg-white rounded-xl border border-stone-200/90 p-4 shadow-subtle flex flex-col justify-between hover:border-[#55132D]/40 transition-all"
+                  >
+                    <div>
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="font-mono text-xs font-bold text-stone-900 bg-stone-100 px-2 py-0.5 rounded">
+                          {stall.number}
+                        </span>
+                        <span
+                          className={`text-[11px] font-semibold px-2 py-0.5 rounded-full ${
+                            isAllocated
+                              ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                              : 'bg-stone-100 text-stone-600 border border-stone-200'
+                          }`}
+                        >
+                          {stall.allocationStatus}
+                        </span>
                       </div>
-                    </td>
-                    <td className="py-3 px-4">
-                      <span className="inline-block px-2 py-0.5 rounded text-[10px] font-semibold bg-stone-100 text-stone-700">
-                        {v.category}
-                      </span>
-                    </td>
-                    <td className="py-3 px-4 font-mono text-[11px]">
-                      {v.assignedStallName || (
-                        <span className="text-amber-600 font-sans italic">Not Allotted</span>
+
+                      <h4 className="card-heading mb-1">{stall.category}</h4>
+                      <p className="supporting-text mb-3 flex items-center gap-1">
+                        <MapPin className="w-3.5 h-3.5 text-[#55132D]" /> {stall.zone}
+                      </p>
+
+                      <div className="bg-stone-50 p-2.5 rounded-lg border border-stone-100 space-y-1 text-xs mb-3">
+                        <div className="flex justify-between text-stone-600">
+                          <span>Dimensions:</span>
+                          <span className="font-medium text-stone-800">{stall.dimensions}</span>
+                        </div>
+                        <div className="flex justify-between text-stone-600">
+                          <span>Monthly Rent:</span>
+                          <span className="font-bold text-stone-900 font-mono">₹{stall.monthlyFee?.toLocaleString('en-IN')}</span>
+                        </div>
+                        <div className="flex justify-between text-stone-600">
+                          <span>Status:</span>
+                          <span className="font-medium text-stone-800">{stall.operationalStatus}</span>
+                        </div>
+                      </div>
+
+                      {isAllocated ? (
+                        <div className="p-2.5 rounded-lg bg-emerald-50/50 border border-emerald-100 text-xs">
+                          <p className="text-[11px] text-stone-500">Allocated Merchant:</p>
+                          <p className="font-bold text-stone-900 truncate">{stall.vendorName}</p>
+                        </div>
+                      ) : (
+                        <div className="p-2.5 rounded-lg bg-amber-50/50 border border-amber-100 text-xs text-amber-800">
+                          Ready for commercial lease allocation.
+                        </div>
                       )}
-                    </td>
-                    <td className="py-3 px-4 font-mono text-[11px] text-stone-600">{v.licenseRef}</td>
-                    <td className="py-3 px-4">
-                      <span
-                        className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold ${
-                          v.status === 'Active'
-                            ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-                            : 'bg-amber-50 text-amber-700 border border-amber-200'
-                        }`}
-                      >
-                        {v.status}
-                      </span>
-                    </td>
-                    <td className="py-3 px-4 text-right space-x-1.5">
-                      <button
-                        onClick={() => setSelectedVendorForDetails(v)}
-                        className="text-[11px] text-[#55132D] hover:underline font-bold"
-                      >
-                        Details
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                    </div>
+
+                    <div className="mt-4 pt-3 border-t border-stone-100 flex items-center justify-between">
+                      {isAllocated ? (
+                        <button
+                          onClick={() => updateStallStatus(stall.id, 'Available')}
+                          className="text-[11px] font-semibold text-rose-700 hover:text-rose-900"
+                        >
+                          Revoke Lease
+                        </button>
+                      ) : (
+                        <button
+                          onClick={() => {
+                            setSelectedStallForAllocation(stall);
+                            setIsAllocateModalOpen(true);
+                          }}
+                          className="w-full py-1.5 text-xs font-semibold bg-[#55132D] text-white rounded-lg hover:bg-[#681B37] text-center"
+                        >
+                          Allocate Stall
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+
+          {/* Sub-view B: Vendors Directory */}
+          {subView === 'vendors' && (
+            <div className="space-y-4">
+              <div className="bg-white rounded-xl p-3.5 border border-stone-200/90 shadow-subtle flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
+                <div className="flex-1 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                  <div className="relative flex-1">
+                    <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-stone-400" />
+                    <input
+                      type="text"
+                      placeholder="Search vendors by name, owner, license..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="w-full pl-9 pr-3 py-2 text-xs rounded-lg border border-stone-200 focus:outline-none focus:ring-1 focus:ring-[#55132D]"
+                    />
+                  </div>
+
+                  <select
+                    value={selectedCategory}
+                    onChange={(e) => setSelectedCategory(e.target.value)}
+                    className="px-3 py-2 text-xs rounded-lg border border-stone-200 bg-white text-stone-700 focus:outline-none focus:ring-1 focus:ring-[#55132D]"
+                  >
+                    {categories.map((c) => (
+                      <option key={c} value={c}>
+                        {c === 'ALL' ? 'All Trade Categories' : c}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <div className="bg-white rounded-xl border border-stone-200/90 shadow-subtle overflow-hidden">
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left text-xs">
+                    <thead>
+                      <tr className="bg-stone-50 border-b border-stone-200 text-stone-600 font-semibold uppercase tracking-wider text-[11px]">
+                        <th className="py-3 px-4">Merchant Name</th>
+                        <th className="py-3 px-4">Trade Category</th>
+                        <th className="py-3 px-4">Contact Person</th>
+                        <th className="py-3 px-4">License Ref</th>
+                        <th className="py-3 px-4">Compliance</th>
+                        <th className="py-3 px-4 text-right">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-stone-100">
+                      {filteredVendors.map((v) => (
+                        <tr key={v.id} className="hover:bg-stone-50/70 transition-colors">
+                          <td className="py-3 px-4">
+                            <span className="font-semibold text-stone-900 block">{v.name}</span>
+                            <span className="supporting-text">{v.description || 'Authorized vendor'}</span>
+                          </td>
+                          <td className="py-3 px-4 text-stone-700">{v.category}</td>
+                          <td className="py-3 px-4">
+                            <span className="font-medium text-stone-900 block">{v.contactPerson}</span>
+                            <span className="supporting-text">{v.mobile}</span>
+                          </td>
+                          <td className="py-3 px-4 font-mono text-stone-600">{v.licenseRef || v.id}</td>
+                          <td className="py-3 px-4">
+                            <span className="inline-block px-2 py-0.5 rounded text-[11px] font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200">
+                              Verified
+                            </span>
+                          </td>
+                          <td className="py-3 px-4 text-right">
+                            <button
+                              onClick={() => setSelectedVendorForDetails(v)}
+                              className="px-2.5 py-1 text-xs font-semibold text-[#55132D] hover:bg-[#55132D]/10 rounded-md transition-colors"
+                            >
+                              Details
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       )}
 
-      {/* TAB 3: LEASE REGISTER */}
-      {activeTab === 'allocations' && (
-        <div className="bg-white rounded-xl border border-stone-200 shadow-xs overflow-hidden">
-          <div className="p-4 border-b border-stone-200">
-            <h3 className="text-sm font-bold text-stone-800">Temple Trust Commercial Lease Register</h3>
-            <p className="text-xs text-stone-500">
-              Contractual rent schedule, billing cycles and trust revenue tracking.
-            </p>
-          </div>
+      {/* ========================================================
+          TAB 3: LEASE & COMPLIANCE
+         ======================================================== */}
+      {activeTab === 'lease-compliance' && (
+        <div className="space-y-6">
+          {/* Commercial Lease Register */}
+          <div className="bg-white rounded-xl border border-stone-200/90 shadow-subtle overflow-hidden">
+            <div className="p-4 border-b border-stone-200 flex items-center justify-between">
+              <div>
+                <h3 className="section-heading">Temple Trust Commercial Lease Register</h3>
+                <p className="supporting-text">Contractual rent schedule, billing cycles and trust revenue tracking</p>
+              </div>
+            </div>
 
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs">
-              <thead className="bg-stone-50 text-stone-600 uppercase font-semibold text-[10px] border-b border-stone-200">
-                <tr>
-                  <th className="py-3 px-4">Stall No.</th>
-                  <th className="py-3 px-4">Premises Zone</th>
-                  <th className="py-3 px-4">Tenant / Merchant</th>
-                  <th className="py-3 px-4">Trade Line</th>
-                  <th className="py-3 px-4">Monthly Rate</th>
-                  <th className="py-3 px-4">Billing Cycle</th>
-                  <th className="py-3 px-4">Renewal Due</th>
-                  <th className="py-3 px-4">Status</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-stone-100 text-stone-700">
-                {stalls.filter(s => s.allocationStatus === 'Allocated').map((s) => (
-                  <tr key={s.id} className="hover:bg-stone-50/60">
-                    <td className="py-3 px-4 font-mono font-bold text-stone-900">{s.number}</td>
-                    <td className="py-3 px-4 text-stone-700">{s.zone}</td>
-                    <td className="py-3 px-4 font-medium text-stone-900">{s.vendorName}</td>
-                    <td className="py-3 px-4 text-stone-600">{s.category}</td>
-                    <td className="py-3 px-4 font-mono font-bold text-stone-900">₹{s.monthlyFee?.toLocaleString('en-IN')}</td>
-                    <td className="py-3 px-4 text-stone-600">1st of Month</td>
-                    <td className="py-3 px-4 text-stone-600 font-mono text-[11px]">31 Dec 2026</td>
-                    <td className="py-3 px-4">
-                      <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                        Up-to-Date
-                      </span>
-                    </td>
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs">
+                <thead>
+                  <tr className="bg-stone-50 text-stone-600 uppercase font-semibold text-[11px] border-b border-stone-200">
+                    <th className="py-3 px-4">Stall No.</th>
+                    <th className="py-3 px-4">Premises Zone</th>
+                    <th className="py-3 px-4">Tenant / Merchant</th>
+                    <th className="py-3 px-4">Monthly Rate</th>
+                    <th className="py-3 px-4">Billing Cycle</th>
+                    <th className="py-3 px-4">Renewal Due</th>
+                    <th className="py-3 px-4">Status</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )}
-
-      {/* TAB 4: COMPLIANCE */}
-      {activeTab === 'compliance' && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="bg-white rounded-xl border border-stone-200 p-4 shadow-xs">
-            <h3 className="text-sm font-bold text-stone-800 mb-2 flex items-center gap-2">
-              <CheckCircle className="w-4 h-4 text-emerald-600" />
-              Food Safety & Hygiene Regulations (FSSAI)
-            </h3>
-            <p className="text-xs text-stone-500 mb-4">
-              All sweets (Peda) and cooked food stalls in temple vicinity must adhere to the Food Safety and Standards Authority of India directives.
-            </p>
-
-            <div className="space-y-2 text-xs">
-              <div className="p-2.5 bg-stone-50 rounded-lg border border-stone-150 flex items-center justify-between">
-                <div>
-                  <p className="font-semibold text-stone-800">Pure Cow Milk Peda Quality Testing</p>
-                  <p className="text-[11px] text-stone-500">Weekly random sampling by district health officer</p>
-                </div>
-                <span className="text-[10px] font-semibold px-2 py-0.5 rounded bg-emerald-100 text-emerald-800">
-                  PASSED (28 Oct)
-                </span>
-              </div>
-
-              <div className="p-2.5 bg-stone-50 rounded-lg border border-stone-150 flex items-center justify-between">
-                <div>
-                  <p className="font-semibold text-stone-800">Potable Water Compliance at Stalls</p>
-                  <p className="text-[11px] text-stone-500">Reverse Osmosis (RO) filtration certification</p>
-                </div>
-                <span className="text-[10px] font-semibold px-2 py-0.5 rounded bg-emerald-100 text-emerald-800">
-                  VERIFIED
-                </span>
-              </div>
-
-              <div className="p-2.5 bg-stone-50 rounded-lg border border-stone-150 flex items-center justify-between">
-                <div>
-                  <p className="font-semibold text-stone-800">Plastic Ban Strict Enforcement</p>
-                  <p className="text-[11px] text-stone-500">Only biodegradable sal-leaf / paper containers permitted</p>
-                </div>
-                <span className="text-[10px] font-semibold px-2 py-0.5 rounded bg-emerald-100 text-emerald-800">
-                  100% ADHERED
-                </span>
-              </div>
+                </thead>
+                <tbody className="divide-y divide-stone-100 text-stone-700">
+                  {stalls.filter((s) => s.allocationStatus === 'Allocated').map((s) => (
+                    <tr key={s.id} className="hover:bg-stone-50/60">
+                      <td className="py-3 px-4 font-mono font-bold text-stone-900">{s.number}</td>
+                      <td className="py-3 px-4 text-stone-700">{s.zone}</td>
+                      <td className="py-3 px-4 font-medium text-stone-900">{s.vendorName}</td>
+                      <td className="py-3 px-4 font-mono font-bold text-stone-900">₹{s.monthlyFee?.toLocaleString('en-IN')}</td>
+                      <td className="py-3 px-4 text-stone-600">1st of Month</td>
+                      <td className="py-3 px-4 text-stone-600 font-mono text-[11px]">31 Dec 2026</td>
+                      <td className="py-3 px-4">
+                        <span className="px-2 py-0.5 rounded text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                          Up-to-Date
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           </div>
 
-          <div className="bg-white rounded-xl border border-stone-200 p-4 shadow-xs">
-            <h3 className="text-sm font-bold text-stone-800 mb-2 flex items-center gap-2">
-              <ShieldAlert className="w-4 h-4 text-[#55132D]" />
-              Kalyan Sagar Ecological Guidelines
-            </h3>
-            <p className="text-xs text-stone-500 mb-4">
-              Special vendor guidelines protecting the holy lake, sacred aquatic life and endangered Bostami turtles (Nigricans).
-            </p>
+          {/* Safety & Ecological Compliance Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="bg-white rounded-xl border border-stone-200/90 p-5 shadow-subtle space-y-4">
+              <h3 className="section-heading flex items-center gap-2">
+                <CheckCircle className="w-4 h-4 text-emerald-600" />
+                Food Safety & Hygiene Regulations (FSSAI)
+              </h3>
+              <p className="supporting-text">
+                All sweets (Peda) and food stalls adhere to Food Safety and Standards Authority of India directives.
+              </p>
 
-            <div className="space-y-2 text-xs">
-              <div className="p-2.5 bg-stone-50 rounded-lg border border-stone-150">
-                <p className="font-semibold text-stone-800 mb-0.5">Approved Turtle Feed Pellets Only</p>
-                <p className="text-[11px] text-stone-600">
-                  Stalls around Ghat steps are strictly prohibited from selling harmful fried snacks or unapproved grains. Only Fisheries-certified puffed rice and vitamin pellets are permitted.
-                </p>
+              <div className="space-y-2.5 text-xs pt-1">
+                <div className="p-3 bg-stone-50 rounded-lg border border-stone-100 flex items-center justify-between">
+                  <div>
+                    <p className="font-semibold text-stone-800">Pure Cow Milk Peda Quality Testing</p>
+                    <p className="supporting-text">Weekly random sampling by district health officer</p>
+                  </div>
+                  <span className="text-[11px] font-semibold px-2 py-0.5 rounded bg-emerald-100 text-emerald-800">
+                    PASSED (28 Oct)
+                  </span>
+                </div>
+
+                <div className="p-3 bg-stone-50 rounded-lg border border-stone-100 flex items-center justify-between">
+                  <div>
+                    <p className="font-semibold text-stone-800">Potable Water Compliance at Stalls</p>
+                    <p className="supporting-text">Reverse Osmosis (RO) filtration certification</p>
+                  </div>
+                  <span className="text-[11px] font-semibold px-2 py-0.5 rounded bg-emerald-100 text-emerald-800">
+                    VERIFIED
+                  </span>
+                </div>
+
+                <div className="p-3 bg-stone-50 rounded-lg border border-stone-100 flex items-center justify-between">
+                  <div>
+                    <p className="font-semibold text-stone-800">Plastic Ban Strict Enforcement</p>
+                    <p className="supporting-text">Only biodegradable sal-leaf / paper containers permitted</p>
+                  </div>
+                  <span className="text-[11px] font-semibold px-2 py-0.5 rounded bg-emerald-100 text-emerald-800">
+                    100% ADHERED
+                  </span>
+                </div>
               </div>
+            </div>
 
-              <div className="p-2.5 bg-stone-50 rounded-lg border border-stone-150">
-                <p className="font-semibold text-stone-800 mb-0.5">Zero Waste Discharge Zone</p>
-                <p className="text-[11px] text-stone-600">
-                  Dedicated segregated waste disposal bins deployed at every 10 meters along the Ghat steps. Daily inspection at 07:00 AM and 07:00 PM.
-                </p>
+            <div className="bg-white rounded-xl border border-stone-200/90 p-5 shadow-subtle space-y-4">
+              <h3 className="section-heading flex items-center gap-2">
+                <ShieldAlert className="w-4 h-4 text-[#55132D]" />
+                Kalyan Sagar Ecological Guidelines
+              </h3>
+              <p className="supporting-text">
+                Special perimeter guidelines protecting the sacred lake and endangered Bostami turtles (Nigricans).
+              </p>
+
+              <div className="space-y-2.5 text-xs pt-1">
+                <div className="p-3 bg-stone-50 rounded-lg border border-stone-100">
+                  <p className="font-semibold text-stone-800 mb-0.5">Approved Turtle Feed Pellets Only</p>
+                  <p className="supporting-text">
+                    Stalls around Ghat steps are strictly prohibited from selling unapproved grains. Only certified puffed rice and vitamin pellets are permitted.
+                  </p>
+                </div>
+
+                <div className="p-3 bg-stone-50 rounded-lg border border-stone-100">
+                  <p className="font-semibold text-stone-800 mb-0.5">Zero Waste Discharge Zone</p>
+                  <p className="supporting-text">
+                    Dedicated segregated waste disposal bins deployed at every 10 meters along Ghat steps. Monitored twice daily.
+                  </p>
+                </div>
               </div>
             </div>
           </div>
         </div>
       )}
 
-      {/* MODAL: REGISTER VENDOR */}
+      {/* Modal: Register Vendor */}
       {isAddVendorOpen && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl max-w-lg w-full overflow-hidden shadow-2xl border border-stone-200">
             <div className="px-5 py-4 bg-stone-50 border-b border-stone-200 flex items-center justify-between">
               <div>
-                <h3 className="text-sm font-bold text-stone-900 font-serif">Register Merchant / Vendor</h3>
-                <p className="text-xs text-stone-500">Add an authorized stall licensee to the temple database.</p>
+                <h3 className="card-heading">Register Merchant / Vendor</h3>
+                <p className="supporting-text">Add an authorized stall licensee to the temple database.</p>
               </div>
               <button
                 onClick={() => setIsAddVendorOpen(false)}
@@ -498,22 +607,22 @@ export default function Vendors() {
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block font-semibold text-stone-700 mb-1">Proprietor Name *</label>
+                  <label className="block font-semibold text-stone-700 mb-1">Contact Person *</label>
                   <input
                     type="text"
                     required
-                    placeholder="e.g. Shri Bikash Roy"
+                    placeholder="Sri Subhash Das"
                     value={vendorForm.contactPerson}
                     onChange={(e) => setVendorForm({ ...vendorForm, contactPerson: e.target.value })}
                     className="w-full border border-stone-300 rounded-lg px-3 py-2 bg-stone-50 focus:outline-none focus:border-[#55132D]"
                   />
                 </div>
                 <div>
-                  <label className="block font-semibold text-stone-700 mb-1">Mobile Contact *</label>
+                  <label className="block font-semibold text-stone-700 mb-1">Mobile Number *</label>
                   <input
-                    type="tel"
+                    type="text"
                     required
-                    placeholder="10 digit mobile"
+                    placeholder="+91 98623 XXXXX"
                     value={vendorForm.mobile}
                     onChange={(e) => setVendorForm({ ...vendorForm, mobile: e.target.value })}
                     className="w-full border border-stone-300 rounded-lg px-3 py-2 bg-stone-50 focus:outline-none focus:border-[#55132D]"
@@ -521,55 +630,32 @@ export default function Vendors() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block font-semibold text-stone-700 mb-1">Trade Category</label>
-                  <select
-                    value={vendorForm.category}
-                    onChange={(e) => setVendorForm({ ...vendorForm, category: e.target.value })}
-                    className="w-full border border-stone-300 rounded-lg px-3 py-2 bg-stone-50 focus:outline-none focus:border-[#55132D]"
-                  >
-                    <option value="Traditional Sweets & Peda">Traditional Sweets & Peda</option>
-                    <option value="Pooja Items">Pooja Items & Garlands</option>
-                    <option value="Souvenirs & Crafts">Souvenirs & Crafts</option>
-                    <option value="Food & Refreshments">Food & Refreshments</option>
-                    <option value="Publications">Publications & Photos</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block font-semibold text-stone-700 mb-1">Trade License / FSSAI Ref</label>
-                  <input
-                    type="text"
-                    placeholder="e.g. FSSAI-TR-102948"
-                    value={vendorForm.licenseRef}
-                    onChange={(e) => setVendorForm({ ...vendorForm, licenseRef: e.target.value })}
-                    className="w-full border border-stone-300 rounded-lg px-3 py-2 bg-stone-50 focus:outline-none focus:border-[#55132D]"
-                  />
-                </div>
-              </div>
-
               <div>
-                <label className="block font-semibold text-stone-700 mb-1">Merchandise Description</label>
-                <textarea
-                  rows={2}
-                  placeholder="Items permitted to sell, raw material source..."
-                  value={vendorForm.description}
-                  onChange={(e) => setVendorForm({ ...vendorForm, description: e.target.value })}
+                <label className="block font-semibold text-stone-700 mb-1">Trade Category</label>
+                <select
+                  value={vendorForm.category}
+                  onChange={(e) => setVendorForm({ ...vendorForm, category: e.target.value })}
                   className="w-full border border-stone-300 rounded-lg px-3 py-2 bg-stone-50 focus:outline-none focus:border-[#55132D]"
-                />
+                >
+                  <option value="Traditional Sweets & Peda">Traditional Sweets & Peda</option>
+                  <option value="Sacred Flowers & Garlands">Sacred Flowers & Garlands</option>
+                  <option value="Puja Samagri & Havan Items">Puja Samagri & Havan Items</option>
+                  <option value="Religious Souvenirs & Books">Religious Souvenirs & Books</option>
+                  <option value="Approved Turtle Feed">Approved Turtle Feed</option>
+                </select>
               </div>
 
               <div className="pt-3 border-t border-stone-200 flex items-center justify-end gap-2">
                 <button
                   type="button"
                   onClick={() => setIsAddVendorOpen(false)}
-                  className="px-3 py-2 border border-stone-300 text-stone-700 font-semibold rounded-lg hover:bg-stone-100"
+                  className="px-4 py-2 text-stone-600 hover:bg-stone-100 rounded-lg text-xs"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-[#55132D] hover:bg-[#681B37] text-white font-semibold rounded-lg shadow-sm"
+                  className="px-4 py-2 bg-[#55132D] text-white rounded-lg hover:bg-[#681B37] text-xs font-semibold"
                 >
                   Confirm Registration
                 </button>
@@ -579,16 +665,14 @@ export default function Vendors() {
         </div>
       )}
 
-      {/* MODAL: ALLOCATE STALL */}
+      {/* Modal: Allocate Stall */}
       {isAllocateModalOpen && selectedStallForAllocation && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl max-w-md w-full overflow-hidden shadow-2xl border border-stone-200">
             <div className="px-5 py-4 bg-stone-50 border-b border-stone-200 flex items-center justify-between">
               <div>
-                <h3 className="text-sm font-bold text-stone-900 font-serif">Allot Commercial Stall</h3>
-                <p className="text-xs text-stone-500">
-                  Assign {selectedStallForAllocation.number} ({selectedStallForAllocation.zone})
-                </p>
+                <h3 className="card-heading">Allocate Stall {selectedStallForAllocation.number}</h3>
+                <p className="supporting-text">{selectedStallForAllocation.zone} • {selectedStallForAllocation.category}</p>
               </div>
               <button
                 onClick={() => setIsAllocateModalOpen(false)}
@@ -598,52 +682,47 @@ export default function Vendors() {
               </button>
             </div>
 
-            <form onSubmit={handleConfirmAllocation} className="p-5 space-y-3.5 text-xs">
+            <form onSubmit={handleConfirmAllocation} className="p-5 space-y-4 text-xs">
               <div>
-                <label className="block font-semibold text-stone-700 mb-1">Select Registered Vendor *</label>
+                <label className="block font-semibold text-stone-700 mb-1">Select Licensed Merchant</label>
                 <select
-                  required
                   value={selectedVendorId}
                   onChange={(e) => setSelectedVendorId(e.target.value)}
+                  required
                   className="w-full border border-stone-300 rounded-lg px-3 py-2 bg-stone-50 focus:outline-none focus:border-[#55132D]"
                 >
                   <option value="">-- Choose Vendor --</option>
-                  {vendors
-                    .filter((v) => !v.assignedStallId)
-                    .map((v) => (
-                      <option key={v.id} value={v.id}>
-                        {v.name} ({v.contactPerson}) - {v.category}
-                      </option>
-                    ))}
+                  {vendors.map((v) => (
+                    <option key={v.id} value={v.id}>
+                      {v.name} ({v.contactPerson}) - {v.category}
+                    </option>
+                  ))}
                 </select>
-                {vendors.filter((v) => !v.assignedStallId).length === 0 && (
-                  <p className="text-[11px] text-amber-600 mt-1">
-                    All existing vendors currently have stalls allocated. You can register a new vendor first.
-                  </p>
-                )}
               </div>
 
-              <div className="bg-stone-50 p-3 rounded-lg border border-stone-200 space-y-1">
-                <p className="text-[11px] text-stone-600">
-                  Monthly Rent: <span className="font-bold text-stone-800">₹{selectedStallForAllocation.monthlyFee}</span>
-                </p>
-                <p className="text-[11px] text-stone-600">
-                  Dimensions: <span className="font-bold text-stone-800">{selectedStallForAllocation.dimensions}</span>
-                </p>
+              <div className="p-3 bg-stone-50 rounded-lg border border-stone-100 space-y-1">
+                <div className="flex justify-between text-stone-600">
+                  <span>Monthly Rate:</span>
+                  <span className="font-bold text-stone-900">₹{selectedStallForAllocation.monthlyFee?.toLocaleString('en-IN')}</span>
+                </div>
+                <div className="flex justify-between text-stone-600">
+                  <span>Dimensions:</span>
+                  <span>{selectedStallForAllocation.dimensions}</span>
+                </div>
               </div>
 
               <div className="pt-3 border-t border-stone-200 flex items-center justify-end gap-2">
                 <button
                   type="button"
                   onClick={() => setIsAllocateModalOpen(false)}
-                  className="px-3 py-2 border border-stone-300 text-stone-700 font-semibold rounded-lg hover:bg-stone-100"
+                  className="px-4 py-2 text-stone-600 hover:bg-stone-100 rounded-lg text-xs"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={!selectedVendorId}
-                  className="px-4 py-2 bg-[#55132D] hover:bg-[#681B37] disabled:bg-stone-300 text-white font-semibold rounded-lg shadow-sm"
+                  className="px-4 py-2 bg-[#55132D] text-white rounded-lg hover:bg-[#681B37] text-xs font-semibold disabled:opacity-50"
                 >
                   Confirm Allotment
                 </button>
@@ -653,63 +732,55 @@ export default function Vendors() {
         </div>
       )}
 
-      {/* MODAL: VENDOR DETAILS INSPECTION */}
+      {/* Modal: Vendor Details Drawer */}
       {selectedVendorForDetails && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl max-w-md w-full overflow-hidden shadow-2xl border border-stone-200 animate-in zoom-in-95 duration-200">
-            <div className="bg-[#1A0610] p-4 text-white flex items-center justify-between border-b border-[#B68A36]/30">
-              <div className="flex items-center gap-2">
-                <Store className="w-5 h-5 text-[#E2BC6B]" />
-                <div>
-                  <h3 className="font-serif font-bold text-sm">{selectedVendorForDetails.name}</h3>
-                  <p className="text-[10px] text-[#E2BC6B]">{selectedVendorForDetails.id} • {selectedVendorForDetails.category}</p>
-                </div>
+          <div className="bg-white rounded-2xl max-w-md w-full overflow-hidden shadow-2xl border border-stone-200">
+            <div className="px-5 py-4 bg-stone-50 border-b border-stone-200 flex items-center justify-between">
+              <div>
+                <h3 className="card-heading">{selectedVendorForDetails.name}</h3>
+                <p className="supporting-text">{selectedVendorForDetails.id}</p>
               </div>
               <button
                 onClick={() => setSelectedVendorForDetails(null)}
-                className="text-stone-400 hover:text-white"
+                className="p-1 rounded-lg hover:bg-stone-200 text-stone-500"
               >
-                <X className="w-5 h-5" />
+                <X className="w-4 h-4" />
               </button>
             </div>
 
-            <div className="p-5 space-y-3.5 text-xs text-stone-700">
-              <div className="grid grid-cols-2 gap-2.5 bg-stone-50 p-3 rounded-xl border border-stone-200">
-                <div>
-                  <span className="text-[10px] text-stone-500 uppercase font-semibold block">Proprietor</span>
-                  <span className="font-bold text-stone-900">{selectedVendorForDetails.contactPerson}</span>
-                </div>
-                <div>
-                  <span className="text-[10px] text-stone-500 uppercase font-semibold block">Phone</span>
-                  <span className="font-mono text-stone-900">+91 {selectedVendorForDetails.mobile}</span>
-                </div>
-                <div>
-                  <span className="text-[10px] text-stone-500 uppercase font-semibold block">FSSAI / License</span>
-                  <span className="font-mono text-stone-900">{selectedVendorForDetails.licenseRef || 'Verified Trust Permit'}</span>
-                </div>
-                <div>
-                  <span className="text-[10px] text-stone-500 uppercase font-semibold block">Assigned Unit</span>
-                  <span className="font-bold text-[#55132D]">{selectedVendorForDetails.assignedStallName || 'Not Allotted'}</span>
-                </div>
+            <div className="p-5 space-y-3 text-xs">
+              <div className="flex justify-between py-1.5 border-b border-stone-100">
+                <span className="text-stone-500">Contact Person:</span>
+                <span className="font-medium text-stone-900">{selectedVendorForDetails.contactPerson}</span>
               </div>
-
-              {selectedVendorForDetails.description && (
-                <div>
-                  <span className="text-[10px] text-stone-500 uppercase font-semibold block mb-0.5">Approved Merchandise</span>
-                  <p className="text-stone-600 bg-stone-50 p-2.5 rounded-lg border border-stone-200 leading-relaxed">
-                    {selectedVendorForDetails.description}
-                  </p>
-                </div>
-              )}
-
-              <div className="pt-2 flex justify-end">
-                <button
-                  onClick={() => setSelectedVendorForDetails(null)}
-                  className="px-4 py-2 bg-stone-100 hover:bg-stone-200 text-stone-800 font-bold rounded-xl transition-colors"
-                >
-                  Close
-                </button>
+              <div className="flex justify-between py-1.5 border-b border-stone-100">
+                <span className="text-stone-500">Mobile Phone:</span>
+                <span className="font-mono text-stone-900">{selectedVendorForDetails.mobile}</span>
               </div>
+              <div className="flex justify-between py-1.5 border-b border-stone-100">
+                <span className="text-stone-500">Trade Category:</span>
+                <span className="font-medium text-stone-900">{selectedVendorForDetails.category}</span>
+              </div>
+              <div className="flex justify-between py-1.5 border-b border-stone-100">
+                <span className="text-stone-500">License Reference:</span>
+                <span className="font-mono text-stone-900">{selectedVendorForDetails.licenseRef || 'LIC-2026-MATABARI'}</span>
+              </div>
+              <div className="pt-2">
+                <span className="text-stone-500 block mb-1">Establishment Profile:</span>
+                <p className="text-stone-700 bg-stone-50 p-2.5 rounded-lg border border-stone-100">
+                  {selectedVendorForDetails.description || 'Authorized vendor operating under Tripura Sundari Temple Board commercial licensing.'}
+                </p>
+              </div>
+            </div>
+
+            <div className="px-5 py-3 bg-stone-50 border-t border-stone-200 flex justify-end">
+              <button
+                onClick={() => setSelectedVendorForDetails(null)}
+                className="px-4 py-2 bg-[#55132D] text-white rounded-lg hover:bg-[#681B37] text-xs font-semibold"
+              >
+                Close
+              </button>
             </div>
           </div>
         </div>
@@ -717,4 +788,3 @@ export default function Vendors() {
     </div>
   );
 }
-

@@ -35,6 +35,8 @@ export default {
         body: ['var(--font-body)', 'Roboto', 'sans-serif'],
         sans: ['var(--font-body)', 'Roboto', 'sans-serif'],
         serif: ['var(--font-heading)', 'Montserrat', 'sans-serif'],
+        cinzel: ['Cinzel', 'serif'],
+        jakarta: ['"Plus Jakarta Sans"', 'Inter', 'sans-serif'],
         number: ['var(--font-number)', 'Inter', 'sans-serif'],
         mono: ['var(--font-number)', 'Inter', 'monospace'],
         montserrat: ['Montserrat', 'sans-serif'],

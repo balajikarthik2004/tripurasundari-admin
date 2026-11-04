@@ -1,12 +1,12 @@
-import React, { useState } from 'react';
-import { X, Wrench, Save } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { X, Wrench, Save, Flag } from 'lucide-react';
 import { useDevoteeServices } from '../../../context/DevoteeServicesContext';
 
-export default function CreateMaintenanceModal({ isOpen, onClose }) {
+export default function CreateMaintenanceModal({ isOpen, onClose, defaultFacilityId }) {
   const { facilities, createMaintenanceRequest } = useDevoteeServices();
 
   const [formData, setFormData] = useState({
-    facilityId: facilities[0]?.id || '',
+    facilityId: defaultFacilityId || facilities[0]?.id || '',
     issueCategory: 'Civil / Safety Railing',
     description: '',
     priority: 'High',
@@ -14,6 +14,16 @@ export default function CreateMaintenanceModal({ isOpen, onClose }) {
     assignedPerson: 'Engineer T. Bhowmik',
     remarks: 'Immediate onsite inspection scheduled.',
   });
+
+  useEffect(() => {
+    if (isOpen) {
+      setFormData((prev) => ({
+        ...prev,
+        facilityId: defaultFacilityId || facilities[0]?.id || '',
+        description: '',
+      }));
+    }
+  }, [isOpen, defaultFacilityId, facilities]);
 
   if (!isOpen) return null;
 
@@ -42,8 +52,8 @@ export default function CreateMaintenanceModal({ isOpen, onClose }) {
       <div className="bg-white rounded-2xl shadow-2xl border border-stone-200 w-full max-w-lg max-h-[90vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200">
         <div className="px-5 py-4 bg-[#55132D] text-white flex items-center justify-between border-b border-[#B68A36]/30">
           <div className="flex items-center gap-2">
-            <Wrench className="w-4 h-4 text-[#E2BC6B]" />
-            <h2 className="text-sm font-bold font-serif text-white">Create Facility Maintenance Ticket</h2>
+            <Flag className="w-4 h-4 text-[#E2BC6B]" />
+            <h2 className="text-sm font-bold font-serif text-white">Flag Facility Maintenance Issue</h2>
           </div>
           <button onClick={onClose} className="p-1 rounded text-white/70 hover:text-white">
             <X className="w-4 h-4" />

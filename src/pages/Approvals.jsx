@@ -301,10 +301,11 @@ const INITIAL_APPROVALS = [
   },
 ];
 
-export default function Approvals() {
+export default function Approvals({ isEmbedded = false }) {
   const navigate = useNavigate();
   const [approvals, setApprovals] = useState(INITIAL_APPROVALS);
-  const [activeTab, setActiveTab] = useState('all');
+  const [mainTab, setMainTab] = useState('pending'); // 'pending' or 'reviewed'
+  const [categoryFilter, setCategoryFilter] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [toastMessage, setToastMessage] = useState(null);
 
@@ -328,18 +329,19 @@ export default function Approvals() {
   };
 
   const pendingList = approvals.filter((a) => a.status === 'Pending');
+  const reviewedList = approvals.filter((a) => a.status !== 'Pending');
 
-  const filteredItems = pendingList.filter((item) => {
-    const matchesTab =
-      activeTab === 'all'
+  const displayedList = (mainTab === 'pending' ? pendingList : reviewedList).filter((item) => {
+    const matchesCategory =
+      categoryFilter === 'all'
         ? true
-        : activeTab === 'vip'
+        : categoryFilter === 'vip'
         ? item.category === 'VIP Protocol'
-        : activeTab === 'seva'
+        : categoryFilter === 'seva'
         ? item.category === 'Seva Verification'
-        : activeTab === 'cancellations'
+        : categoryFilter === 'cancellations'
         ? item.category === 'Cancellations'
-        : activeTab === 'accommodation'
+        : categoryFilter === 'accommodation'
         ? item.category === 'Accommodation'
         : true;
 
@@ -351,13 +353,13 @@ export default function Approvals() {
           item.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
           item.requestedTier.toLowerCase().includes(searchQuery.toLowerCase());
 
-    return matchesTab && matchesSearch;
+    return matchesCategory && matchesSearch;
   });
 
-  const vipCount = approvals.filter((a) => a.category === 'VIP Protocol' && a.status === 'Pending').length;
-  const sevaCount = approvals.filter((a) => a.category === 'Seva Verification' && a.status === 'Pending').length;
-  const canCount = approvals.filter((a) => a.category === 'Cancellations' && a.status === 'Pending').length;
-  const accCount = approvals.filter((a) => a.category === 'Accommodation' && a.status === 'Pending').length;
+  const vipCount = pendingList.filter((a) => a.category === 'VIP Protocol').length;
+  const sevaCount = pendingList.filter((a) => a.category === 'Seva Verification').length;
+  const canCount = pendingList.filter((a) => a.category === 'Cancellations').length;
+  const accCount = pendingList.filter((a) => a.category === 'Accommodation').length;
 
   return (
     <div className="space-y-5 pb-10">
@@ -369,137 +371,47 @@ export default function Approvals() {
         </div>
       )}
 
-      {/* Module Page Header */}
-      <div className="bg-white rounded-2xl p-5 border border-stone-200/90 shadow-xs flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold font-serif text-stone-900 tracking-tight">
-            Administrative Approvals & Clearance Desk
-          </h1>
-        </div>
-
-        <div className="flex flex-wrap items-center gap-2.5 shrink-0">
-          <button
-            onClick={() => navigate('/bookings')}
-            className="px-3.5 py-2 text-xs font-semibold text-stone-700 bg-stone-100 hover:bg-stone-200 rounded-xl transition-colors flex items-center gap-1.5 whitespace-nowrap shrink-0"
-          >
-            <Calendar className="w-4 h-4 text-stone-500" />
-            <span>Bookings Register</span>
-          </button>
-          <button
-            onClick={() => navigate('/dashboard')}
-            className="px-4 py-2 text-xs font-bold text-white bg-[#55132D] hover:bg-[#681B37] rounded-xl shadow-xs transition-colors flex items-center gap-1.5 whitespace-nowrap shrink-0"
-          >
-            <span>Back to Dashboard</span>
-          </button>
-        </div>
-      </div>
-
-      {/* 4 Summary KPI Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5">
-        <div className="bg-white rounded-xl p-4 border border-stone-200 shadow-xs flex flex-col justify-between">
-          <div className="flex items-center justify-between text-xs text-stone-500 mb-1">
-            <span className="font-semibold uppercase tracking-wider">VIP & State Protocol</span>
-            <span className="p-1.5 rounded-lg bg-amber-50 text-amber-700">
-              <Award className="w-4 h-4" />
-            </span>
-          </div>
-          <div className="text-2xl font-bold font-number text-stone-900">{vipCount}</div>
-          <span className="text-[11px] text-stone-500 mt-1">Awaiting authority clearance</span>
-        </div>
-
-        <div className="bg-white rounded-xl p-4 border border-stone-200 shadow-xs flex flex-col justify-between">
-          <div className="flex items-center justify-between text-xs text-stone-500 mb-1">
-            <span className="font-semibold uppercase tracking-wider">Pooja Sankalpam</span>
-            <span className="p-1.5 rounded-lg bg-rose-50 text-rose-700">
-              <Flame className="w-4 h-4" />
-            </span>
-          </div>
-          <div className="text-2xl font-bold font-number text-stone-900">{sevaCount}</div>
-          <span className="text-[11px] text-stone-500 mt-1">Priest & altar assignment</span>
-        </div>
-
-        <div className="bg-white rounded-xl p-4 border border-stone-200 shadow-xs flex flex-col justify-between">
-          <div className="flex items-center justify-between text-xs text-stone-500 mb-1">
-            <span className="font-semibold uppercase tracking-wider">Cancellations & Refunds</span>
-            <span className="p-1.5 rounded-lg bg-blue-50 text-blue-700">
-              <Clock className="w-4 h-4" />
-            </span>
-          </div>
-          <div className="text-2xl font-bold font-number text-stone-900">{canCount}</div>
-          <span className="text-[11px] text-stone-500 mt-1">Quota release validation</span>
-        </div>
-
-        <div className="bg-white rounded-xl p-4 border border-stone-200 shadow-xs flex flex-col justify-between">
-          <div className="flex items-center justify-between text-xs text-stone-500 mb-1">
-            <span className="font-semibold uppercase tracking-wider">VIP Cottage Allotment</span>
-            <span className="p-1.5 rounded-lg bg-emerald-50 text-emerald-700">
-              <Building className="w-4 h-4" />
-            </span>
-          </div>
-          <div className="text-2xl font-bold font-number text-stone-900">{accCount}</div>
-          <span className="text-[11px] text-stone-500 mt-1">Yatri Niwas guest requests</span>
-        </div>
-      </div>
-
-      {/* Filter Tabs and Search Bar */}
-      <div className="bg-white rounded-xl p-4 border border-stone-200 shadow-xs space-y-3">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          {/* Category Tabs */}
-          <div className="flex items-center gap-2 overflow-x-auto pb-1 text-sm">
-            {[
-              { id: 'all', label: 'All Pending', count: pendingList.length },
-              { id: 'vip', label: 'VIP Protocols', count: vipCount },
-              { id: 'seva', label: 'Seva Verification', count: sevaCount },
-              { id: 'cancellations', label: 'Cancellations', count: canCount },
-              { id: 'accommodation', label: 'Accommodations', count: accCount },
-            ].map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`px-3.5 py-2 rounded-lg text-sm font-semibold flex items-center gap-2 transition-all whitespace-nowrap ${
-                  activeTab === tab.id
-                    ? 'bg-[#55132D] text-white shadow-xs'
-                    : 'bg-stone-100 text-stone-700 hover:bg-stone-200'
-                }`}
-              >
-                <span>{tab.label}</span>
-                <span
-                  className={`text-xs px-2 py-0.5 rounded-full font-bold ${
-                    activeTab === tab.id ? 'bg-[#E2BC6B] text-[#55132D]' : 'bg-stone-200 text-stone-800'
-                  }`}
-                >
-                  {tab.count}
-                </span>
-              </button>
-            ))}
+      {/* Module Page Header (Hidden when embedded) */}
+      {!isEmbedded && (
+        <div className="bg-white rounded-2xl p-5 border border-stone-200/90 shadow-xs flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+          <div>
+            <h1 className="text-2xl font-bold font-serif text-stone-900 tracking-tight">
+              Administrative Approvals & Clearance Desk
+            </h1>
           </div>
 
-          {/* Search Input */}
-          <div className="relative min-w-[260px]">
-            <Search className="w-3.5 h-3.5 text-stone-400 absolute left-3 top-1/2 -translate-y-1/2" />
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search by devotee, ID or seva..."
-              className="w-full text-xs pl-8 pr-3 py-1.5 rounded-lg border border-stone-200 bg-stone-50 focus:outline-none focus:border-[#55132D] focus:bg-white"
-            />
+          <div className="flex flex-wrap items-center gap-2.5 shrink-0">
+            <button
+              onClick={() => navigate('/bookings')}
+              className="px-3.5 py-2 text-xs font-semibold text-stone-700 bg-stone-100 hover:bg-stone-200 rounded-xl transition-colors flex items-center gap-1.5 whitespace-nowrap shrink-0"
+            >
+              <Calendar className="w-4 h-4 text-stone-500" />
+              <span>Bookings Register</span>
+            </button>
+            <button
+              onClick={() => navigate('/dashboard')}
+              className="px-4 py-2 text-xs font-bold text-white bg-[#55132D] hover:bg-[#681B37] rounded-xl shadow-xs transition-colors flex items-center gap-1.5 whitespace-nowrap shrink-0"
+            >
+              <span>Back to Dashboard</span>
+            </button>
           </div>
         </div>
-      </div>
+      )}
 
       {/* Approvals Cards Stream */}
       <div className="space-y-3.5">
-        {filteredItems.length === 0 ? (
-          <div className="bg-white rounded-xl p-12 text-center border border-stone-200 shadow-xs">
-            <CheckCircle2 className="w-10 h-10 text-emerald-600 mx-auto mb-2" />
-            <h3 className="text-base font-bold text-stone-900 font-serif">No Pending Approvals</h3>
+        {displayedList.length === 0 ? (
+          <div className="bg-white rounded-xl p-10 text-center border border-stone-200 shadow-xs">
+            <CheckCircle2 className="w-9 h-9 text-emerald-600 mx-auto mb-2" />
+            <h3 className="text-sm font-bold text-stone-900 font-serif">No Approvals Found</h3>
             <p className="text-xs text-stone-500 mt-1">
-              All requests in this category have been processed and cleared.
+              {mainTab === 'pending'
+                ? 'All requests in this category have been processed and cleared.'
+                : 'No reviewed requests in this category yet.'}
             </p>
           </div>
         ) : (
-          filteredItems.map((item) => (
+          displayedList.map((item) => (
             <div
               key={item.id}
               className="bg-white rounded-2xl p-5 border border-stone-200/80 shadow-2xs hover:border-stone-300 hover:shadow-xs transition-all flex flex-col lg:flex-row lg:items-center justify-between gap-5 relative"
@@ -564,25 +476,37 @@ export default function Approvals() {
                 </div>
               </div>
 
-              {/* Right Column: Actions */}
+              {/* Right Column: Actions or Status Badge */}
               <div className="border-t lg:border-t-0 lg:border-l border-stone-200 pt-3 lg:pt-0 lg:pl-6 xl:pl-8 shrink-0 flex items-center justify-end">
-                <div className="flex items-center gap-2.5">
-                  <button
-                    onClick={() => handleApprove(item.id)}
-                    className="px-5 py-2 rounded-full bg-[#55132D] hover:bg-[#681B37] text-white text-xs font-semibold flex items-center gap-1.5 shadow-xs transition-all whitespace-nowrap active:scale-[0.98]"
-                  >
-                    <Check className="w-3.5 h-3.5 text-[#E2BC6B]" />
-                    <span>Approve</span>
-                  </button>
+                {item.status === 'Pending' ? (
+                  <div className="flex items-center gap-2.5">
+                    <button
+                      onClick={() => handleApprove(item.id)}
+                      className="px-5 py-2 rounded-full bg-[#55132D] hover:bg-[#681B37] text-white text-xs font-semibold flex items-center gap-1.5 shadow-xs transition-all whitespace-nowrap active:scale-[0.98]"
+                    >
+                      <Check className="w-3.5 h-3.5 text-[#E2BC6B]" />
+                      <span>Approve</span>
+                    </button>
 
-                  <button
-                    onClick={() => handleReject(item.id)}
-                    className="px-4 py-2 rounded-full border border-pink-200 bg-white hover:bg-pink-50 text-[#8B2648] text-xs font-semibold flex items-center gap-1.5 transition-all whitespace-nowrap active:scale-[0.98]"
+                    <button
+                      onClick={() => handleReject(item.id)}
+                      className="px-4 py-2 rounded-full border border-pink-200 bg-white hover:bg-pink-50 text-[#8B2648] text-xs font-semibold flex items-center gap-1.5 transition-all whitespace-nowrap active:scale-[0.98]"
+                    >
+                      <X className="w-3.5 h-3.5 text-rose-500" />
+                      <span>Reject</span>
+                    </button>
+                  </div>
+                ) : (
+                  <span
+                    className={`px-4 py-1.5 rounded-full text-xs font-bold border ${
+                      item.status === 'Approved'
+                        ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
+                        : 'bg-rose-50 text-rose-800 border-rose-200'
+                    }`}
                   >
-                    <X className="w-3.5 h-3.5 text-rose-500" />
-                    <span>Reject</span>
-                  </button>
-                </div>
+                    {item.status}
+                  </span>
+                )}
               </div>
             </div>
           ))

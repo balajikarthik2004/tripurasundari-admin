@@ -1,13 +1,14 @@
 // Public-Facing Visitor Information & Guidelines Data Model
+// Streamlined, clear, and breathable format
 
 export const INITIAL_VISITOR_GUIDELINES = [
   {
     id: 'VIG-001',
-    title: 'Before Your Visit: General Etiquette & Best Times',
-    category: 'Before Your Visit',
+    title: 'Temple Timings & Recommended Hours',
+    category: 'Timings & Darshan',
     displayOrder: 1,
     content:
-      'Visiting Mata Tripura Sundari Temple is a deeply spiritually uplifting experience. Early morning hours between 05:30 AM and 08:30 AM, and late afternoons between 04:00 PM and 06:30 PM are generally cooler and ideal for peaceful darshan and circumambulation (Parikrama). Devotees are encouraged to wear comfortable walking shoes that can be easily deposited at the free footwear counters at East and West gates.',
+      'Temple sanctum opens daily from 05:00 AM to 09:30 PM. Morning hours (05:30 AM – 08:30 AM) and evening aarti (06:00 PM – 07:30 PM) provide serene darshan with minimal queue delays.',
     status: 'Published',
     verificationStatus: 'Verified',
     lastUpdated: '28 Oct 2026',
@@ -15,10 +16,10 @@ export const INITIAL_VISITOR_GUIDELINES = [
   {
     id: 'VIG-002',
     title: 'Dress Code & Reverential Conduct',
-    category: 'Dress and Conduct Guidelines',
+    category: 'Dress & Conduct',
     displayOrder: 2,
     content:
-      'Devotees are requested to wear modest, dignified traditional attire appropriate for an ancient Vedic Shakti Peetha. Traditional Indian garments such as Sarees, Salwar Kameez, Dhotis, or Kurtas are warmly encouraged. Short trousers, sleeveless tops, and clothing with irreverent graphics are strongly discouraged inside the inner sanctum courtyard. Maintaining solemn quietude and mobile phones on silent mode is appreciated.',
+      'Modest, traditional Indian attire (Saree, Salwar Kameez, Dhoti, Kurta) is warmly encouraged. Devotees are requested to maintain solemn quietude and silence mobile phones inside the sanctum plinth.',
     status: 'Published',
     verificationStatus: 'Verified',
     lastUpdated: '25 Oct 2026',
@@ -26,35 +27,23 @@ export const INITIAL_VISITOR_GUIDELINES = [
   {
     id: 'VIG-003',
     title: 'Photography & Electronic Devices Policy',
-    category: 'Photography Guidelines',
+    category: 'Photography Rules',
     displayOrder: 3,
     content:
-      'Photography and videography are warmly welcomed across the outer temple courtyard, surrounding garden walkways, and Kalyan Sagar lake banks. However, photography and mobile phone recording are strictly forbidden inside the Garbhagriha (inner sanctum) to protect the sanctity and privacy of worship. Drone piloting over the temple compound requires prior written sanction from the District Police Superintendent.',
+      'Photography and personal video recording are welcomed across outer courtyards, landscaped gardens, and Kalyan Sagar lake banks. Cameras and phones are strictly prohibited inside the inner Garbhagriha.',
     status: 'Published',
     verificationStatus: 'Verified',
     lastUpdated: '26 Oct 2026',
   },
   {
     id: 'VIG-004',
-    title: 'Accessibility for Seniors & Divyangjan Pilgrims',
-    category: 'Accessibility Information',
+    title: 'Senior Citizen & Divyangjan Accessibility',
+    category: 'Accessibility',
     displayOrder: 4,
     content:
-      'The temple administration is committed to making darshan accessible for all devotees. Dedicated barrier-free wheelchair ramps are provided at West Gate Plaza. Complimentary manual wheelchairs and trained volunteer sevadal attendants are stationed at the main pilgrim help desk. Priority queue access is granted to senior citizens (65+) and differently-abled devotees.',
+      'A dedicated barrier-free ramp is situated at West Gate. Complimentary manual wheelchairs and trained Sevadal volunteer escorts are available on-demand at the Central Help Desk.',
     status: 'Published',
     verificationStatus: 'Verified',
     lastUpdated: '29 Oct 2026',
   },
-  {
-    id: 'VIG-005',
-    title: 'Offerings, Prasad & Holy Kalyan Sagar Sanctity',
-    category: 'Visitor Guidelines',
-    displayOrder: 5,
-    content:
-      'Devotees may offer fresh red hibiscus garlands, pure cow milk pedas, and sacred red chunri to the Goddess. All offerings can be procured from licensed cooperative counters near the Torana gate. Please never throw non-biodegradable articles, plastic or fried items into Kalyan Sagar lake, as it is a protected aquatic habitat for holy Bostami tortoises.',
-    status: 'Published',
-    verificationStatus: 'Verified',
-    lastUpdated: '27 Oct 2026',
-  },
 ];
-
