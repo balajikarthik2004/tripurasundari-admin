@@ -6,6 +6,7 @@ import {
   Flame,
   ChevronDown,
   Info,
+  BarChart2,
 } from 'lucide-react';
 
 // Sacred Golden Lotus Motif for card and bottom flourish
@@ -443,71 +444,81 @@ export default function BookingDemandMatrix({ onCellClick }) {
         </div>
 
         {/* Right Side: Dual-Column Summary & Utilization Card (Aligned to match bottom of left matrix) */}
-        <div className="w-full xl:w-[336px] 2xl:w-[350px] shrink-0 bg-white rounded-2xl border border-[#EFE5D5] p-3.5 shadow-2xs flex flex-col justify-between">
-          <div className="grid grid-cols-2 gap-3.5 divide-x divide-stone-150 h-full">
+        <div className="w-full xl:w-[370px] 2xl:w-[390px] shrink-0 bg-white rounded-2xl border border-[#EFE5D5] p-3.5 sm:p-4 shadow-2xs flex flex-col justify-between">
+          <div className="grid grid-cols-2 gap-3.5 sm:gap-4 divide-x divide-stone-150 h-full">
             {/* Column 1: Summary */}
-            <div className="flex flex-col justify-between pr-1">
-              <div className="flex items-center gap-1.5 pb-2 border-b border-stone-150">
-                <span className="text-[#55132D] text-xs">📊</span>
-                <h3 className="font-bold text-[#55132D] font-serif text-xs">
+            <div className="flex flex-col justify-between pr-2 sm:pr-3 h-full">
+              <div className="flex items-center gap-1.5 pb-2.5 border-b border-stone-150">
+                <BarChart2 className="w-3.5 h-3.5 text-[#751838]" />
+                <h3 className="font-bold text-[#751838] font-serif text-xs">
                   {summary.title}
                 </h3>
               </div>
 
-              <div className="space-y-2.5 text-[11px] py-1">
-                <div>
-                  <div className="text-stone-500 text-[10px]">Total Bookings</div>
-                  <div className="font-bold text-stone-900 font-sans text-xs">
+              <div className="flex flex-col justify-around flex-1 pt-2">
+                <div className="flex items-center justify-between gap-1.5 py-1 text-xs">
+                  <span className="text-stone-500 text-[11px] whitespace-nowrap">Total Bookings</span>
+                  <span className="font-bold text-stone-900 font-sans text-xs">
                     {summary.totalBookings}
-                  </div>
+                  </span>
                 </div>
-                <div>
-                  <div className="text-stone-500 text-[10px]">Avg. Daily Bookings</div>
-                  <div className="font-bold text-stone-900 font-sans text-xs">
+                <div className="flex items-center justify-between gap-1.5 py-1 text-xs">
+                  <span className="text-stone-500 text-[11px] whitespace-nowrap">Avg. Daily Bookings</span>
+                  <span className="font-bold text-stone-900 font-sans text-xs">
                     {summary.avgDaily}
-                  </div>
+                  </span>
                 </div>
-                <div>
-                  <div className="text-stone-500 text-[10px]">Peak Slot</div>
-                  <div className="font-bold text-stone-900 font-sans text-xs">
+                <div className="flex items-center justify-between gap-1.5 py-1 text-xs">
+                  <span className="text-stone-500 text-[11px] whitespace-nowrap">Peak Slot</span>
+                  <span className="font-bold text-stone-900 font-sans text-xs">
                     {summary.peakSlot}
-                  </div>
+                  </span>
                 </div>
-                <div>
-                  <div className="text-stone-500 text-[10px]">Peak Service</div>
-                  <div className="font-bold text-stone-900 font-sans text-xs">
+                <div className="flex items-center justify-between gap-1.5 py-1 text-xs">
+                  <span className="text-stone-500 text-[11px] whitespace-nowrap">Peak Service</span>
+                  <span className="font-bold text-stone-900 font-sans text-xs">
                     {summary.peakService}
-                  </div>
+                  </span>
                 </div>
               </div>
             </div>
 
             {/* Column 2: Utilization Legend */}
-            <div className="pl-3.5 flex flex-col justify-between">
-              <h3 className="font-bold text-stone-900 text-[11px] tracking-wider uppercase pb-2 border-b border-stone-150">
-                Utilization
-              </h3>
+            <div className="pl-3.5 sm:pl-4 flex flex-col justify-between h-full">
+              <div className="flex items-center pb-2.5 border-b border-stone-150">
+                <h3 className="font-bold text-stone-900 font-serif text-xs">
+                  Utilization
+                </h3>
+              </div>
 
-              <div className="space-y-3 text-[11px] py-1">
-                <div className="flex items-center gap-1.5">
-                  <span className="w-3 h-3 rounded-full bg-[#751838] shrink-0" />
-                  <span className="font-bold text-stone-800 whitespace-nowrap">≥ 90%</span>
-                  <span className="text-stone-500 text-[10px] ml-auto">(High)</span>
+              <div className="flex flex-col justify-around flex-1 pt-2">
+                <div className="flex items-center justify-between gap-1.5 py-1 text-xs">
+                  <div className="flex items-center gap-1.5">
+                    <span className="w-2.5 h-2.5 rounded-full bg-[#751838] shrink-0" />
+                    <span className="font-bold text-stone-800 text-[11px] whitespace-nowrap">≥ 90%</span>
+                  </div>
+                  <span className="text-stone-500 text-[10px] font-medium">(High)</span>
                 </div>
-                <div className="flex items-center gap-1.5">
-                  <span className="w-3 h-3 rounded-full bg-[#EA580C] shrink-0" />
-                  <span className="font-bold text-stone-800 whitespace-nowrap">75%–89%</span>
-                  <span className="text-stone-500 text-[10px] ml-auto">(Busy)</span>
+                <div className="flex items-center justify-between gap-1.5 py-1 text-xs">
+                  <div className="flex items-center gap-1.5">
+                    <span className="w-2.5 h-2.5 rounded-full bg-[#EA580C] shrink-0" />
+                    <span className="font-bold text-stone-800 text-[11px] whitespace-nowrap">75%–89%</span>
+                  </div>
+                  <span className="text-stone-500 text-[10px] font-medium">(Busy)</span>
                 </div>
-                <div className="flex items-center gap-1.5">
-                  <span className="w-3 h-3 rounded-full bg-[#FACC15] border border-[#CA8A04] shrink-0" />
-                  <span className="font-bold text-stone-800 whitespace-nowrap">50%–74%</span>
-                  <span className="text-stone-500 text-[10px] ml-auto">(Moderate)</span>
+                <div className="flex items-center justify-between gap-1.5 py-1 text-xs">
+                  <div className="flex items-center gap-1.5">
+                    <span className="w-2.5 h-2.5 rounded-full bg-[#FACC15] border border-[#CA8A04] shrink-0" />
+                    <span className="font-bold text-stone-800 text-[11px] whitespace-nowrap">50%–74%</span>
+                  </div>
+                  <span className="text-stone-500 text-[10px] font-medium">(Moderate)</span>
                 </div>
-                <div className="flex items-center gap-1.5">
-                  <span className="w-3 h-3 rounded-full bg-[#FEF9C3] border border-[#FDE047] shrink-0" />
-                  <span className="font-bold text-stone-800 whitespace-nowrap">&lt; 50%</span>
-                  <span className="text-stone-500 text-[10px] ml-auto">(Low)</span>
+                <div className="flex items-center justify-between gap-1.5 py-1 text-xs">
+                  <div className="flex items-center gap-1.5">
+                    <span className="w-2.5 h-2.5 rounded-full bg-[#FEF9C3] border border-[#FDE047] shrink-0" />
+                    <span className="font-bold text-stone-800 text-[11px] whitespace-nowrap">&lt; 50%</span>
+                  </div>
+                  <span className="text-stone-500 text-[10px] font-medium">(Low)</span>
                 </div>
               </div>
             </div>
