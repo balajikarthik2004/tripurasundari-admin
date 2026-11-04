@@ -78,10 +78,10 @@ export default function CrowdStatusCard() {
         </div>
       </div>
 
-      {/* 2. Top Section: 2-Column CSS Grid - Perfectly Balanced Proportions */}
-      <div className="grid grid-cols-[144px_1fr] sm:grid-cols-[148px_1fr] gap-3 sm:gap-4 items-center py-1">
-        {/* Left Column: Capacity Gauge with Compact Floral Petal Collar */}
-        <div className="relative w-[144px] h-[144px] sm:w-[148px] sm:h-[148px] shrink-0 flex items-center justify-center">
+      {/* 2. Top Section: 2-Column CSS Grid - Increased Gauge + Sized Petals + Compact Right Section */}
+      <div className="grid grid-cols-[152px_1fr] sm:grid-cols-[156px_1fr] gap-2.5 sm:gap-3 items-center py-1">
+        {/* Left Column: Enlarged Capacity Gauge with Sized Temple Floral Petals */}
+        <div className="relative w-[152px] h-[152px] sm:w-[156px] sm:h-[156px] shrink-0 flex items-center justify-center">
           <svg className="w-full h-full overflow-visible" viewBox="0 0 200 200">
             <defs>
               {/* Vibrant Amber-to-Saffron Capacity Arc Gradient */}
@@ -101,13 +101,13 @@ export default function CrowdStatusCard() {
               </linearGradient>
             </defs>
 
-            {/* LAYER 1: Compact, Delicate Temple Petals (Tight Collar Hugging the Larger Gauge) */}
+            {/* LAYER 1: Sized Temple Petals (Slightly larger petals hugging the gauge) */}
             <g id="mandala-petals" opacity="0.75">
               {Array.from({ length: 20 }).map((_, i) => (
                 <g key={`petal-${i}`} transform={`rotate(${i * 18} 100 100)`}>
-                  {/* Compact Outer Petal Accolade Contour */}
+                  {/* Outer Petal Accolade Contour - Increased height to y=6 */}
                   <path
-                    d="M 88.5 25.5 C 87 19.5, 93 14.5, 100 10 C 107 14.5, 113 19.5, 111.5 25.5"
+                    d="M 88.5 25.5 C 86.5 17.5, 93 11, 100 6 C 107 11, 113.5 17.5, 111.5 25.5"
                     fill="#FFFDF7"
                     fillOpacity="0.45"
                     stroke="#C88728"
@@ -117,7 +117,7 @@ export default function CrowdStatusCard() {
                   />
                   {/* Inner Parallel Arch */}
                   <path
-                    d="M 91.5 25.5 C 90.5 20.5, 94.5 16.5, 100 13.5 C 105.5 16.5, 109.5 20.5, 108.5 25.5"
+                    d="M 91.5 25.5 C 90 18.5, 94.5 13, 100 9.5 C 105.5 13, 110 18.5, 108.5 25.5"
                     fill="none"
                     stroke="#D97706"
                     strokeWidth="0.75"
@@ -125,15 +125,15 @@ export default function CrowdStatusCard() {
                   />
                   {/* Base Inner Trefoil Scallop */}
                   <path
-                    d="M 94.5 25.5 C 95.5 22, 97.5 20.5, 100 20.5 C 102.5 20.5, 104.5 22, 105.5 25.5"
+                    d="M 94.5 25.5 C 95.5 21, 97.5 19, 100 19 C 102.5 19, 104.5 21, 105.5 25.5"
                     fill="none"
                     stroke="#D97706"
                     strokeWidth="0.7"
                     opacity="0.8"
                   />
                   {/* Center Vein & Teardrop Bindu */}
-                  <line x1="100" y1="14.5" x2="100" y2="19" stroke="#D97706" strokeWidth="0.7" strokeLinecap="round" />
-                  <circle cx="100" cy="16.5" r="0.7" fill="#D97706" />
+                  <line x1="100" y1="11" x2="100" y2="18" stroke="#D97706" strokeWidth="0.7" strokeLinecap="round" />
+                  <circle cx="100" cy="14" r="0.75" fill="#D97706" />
                   {/* Base Connecting Scallop */}
                   <path d="M 88.5 25.5 Q 100 27.5 111.5 25.5" fill="none" stroke="#C88728" strokeWidth="0.8" />
                   <circle cx="88.5" cy="25.5" r="0.75" fill="#D97706" />
@@ -187,36 +187,36 @@ export default function CrowdStatusCard() {
 
           {/* LAYER 4: 56% / Capacity / Whisker Lotus in Spacious Ivory Centre */}
           <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-            <span className="text-[26px] sm:text-[28px] font-bold font-number text-[#55132D] tracking-tight leading-none">
+            <span className="text-[27px] sm:text-[29px] font-bold font-number text-[#55132D] tracking-tight leading-none">
               <AnimatedCounter value={`${occupancyPercent}%`} />
             </span>
             <span className="text-[11px] font-serif font-medium text-stone-700 tracking-tight mt-0.5">
               Capacity
             </span>
             <div className="mt-0.5">
-              <WhiskerGoldenLotus className="w-8 h-2.5" />
+              <WhiskerGoldenLotus className="w-8.5 h-2.5" />
             </div>
           </div>
         </div>
 
-        {/* Right Column: Centered, Balanced Occupancy Numbers & Status */}
-        <div className="min-w-0 flex flex-col justify-center space-y-2 pl-3 sm:pl-4 border-l border-[#E8E2D8]">
+        {/* Right Column: Compact, Sized Right-Side Section */}
+        <div className="min-w-0 flex flex-col justify-center space-y-1.5 pl-2.5 sm:pl-3 border-l border-[#E8E2D8]">
           {/* Metric Count: Tabular numbers on single line */}
           <div>
-            <div className="text-[25px] sm:text-[27px] font-bold font-number text-[#55132D] leading-none whitespace-nowrap flex items-baseline">
+            <div className="text-[23px] sm:text-[25px] font-bold font-number text-[#55132D] leading-none whitespace-nowrap flex items-baseline">
               <AnimatedCounter value={currentInside} />
-              <span className="text-stone-400 font-normal text-[13px] sm:text-[14px] ml-1.5 tabular-nums whitespace-nowrap">
+              <span className="text-stone-400 font-normal text-[12.5px] sm:text-[13px] ml-1.5 tabular-nums whitespace-nowrap">
                 / {maxCapacity.toLocaleString()}
               </span>
             </div>
-            <div className="text-[11px] text-stone-500 font-medium mt-0.5">
+            <div className="text-[10px] text-stone-500 font-medium mt-0.5">
               inside
             </div>
           </div>
 
           {/* Flow Status Pill: Compact single-line pill */}
           <div>
-            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10.5px] font-semibold bg-[#FEF6E4] text-[#854D0E] border border-[#FDE68A] whitespace-nowrap shadow-2xs">
+            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-[#FEF6E4] text-[#854D0E] border border-[#FDE68A] whitespace-nowrap shadow-2xs">
               {status} Flow
             </span>
           </div>
