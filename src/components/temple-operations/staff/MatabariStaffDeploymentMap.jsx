@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useRef } from 'react';
+import OverlayPortal from '../../common/OverlayPortal';
 import TempleCampus3DScene from './TempleCampus3DScene';
 import {
   ZoomIn,

@@ -1,3 +1,4 @@
+import OverlayPortal from '../../common/OverlayPortal';
 import React, { useState } from 'react';
 import { X, Radio, Send } from 'lucide-react';
 import { useTempleOperations } from '../../../context/TempleOperationsContext';
@@ -17,7 +18,8 @@ export default function BroadcastModal({ isOpen, onClose }) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
+    <OverlayPortal isOpen={isOpen} onClose={onClose}>
+      <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-stone-950/60 backdrop-blur-xs">
       <div className="bg-white rounded-2xl shadow-2xl border border-stone-200 w-full max-w-md flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200">
         <div className="px-5 py-4 bg-[#55132D] text-white flex items-center justify-between border-b border-[#B68A36]/30">
           <div className="flex items-center gap-2">
@@ -75,6 +77,7 @@ export default function BroadcastModal({ isOpen, onClose }) {
         </form>
       </div>
     </div>
+    </OverlayPortal>
   );
 }
 

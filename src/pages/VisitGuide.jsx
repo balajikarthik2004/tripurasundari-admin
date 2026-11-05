@@ -43,6 +43,7 @@ import ContentPageHeader from '../components/content-management/shared/ContentPa
 import ContentTabs from '../components/content-management/shared/ContentTabs';
 import ContentStatusBadge from '../components/content-management/shared/ContentStatusBadge';
 import VerificationBadge from '../components/content-management/shared/VerificationBadge';
+import OverlayPortal from '../components/common/OverlayPortal';
 import PublicWebsitePreviewModal from '../components/content-management/shared/PublicWebsitePreviewModal';
 import TempleArchitectureMap from '../components/content-management/shared/TempleArchitectureMap';
 
@@ -762,15 +763,16 @@ export default function VisitGuide({ isEmbedded = false }) {
 
       {/* Slide-In Facility & Marker Detail Drawer */}
       {isDrawerOpen && selectedMarker && (
-        <div className="fixed inset-0 z-50 overflow-hidden select-none">
+        <OverlayPortal isOpen={isDrawerOpen} onClose={() => setIsDrawerOpen(false)}>
+        <div className="fixed inset-0 z-[9999] overflow-hidden select-none">
           {/* Backdrop */}
           <div
-            className="absolute inset-0 bg-stone-900/40 backdrop-blur-2xs transition-opacity animate-in fade-in"
+            className="fixed inset-0 bg-stone-950/60 backdrop-blur-xs transition-opacity animate-in fade-in duration-200"
             onClick={() => setIsDrawerOpen(false)}
           />
 
           {/* Drawer Container */}
-          <div className="fixed inset-y-0 right-0 max-w-full flex pl-8 sm:pl-16">
+          <div className="fixed inset-y-0 right-0 max-w-full flex pl-8 sm:pl-16 z-10">
             <div className="w-screen max-w-md bg-white shadow-2xl border-l border-stone-200 flex flex-col justify-between animate-in slide-in-from-right duration-300">
               {/* Drawer Header */}
               <div className="p-4.5 bg-[#55132D] text-white flex items-center justify-between shadow-xs shrink-0">
@@ -890,6 +892,7 @@ export default function VisitGuide({ isEmbedded = false }) {
             </div>
           </div>
         </div>
+              </OverlayPortal>
       )}
 
       {/* TAB 2: VISITOR GUIDELINES & FAQS (Segmented Sub-views) */}
@@ -1169,8 +1172,9 @@ export default function VisitGuide({ isEmbedded = false }) {
 
       {/* MODAL: ADD MAP MARKER */}
       {isAddMarkerModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl max-w-md w-full overflow-hidden shadow-2xl border border-stone-200">
+        <OverlayPortal isOpen={isAddMarkerModalOpen} onClose={() => setIsAddMarkerModalOpen(false)}>
+          <div className="fixed inset-0 z-[9999] bg-stone-950/60 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-150">
+            <div className="bg-white rounded-2xl max-w-md w-full overflow-hidden shadow-2xl border border-stone-200">
             <div className="px-5 py-4 bg-stone-50 border-b border-stone-200 flex items-center justify-between">
               <div>
                 <h3 className="text-sm font-bold text-stone-900">Configure Map Marker</h3>
@@ -1284,13 +1288,15 @@ export default function VisitGuide({ isEmbedded = false }) {
               </div>
             </form>
           </div>
-        </div>
+          </div>
+        </OverlayPortal>
       )}
 
       {/* MODAL: EDIT MARKER */}
       {isEditMarkerModalOpen && selectedMarker && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl max-w-md w-full overflow-hidden shadow-2xl border border-stone-200">
+        <OverlayPortal isOpen={isEditMarkerModalOpen} onClose={() => setIsEditMarkerModalOpen(false)}>
+          <div className="fixed inset-0 z-[9999] bg-stone-950/60 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-150">
+            <div className="bg-white rounded-2xl max-w-md w-full overflow-hidden shadow-2xl border border-stone-200">
             <div className="px-5 py-4 bg-stone-50 border-b border-stone-200 flex items-center justify-between">
               <div>
                 <h3 className="text-sm font-bold text-stone-900">Edit Marker Details</h3>
@@ -1378,13 +1384,15 @@ export default function VisitGuide({ isEmbedded = false }) {
               </div>
             </form>
           </div>
-        </div>
+          </div>
+        </OverlayPortal>
       )}
 
       {/* MODAL: CONFIGURE DEVOTEE GUIDELINE (ADD & EDIT) */}
       {isGuidelineModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl max-w-md w-full overflow-hidden shadow-2xl border border-stone-200">
+        <OverlayPortal isOpen={isGuidelineModalOpen} onClose={() => setIsGuidelineModalOpen(false)}>
+          <div className="fixed inset-0 z-[9999] bg-stone-950/60 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-150">
+            <div className="bg-white rounded-2xl max-w-md w-full overflow-hidden shadow-2xl border border-stone-200">
             <div className="px-5 py-4 bg-stone-50 border-b border-stone-200 flex items-center justify-between">
               <div>
                 <h3 className="text-sm font-bold text-stone-900 font-serif">
@@ -1472,13 +1480,15 @@ export default function VisitGuide({ isEmbedded = false }) {
               </div>
             </form>
           </div>
-        </div>
+          </div>
+        </OverlayPortal>
       )}
 
       {/* MODAL: EDIT TRANSIT OPTION */}
       {isTransitModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl max-w-md w-full overflow-hidden shadow-2xl border border-stone-200">
+        <OverlayPortal isOpen={isTransitModalOpen} onClose={() => setIsTransitModalOpen(false)}>
+          <div className="fixed inset-0 z-[9999] bg-stone-950/60 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-150">
+            <div className="bg-white rounded-2xl max-w-md w-full overflow-hidden shadow-2xl border border-stone-200">
             <div className="px-5 py-4 bg-stone-50 border-b border-stone-200 flex items-center justify-between">
               <div>
                 <h3 className="text-sm font-bold text-stone-900 font-serif">Edit Transit Option</h3>
@@ -1544,13 +1554,15 @@ export default function VisitGuide({ isEmbedded = false }) {
               </div>
             </form>
           </div>
-        </div>
+          </div>
+        </OverlayPortal>
       )}
 
       {/* MODAL: CONFIGURE FAQ (ADD & EDIT) */}
       {isFaqModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl max-w-md w-full overflow-hidden shadow-2xl border border-stone-200">
+        <OverlayPortal isOpen={isFaqModalOpen} onClose={() => setIsFaqModalOpen(false)}>
+          <div className="fixed inset-0 z-[9999] bg-stone-950/60 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-150">
+            <div className="bg-white rounded-2xl max-w-md w-full overflow-hidden shadow-2xl border border-stone-200">
             <div className="px-5 py-4 bg-stone-50 border-b border-stone-200 flex items-center justify-between">
               <div>
                 <h3 className="text-sm font-bold text-stone-900 font-serif">
@@ -1639,7 +1651,8 @@ export default function VisitGuide({ isEmbedded = false }) {
               </div>
             </form>
           </div>
-        </div>
+          </div>
+        </OverlayPortal>
       )}
 
       {/* Global Preview Modal */}

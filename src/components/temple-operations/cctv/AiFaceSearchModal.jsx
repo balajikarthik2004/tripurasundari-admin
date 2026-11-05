@@ -1,3 +1,4 @@
+import OverlayPortal from '../../common/OverlayPortal';
 import React, { useState, useMemo, useRef } from 'react';
 import {
   Upload,
@@ -169,7 +170,8 @@ export default function AiFaceSearchModal({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
+    <OverlayPortal isOpen={isOpen} onClose={onClose}>
+      <div className="fixed inset-0 z-[9999] bg-stone-950/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
       <div className="bg-white border border-stone-200 rounded-2xl w-full max-w-4xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh] animate-in zoom-in-95 duration-150">
         {/* Simple & Clean Header */}
         <div className="px-6 py-4 border-b border-stone-200 flex items-center justify-between gap-4 bg-[#FAF8F5]">
@@ -386,5 +388,6 @@ export default function AiFaceSearchModal({
         </div>
       </div>
     </div>
+    </OverlayPortal>
   );
 }

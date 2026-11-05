@@ -1,3 +1,4 @@
+import OverlayPortal from '../common/OverlayPortal';
 import React, { useState } from 'react';
 import { Camera, Maximize2, AlertCircle } from 'lucide-react';
 import { CAMERA_FEEDS } from '../../data/dashboardData';

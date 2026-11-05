@@ -1,3 +1,4 @@
+import OverlayPortal from '../../common/OverlayPortal';
 import React, { useState, useEffect } from 'react';
 import {
   X,
@@ -127,7 +128,8 @@ export default function CalendarAddScheduleModal() {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-2xs select-none">
+    <OverlayPortal isOpen={true} onClose={onClose}>
+      <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-stone-950/60 backdrop-blur-2xs select-none">
       <div className="bg-white rounded-2xl max-w-lg w-full overflow-hidden shadow-2xl border border-stone-200 animate-in zoom-in-95 duration-150">
         {/* Modal Header */}
         <div className="p-4 bg-[#55132D] text-white flex items-center justify-between">
@@ -555,6 +557,7 @@ export default function CalendarAddScheduleModal() {
         </div>
       </div>
     </div>
+    </OverlayPortal>
   );
 }
 

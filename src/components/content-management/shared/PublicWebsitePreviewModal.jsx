@@ -1,3 +1,4 @@
+import OverlayPortal from '../../common/OverlayPortal';
 import React, { useState } from 'react';
 import {
   X,
@@ -26,7 +27,8 @@ export default function PublicWebsitePreviewModal() {
   const { type, item } = previewData;
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-3 md:p-6 overflow-y-auto">
+    <OverlayPortal isOpen={true} onClose={closePreview}>
+      <div className="fixed inset-0 z-[9999] bg-stone-950/75 backdrop-blur-sm flex items-center justify-center p-3 md:p-6 overflow-y-auto">
       <div
         className={`bg-stone-100 rounded-2xl shadow-2xl border border-stone-700 overflow-hidden flex flex-col transition-all duration-300 ${
           viewport === 'mobile' ? 'max-w-md w-full' : 'max-w-4xl w-full'
@@ -299,6 +301,7 @@ export default function PublicWebsitePreviewModal() {
           </button>
         </div>
       </div>
-    </div>
+      </div>
+    </OverlayPortal>
   );
 }

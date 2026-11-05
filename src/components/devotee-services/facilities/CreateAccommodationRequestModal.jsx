@@ -1,3 +1,4 @@
+import OverlayPortal from '../../common/OverlayPortal';
 import React, { useState } from 'react';
 import { X, Building2, Calendar, User, Save } from 'lucide-react';
 import { useDevoteeServices } from '../../../context/DevoteeServicesContext';
@@ -42,7 +43,8 @@ export default function CreateAccommodationRequestModal({ isOpen, onClose }) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
+    <OverlayPortal isOpen={isOpen} onClose={onClose}>
+      <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-stone-950/60 backdrop-blur-xs">
       <div className="bg-white rounded-2xl shadow-2xl border border-stone-200 w-full max-w-lg max-h-[92vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200">
         <div className="px-6 py-4 bg-gradient-to-r from-[#55132D] to-[#681B37] text-white flex items-center justify-between border-b border-[#B68A36]/30">
           <div className="flex items-center gap-2.5">
@@ -165,6 +167,7 @@ export default function CreateAccommodationRequestModal({ isOpen, onClose }) {
         </div>
       </div>
     </div>
+    </OverlayPortal>
   );
 }
 

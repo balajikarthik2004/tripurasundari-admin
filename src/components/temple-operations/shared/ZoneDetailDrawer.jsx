@@ -1,3 +1,4 @@
+import OverlayPortal from '../../common/OverlayPortal';
 import React from 'react';
 import { X, Users, Video, ShieldAlert, ArrowRight, UserCheck, Flame, Clock } from 'lucide-react';
 import { useTempleOperations } from '../../../context/TempleOperationsContext';
@@ -14,7 +15,8 @@ export default function ZoneDetailDrawer({ zone, onClose, onLogIncident }) {
   const occPercent = Math.min(100, Math.round((zone.currentOccupancy / zone.capacity) * 100));
 
   return (
-    <div className="fixed inset-0 z-50 flex justify-end bg-black/50 backdrop-blur-2xs animate-in fade-in duration-200">
+    <OverlayPortal isOpen={true} onClose={onClose}>
+      <div className="fixed inset-0 z-[9999] flex justify-end bg-stone-950/60 backdrop-blur-xs animate-in fade-in duration-200">
       <div className="w-full max-w-md bg-white h-full shadow-2xl flex flex-col border-l border-stone-200 animate-in slide-in-from-right duration-250">
         {/* Header */}
         <div className="px-5 py-4 bg-gradient-to-r from-[#55132D] to-[#681B37] text-white flex items-center justify-between border-b border-[#B68A36]/30">
@@ -166,7 +168,8 @@ export default function ZoneDetailDrawer({ zone, onClose, onLogIncident }) {
           </button>
         </div>
       </div>
-    </div>
+      </div>
+    </OverlayPortal>
   );
 }
 

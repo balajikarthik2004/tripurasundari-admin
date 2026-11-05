@@ -1,3 +1,4 @@
+import OverlayPortal from '../../common/OverlayPortal';
 import React, { useRef } from 'react';
 import { X, Printer, ShieldCheck, Download } from 'lucide-react';
 
@@ -11,7 +12,8 @@ export default function ReceiptModal({ isOpen, onClose, receiptData }) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
+    <OverlayPortal isOpen={true} onClose={onClose}>
+      <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-stone-950/60 backdrop-blur-xs">
       <div className="bg-white rounded-2xl shadow-2xl border border-stone-200 w-full max-w-lg max-h-[92vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200">
         {/* Modal Top Bar */}
         <div className="px-5 py-3.5 bg-stone-100 border-b border-stone-200 flex items-center justify-between">
@@ -134,6 +136,7 @@ export default function ReceiptModal({ isOpen, onClose, receiptData }) {
         </div>
       </div>
     </div>
+    </OverlayPortal>
   );
 }
 

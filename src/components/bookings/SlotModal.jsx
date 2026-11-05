@@ -1,3 +1,4 @@
+import OverlayPortal from '../common/OverlayPortal';
 import React, { useState, useEffect } from 'react';
 import { X, Clock, Save } from 'lucide-react';
 import { useDarshanBookings } from '../../context/DarshanBookingContext';
@@ -71,7 +72,8 @@ export default function SlotModal({ isOpen, onClose, editingSlot = null }) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
+    <OverlayPortal isOpen={true} onClose={onClose}>
+      <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-stone-950/60 backdrop-blur-xs">
       <div className="bg-white rounded-2xl shadow-2xl border border-stone-200 w-full max-w-md max-h-[90vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200">
         {/* Header */}
         <div className="px-5 py-4 bg-[#55132D] text-white flex items-center justify-between border-b border-[#B68A36]/30">
@@ -204,6 +206,7 @@ export default function SlotModal({ isOpen, onClose, editingSlot = null }) {
         </div>
       </div>
     </div>
+    </OverlayPortal>
   );
 }
 

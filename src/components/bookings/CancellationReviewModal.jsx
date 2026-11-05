@@ -1,3 +1,4 @@
+import OverlayPortal from '../common/OverlayPortal';
 import React, { useState } from 'react';
 import { AlertTriangle, X, Check, ShieldAlert, User, Calendar, Clock, ArrowRight, Ban, ShieldCheck } from 'lucide-react';
 
@@ -39,7 +40,8 @@ export default function CancellationReviewModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 overflow-hidden flex items-center justify-center p-4 animate-in fade-in duration-150">
+    <OverlayPortal isOpen={true} onClose={onClose}>
+      <div className="fixed inset-0 z-[9999] overflow-hidden flex items-center justify-center p-4 animate-in fade-in duration-150">
       <div
         className="fixed inset-0 bg-black/50 backdrop-blur-xs transition-opacity"
         onClick={onClose}
@@ -166,6 +168,7 @@ export default function CancellationReviewModal({
         </div>
       </div>
     </div>
+    </OverlayPortal>
   );
 }
 

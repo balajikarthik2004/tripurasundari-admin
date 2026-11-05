@@ -20,6 +20,7 @@ import {
   Tag
 } from 'lucide-react';
 import { useContentManagement } from '../context/ContentManagementContext';
+import OverlayPortal from '../components/common/OverlayPortal';
 import ContentPageHeader from '../components/content-management/shared/ContentPageHeader';
 import ContentTabs from '../components/content-management/shared/ContentTabs';
 import ContentStatusBadge from '../components/content-management/shared/ContentStatusBadge';

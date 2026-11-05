@@ -1,3 +1,4 @@
+import OverlayPortal from '../common/OverlayPortal';
 import React from 'react';
 import { X, CheckCircle2, Printer, ShieldCheck, Clock, User, Phone, Mail, FileText, IndianRupee } from 'lucide-react';
 import { formatCurrency, getStatusBadgeStyle } from '../../utils/formatters';
@@ -8,14 +9,15 @@ export default function ActivityDetailDrawer({ item, isOpen, onClose }) {
   const badgeStyle = getStatusBadgeStyle(item.status);
 
   return (
-    <div className="fixed inset-0 z-50 overflow-hidden animate-in fade-in duration-200">
+    <OverlayPortal isOpen={isOpen} onClose={onClose}>
+      <div className="fixed inset-0 z-[9999] overflow-hidden animate-in fade-in duration-200">
       {/* Backdrop */}
       <div
-        className="absolute inset-0 bg-black/40 backdrop-blur-xs transition-opacity"
+        className="fixed inset-0 bg-stone-950/60 backdrop-blur-xs transition-opacity"
         onClick={onClose}
       />
 
-      <div className="fixed inset-y-0 right-0 max-w-full flex pl-10">
+      <div className="fixed inset-y-0 right-0 max-w-full flex pl-10 z-10">
         <div className="w-screen max-w-md bg-[#F8F5EF] border-l border-[#E8E2D8] shadow-2xl flex flex-col justify-between">
           {/* Header */}
           <div className="p-5 bg-white border-b border-[#E8E2D8] flex items-center justify-between">
@@ -155,7 +157,8 @@ export default function ActivityDetailDrawer({ item, isOpen, onClose }) {
           </div>
         </div>
       </div>
-    </div>
+      </div>
+    </OverlayPortal>
   );
 }
 
