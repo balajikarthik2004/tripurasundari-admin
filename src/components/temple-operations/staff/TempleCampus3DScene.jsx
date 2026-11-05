@@ -30,6 +30,88 @@ import {
 } from './Officer3DModelBuilder';
 
 /**
+ * Procedural Architectural Drafting Grid Texture
+ * Creates an authentic architectural graph paper / drafting blueprint canvas texture
+ * with major meter grid lines, minor subdivision lines, and precision intersection crosses.
+ */
+function createArchitecturalGridTexture() {
+  const canvas = document.createElement('canvas');
+  canvas.width = 512;
+  canvas.height = 512;
+  const ctx = canvas.getContext('2d');
+
+  // 1. Warm alabaster / architectural drafting base
+  ctx.fillStyle = '#FAF8F4';
+  ctx.fillRect(0, 0, 512, 512);
+
+  // 2. Minor subdivision lines (every 16px)
+  ctx.strokeStyle = '#EFE9DE';
+  ctx.lineWidth = 1;
+  for (let i = 0; i <= 512; i += 16) {
+    ctx.beginPath();
+    ctx.moveTo(0, i);
+    ctx.lineTo(512, i);
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo(i, 0);
+    ctx.lineTo(i, 512);
+    ctx.stroke();
+  }
+
+  // 3. Medium grid lines (every 64px)
+  ctx.strokeStyle = '#D9CCA8';
+  ctx.lineWidth = 1.2;
+  for (let i = 0; i <= 512; i += 64) {
+    ctx.beginPath();
+    ctx.moveTo(0, i);
+    ctx.lineTo(512, i);
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo(i, 0);
+    ctx.lineTo(i, 512);
+    ctx.stroke();
+  }
+
+  // 4. Major structural axis lines (every 256px)
+  ctx.strokeStyle = '#C2B092';
+  ctx.lineWidth = 1.8;
+  for (let i = 0; i <= 512; i += 256) {
+    ctx.beginPath();
+    ctx.moveTo(0, i);
+    ctx.lineTo(512, i);
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo(i, 0);
+    ctx.lineTo(i, 512);
+    ctx.stroke();
+  }
+
+  // 5. Precision architectural registration crosses (+) at 64px intersections
+  ctx.strokeStyle = '#968165';
+  ctx.lineWidth = 1.4;
+  const crossSize = 4;
+  for (let x = 64; x < 512; x += 64) {
+    for (let y = 64; y < 512; y += 64) {
+      ctx.beginPath();
+      ctx.moveTo(x - crossSize, y);
+      ctx.lineTo(x + crossSize, y);
+      ctx.moveTo(x, y - crossSize);
+      ctx.lineTo(x, y + crossSize);
+      ctx.stroke();
+    }
+  }
+
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.wrapS = THREE.RepeatWrapping;
+  texture.wrapT = THREE.RepeatWrapping;
+  texture.repeat.set(24, 24);
+  return texture;
+}
+
+/**
  * TempleCampus3DScene:
  * Master WebGL 3D Architectural Digital Twin & Security Deployment System
  * for Mata Tripura Sundari Temple (Matabari, Udaipur, Tripura).
@@ -177,9 +259,9 @@ export default function TempleCampus3DScene({
     const scene = new THREE.Scene();
     sceneRef.current = scene;
 
-    const initialBgColor = 0xF5F0E8; // Light sandstone cream
+    const initialBgColor = 0xFAF8F5; // Clean warm architectural alabaster white
     scene.background = new THREE.Color(initialBgColor);
-    scene.fog = new THREE.FogExp2(initialBgColor, 0.0035);
+    scene.fog = new THREE.FogExp2(initialBgColor, 0.0022);
 
     // 2. Camera
     const camera = new THREE.PerspectiveCamera(42, width / height, 1, 400);
@@ -235,11 +317,49 @@ export default function TempleCampus3DScene({
     scene.add(sunLight);
     lightsRef.current.sunLight = sunLight;
 
-    // 6. BUILD AUTHENTIC 3D TEMPLE ARCHITECTURE
+    // 6. EXPANSIVE ARCHITECTURAL DRAFTING BLUEPRINT FLOOR PLANE ("Lines or something")
+    const gridTexture = createArchitecturalGridTexture();
+    const floorGeo = new THREE.PlaneGeometry(360, 360);
+    const floorMat = new THREE.MeshBasicMaterial({
+      map: gridTexture,
+      depthWrite: true,
+    });
+    const floorMesh = new THREE.Mesh(floorGeo, floorMat);
+    floorMesh.rotation.x = -Math.PI / 2;
+    floorMesh.position.y = -1.22;
+    floorMesh.name = 'architecturalDraftingFloor';
+    scene.add(floorMesh);
+
+    // Delicate Three.js GridHelper for dynamic anti-aliased 3D perspective lines
+    const gridHelper = new THREE.GridHelper(300, 150, 0xC4AE8D, 0xE2D6C6);
+    gridHelper.position.y = -1.20;
+    gridHelper.material.opacity = 0.65;
+    gridHelper.material.transparent = true;
+    gridHelper.name = 'architecturalPerspectiveGrid';
+    scene.add(gridHelper);
+
+    // Subtle concentric architectural drafting circle rings on floor around Kurmapitha
+    const ringsGroup = new THREE.Group();
+    [28, 42, 56, 72].forEach((radius) => {
+      const ringGeo = new THREE.RingGeometry(radius - 0.16, radius, 80);
+      ringGeo.rotateX(-Math.PI / 2);
+      const ringMat = new THREE.MeshBasicMaterial({
+        color: 0xDAC7B0,
+        side: THREE.DoubleSide,
+        transparent: true,
+        opacity: 0.55,
+      });
+      const ringMesh = new THREE.Mesh(ringGeo, ringMat);
+      ringMesh.position.set(d3ScaleX(640), -1.18, d3ScaleZ(335));
+      ringsGroup.add(ringMesh);
+    });
+    scene.add(ringsGroup);
+
+    // 7. BUILD AUTHENTIC 3D TEMPLE ARCHITECTURE
     const dynamicAnimRefs = buildTempleCampus(scene, d3ScaleX, d3ScaleZ);
     animRefs.current = dynamicAnimRefs;
 
-    // 7. Add Groups (Officers, Heatmap, Pilgrim Path, Ghost Cursor)
+    // 8. Add Groups (Officers, Heatmap, Pilgrim Path, Ghost Cursor)
     scene.add(officersGroupRef.current);
     scene.add(heatmapGroupRef.current);
     scene.add(pilgrimPathGroupRef.current);
@@ -344,39 +464,41 @@ export default function TempleCampus3DScene({
     const { sunLight, ambientLight, hemisphereLight } = lightsRef.current;
 
     if (atmosphere === 'night') {
-      scene.background.setHex(0x181528); // Deep twilight indigo
-      scene.fog.color.setHex(0x181528);
-      ambientLight.color.setHex(0x282044);
-      ambientLight.intensity = 0.65;
-      hemisphereLight.color.setHex(0x3B3060);
-      hemisphereLight.groundColor.setHex(0x151222);
-      hemisphereLight.intensity = 0.55;
-      sunLight.color.setHex(0x60A5FA); // Cool moonlight
-      sunLight.intensity = 0.5;
-      renderer.toneMappingExposure = 1.35;
+      // Clean silver-stone twilight blueprint (Light Theme, NOT black!)
+      scene.background.setHex(0xEDE9E1);
+      scene.fog.color.setHex(0xEDE9E1);
+      ambientLight.color.setHex(0xE5E2DC);
+      ambientLight.intensity = 1.05;
+      hemisphereLight.color.setHex(0xD8E2DC);
+      hemisphereLight.groundColor.setHex(0xC8BFB5);
+      hemisphereLight.intensity = 0.8;
+      sunLight.color.setHex(0x93C5FD); // Cool silver moonbeam
+      sunLight.intensity = 1.2;
+      renderer.toneMappingExposure = 1.15;
       if (animRefs.current.sanctumInnerLight) animRefs.current.sanctumInnerLight.intensity = 5.2;
     } else if (atmosphere === 'sunset') {
-      scene.background.setHex(0xFCE8D5); // Warm peach golden hour
-      scene.fog.color.setHex(0xFCE8D5);
-      ambientLight.color.setHex(0xFFE2D0);
-      ambientLight.intensity = 1.1;
-      hemisphereLight.color.setHex(0xFB923C);
-      hemisphereLight.groundColor.setHex(0x78350F);
+      // Warm peach golden-hour drafting tone
+      scene.background.setHex(0xFAF3EC);
+      scene.fog.color.setHex(0xFAF3EC);
+      ambientLight.color.setHex(0xFFEFE5);
+      ambientLight.intensity = 1.15;
+      hemisphereLight.color.setHex(0xFED7AA);
+      hemisphereLight.groundColor.setHex(0xD4A373);
       hemisphereLight.intensity = 0.85;
-      sunLight.color.setHex(0xF97316); // Golden sunset sun
+      sunLight.color.setHex(0xFB923C); // Golden sunset sun
       sunLight.intensity = 1.8;
-      renderer.toneMappingExposure = 1.25;
+      renderer.toneMappingExposure = 1.2;
       if (animRefs.current.sanctumInnerLight) animRefs.current.sanctumInnerLight.intensity = 4.5;
     } else {
-      // Day (Serene Light Theme)
-      scene.background.setHex(0xF5F0E8); // Light sandstone cream
-      scene.fog.color.setHex(0xF5F0E8);
+      // Day (Pristine Warm White Architectural Drafting Blueprint)
+      scene.background.setHex(0xFAF8F5);
+      scene.fog.color.setHex(0xFAF8F5);
       ambientLight.color.setHex(0xFFFBF2);
       ambientLight.intensity = 1.25;
-      hemisphereLight.color.setHex(0xEBF4FA);
-      hemisphereLight.groundColor.setHex(0xE8DFD1);
+      hemisphereLight.color.setHex(0xEFF6FF);
+      hemisphereLight.groundColor.setHex(0xEADFD0);
       hemisphereLight.intensity = 0.9;
-      sunLight.color.setHex(0xFFF5E4); // Warm natural sunlight
+      sunLight.color.setHex(0xFFF7ED); // Warm natural sunlight
       sunLight.intensity = 2.0;
       renderer.toneMappingExposure = 1.15;
       if (animRefs.current.sanctumInnerLight) animRefs.current.sanctumInnerLight.intensity = 3.2;
@@ -757,7 +879,16 @@ export default function TempleCampus3DScene({
   };
 
   return (
-    <div className="relative w-full h-[660px] rounded-2xl overflow-hidden border border-[#E2BC6B]/60 shadow-xl bg-[#FAF7F2] select-none">
+    <div
+      className="relative w-full h-[660px] rounded-2xl overflow-hidden border border-[#E2BC6B]/60 shadow-xl bg-[#FAF8F5] select-none"
+      style={{
+        backgroundImage: `
+          linear-gradient(to right, rgba(218, 199, 176, 0.28) 1px, transparent 1px),
+          linear-gradient(to bottom, rgba(218, 199, 176, 0.28) 1px, transparent 1px)
+        `,
+        backgroundSize: '24px 24px',
+      }}
+    >
       {/* 3D WebGL Canvas */}
       <div
         ref={containerRef}
