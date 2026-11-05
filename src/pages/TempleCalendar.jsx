@@ -19,7 +19,7 @@ export default function TempleCalendar() {
       {/* Toast Notification */}
       {calendarToast && (
         <div
-          className={`fixed top-5 right-5 z-50 px-4 py-2.5 rounded-xl border shadow-xl text-xs font-semibold flex items-center gap-2 animate-in fade-in slide-in-from-top-2 ${
+          className={`fixed top-20 right-5 sm:right-6 z-[9999] px-4 py-2.5 rounded-xl border shadow-xl text-xs font-semibold flex items-center gap-2 animate-in fade-in slide-in-from-top-3 duration-200 ${
             calendarToast.type === 'warning'
               ? 'bg-amber-900 text-white border-amber-600'
               : 'bg-[#38091B] text-white border-[#B68A36]/40'

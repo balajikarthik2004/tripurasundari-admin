@@ -35,7 +35,7 @@ export default function RecentActivityTable() {
             {DASHBOARD_RECENT_ACTIVITIES.map((row) => (
               <tr
                 key={row.id}
-                onClick={() => navigate('/bookings')}
+                onClick={() => navigate('/sacred-services?tab=bookings')}
                 className="hover:bg-[#FAF8F5] transition-colors cursor-pointer group"
               >
                 <td className="py-2.5 px-1.5 sm:px-2 font-mono text-[11px] font-semibold text-stone-500 whitespace-nowrap">
@@ -79,7 +79,7 @@ export default function RecentActivityTable() {
         </span>
         <button
           type="button"
-          onClick={() => navigate('/bookings')}
+          onClick={() => navigate('/sacred-services?tab=bookings')}
           className="font-bold text-[#55132D] hover:underline flex items-center gap-1 cursor-pointer transition-colors"
         >
           <span>View all transactions</span>

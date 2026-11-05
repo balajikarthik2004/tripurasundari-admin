@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
-import { NAVIGATION_GROUPS } from '../data/navigationData';
+import { NAVIGATION_GROUPS, isRouteActive } from '../data/navigationData';
 
 const findActiveGroupId = (pathname) => {
   for (const group of NAVIGATION_GROUPS) {
-    if (group.items.some((item) => item.path === pathname || (item.path !== '/' && pathname.startsWith(item.path)))) {
+    if (group.items.some((item) => isRouteActive(item.path, pathname))) {
       return group.id;
     }
   }

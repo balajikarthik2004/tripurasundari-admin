@@ -501,7 +501,7 @@ export function ContentManagementProvider({ children }) {
 
       {/* Global Context Toast */}
       {toast && (
-        <div className="fixed bottom-5 right-5 z-50 bg-[#28212A] text-white px-4 py-2.5 rounded-xl shadow-2xl border border-[#B68A36]/40 flex items-center gap-2.5 text-xs animate-bounce">
+        <div className="fixed top-20 right-5 sm:right-6 z-[9999] bg-[#28212A] text-white px-4 py-2.5 rounded-xl shadow-2xl border border-[#B68A36]/40 flex items-center gap-2.5 text-xs animate-in slide-in-from-top-3 fade-in duration-200">
           <span className="w-2 h-2 rounded-full bg-[#E2BC6B] animate-ping" />
           <span>{toast.message}</span>
         </div>

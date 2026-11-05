@@ -353,7 +353,7 @@ export default function GateManagement({ isEmbedded = false }) {
 
       {/* Toast Notification */}
       {toastMessage && (
-        <div className="fixed top-5 right-5 z-50 bg-[#38091B] text-white px-4 py-2.5 rounded-xl border border-[#B68A36]/40 shadow-xl text-xs font-semibold flex items-center gap-2 animate-in fade-in">
+        <div className="fixed top-20 right-5 sm:right-6 z-[9999] bg-[#38091B] text-white px-4 py-2.5 rounded-xl border border-[#B68A36]/40 shadow-xl text-xs font-semibold flex items-center gap-2 animate-in fade-in slide-in-from-top-3 duration-200">
           <CheckCircle2 className="w-4 h-4 text-emerald-400" />
           <span>{toastMessage}</span>
         </div>

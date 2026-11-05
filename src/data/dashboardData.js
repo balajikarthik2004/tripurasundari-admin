@@ -19,7 +19,7 @@ export const FESTIVAL_INFO = {
   name: 'Diwali Mela',
   dates: '10–12 Nov',
   daysLeft: getFestivalDaysLeft(),
-  path: '/mela-management',
+  path: '/mela-festival',
 };
 
 // Exactly 4 Equal KPI Cards with standardized trend format
@@ -31,7 +31,7 @@ export const DASHBOARD_KPIS = [
     icon: 'Users',
     trend: '↑ 12% vs yesterday',
     trendPositive: true,
-    path: '/gate-management',
+    path: '/sacred-services',
   },
   {
     id: 'kpi-bookings',
@@ -40,7 +40,7 @@ export const DASHBOARD_KPIS = [
     icon: 'CalendarCheck',
     trend: '↑ 18% vs yesterday',
     trendPositive: true,
-    path: '/bookings',
+    path: '/sacred-services?tab=bookings',
   },
   {
     id: 'kpi-wait',
@@ -58,7 +58,7 @@ export const DASHBOARD_KPIS = [
     icon: 'FileCheck',
     trend: '↑ 3 new today',
     trendPositive: false,
-    path: '/approvals',
+    path: '/approvals-alerts',
   },
 ];
 
@@ -154,7 +154,7 @@ export const AI_FORECAST_DATA = [
     iconBg: 'bg-rose-50 border border-rose-100',
     iconColor: 'text-rose-700',
     accentColor: 'bg-[#55132D]',
-    path: '/bookings',
+    path: '/sacred-services?tab=bookings',
   },
 ];
 
@@ -166,7 +166,7 @@ export const QUICK_ACTIONS_DATA = [
     subtitle: 'Issue VIP / Special pass',
     icon: 'CalendarCheck',
     colorTheme: 'text-amber-700 bg-amber-50 group-hover:bg-amber-600 group-hover:text-white border-amber-200',
-    path: '/bookings',
+    path: '/sacred-services?tab=bookings',
   },
   {
     id: 'act-2',

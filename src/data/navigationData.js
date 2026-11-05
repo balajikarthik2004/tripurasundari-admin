@@ -148,6 +148,36 @@ export const NAVIGATION_GROUPS = [
 // Helper to look up any item by path
 export const ALL_NAVIGATION_ITEMS = NAVIGATION_GROUPS.flatMap((group) => group.items);
 
+export const ROUTE_ALIASES = {
+  '/dashboard': ['/dashboard', '/'],
+  '/approvals-alerts': ['/approvals-alerts', '/approvals', '/alerts'],
+  '/sacred-services': ['/sacred-services', '/bookings', '/pooja-seva', '/gate-management', '/ritual-schedule'],
+  '/annadanam': ['/annadanam'],
+  '/devotees-grievances': ['/devotees-grievances', '/devotees', '/grievances'],
+  '/donations': ['/donations'],
+  '/prasad-store': ['/prasad-store'],
+  '/facilities': ['/facilities', '/accommodation'],
+  '/crowd-control': ['/crowd-control'],
+  '/cctv-monitoring': ['/cctv-monitoring'],
+  '/staff-management': ['/staff-management', '/volunteer-staff'],
+  '/temple-calendar': ['/temple-calendar'],
+  '/campus-logistics': ['/campus-logistics', '/parking', '/vendors'],
+  '/mela-festival': ['/mela-festival', '/events', '/events-festivals', '/mela-management'],
+  '/temple-content': ['/temple-content', '/temple-information', '/announcements', '/content-guide'],
+  '/visitors-info': ['/visitors-info', '/visit-guide'],
+  '/reports-admin': ['/reports-admin', '/reports'],
+  '/settings': ['/settings', '/temple-settings', '/users', '/users-roles'],
+};
+
+export const isRouteActive = (itemPath, currentPath) => {
+  if (!itemPath || !currentPath) return false;
+  if (currentPath === itemPath) return true;
+  const aliases = ROUTE_ALIASES[itemPath];
+  if (aliases && aliases.includes(currentPath)) return true;
+  if (itemPath !== '/' && currentPath.startsWith(itemPath + '/')) return true;
+  return false;
+};
+
 export const getNavItemByPath = (path) => {
-  return ALL_NAVIGATION_ITEMS.find((item) => item.path === path) || ALL_NAVIGATION_ITEMS[0];
+  return ALL_NAVIGATION_ITEMS.find((item) => isRouteActive(item.path, path)) || ALL_NAVIGATION_ITEMS[0];
 };
