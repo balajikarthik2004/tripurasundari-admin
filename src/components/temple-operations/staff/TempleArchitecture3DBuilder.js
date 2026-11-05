@@ -2,26 +2,32 @@ import * as THREE from 'three';
 
 /**
  * TempleArchitecture3DBuilder:
- * Authentic 3D Architectural Builder for Mata Tripura Sundari Temple (Matabari),
- * one of the 51 Shakti Peethas located in Udaipur, Tripura. Built in 1501 CE
- * by Maharaja Dhanya Manikya in traditional Bengali Char-Chala style atop the
- * Kurma-pitha (tortoise-shaped mound) alongside the sacred Kalyan Sagar lake.
+ * Authentic, highly-detailed 3D Architectural Digital Twin for Mata Tripura Sundari Temple (Matabari),
+ * one of the revered 51 Shakti Peethas in Udaipur, Tripura.
+ *
+ * Built in 1501 CE by Maharaja Dhanya Manikya of the Manikya Dynasty.
+ * Architectural style: Unique synthesis of medieval Bengali Char-Chala (four-sloping curved eaves),
+ * Kurmapitha (tortoise-shaped mound base), and late-medieval Tripura stupa-shikhara crown,
+ * situated beside the sacred 6.4-acre Kalyan Sagar lake.
  */
 
-// Procedural texture generators for rich visual fidelity
+// =========================================================================
+// PROCEDURAL ARCHITECTURAL TEXTURES FOR RICH VISUAL FIDELITY
+// =========================================================================
+
 function createTerracottaBrickTexture() {
   const canvas = document.createElement('canvas');
   canvas.width = 512;
   canvas.height = 512;
   const ctx = canvas.getContext('2d');
 
-  // Base terracotta clay color
-  ctx.fillStyle = '#9C3D26';
+  // Base warm red terracotta clay
+  ctx.fillStyle = '#A33C25';
   ctx.fillRect(0, 0, 512, 512);
 
-  // Brick grid with lime mortar grooves
-  ctx.strokeStyle = '#D8C7B0';
-  ctx.lineWidth = 4;
+  // Brick grid with light lime mortar grooves
+  ctx.strokeStyle = '#D6C5AD';
+  ctx.lineWidth = 3.5;
   const brickH = 32;
   const brickW = 64;
 
@@ -41,13 +47,13 @@ function createTerracottaBrickTexture() {
     }
   }
 
-  // Subtle weathered noise
-  for (let i = 0; i < 4000; i++) {
+  // Weathered clay specks & tonal variation
+  for (let i = 0; i < 3500; i++) {
     const nx = Math.random() * 512;
     const ny = Math.random() * 512;
-    const alpha = Math.random() * 0.15;
-    ctx.fillStyle = Math.random() > 0.5 ? `rgba(255,255,255,${alpha})` : `rgba(0,0,0,${alpha})`;
-    ctx.fillRect(nx, ny, 2, 2);
+    const alpha = Math.random() * 0.14;
+    ctx.fillStyle = Math.random() > 0.5 ? `rgba(255,255,255,${alpha})` : `rgba(40,10,5,${alpha})`;
+    ctx.fillRect(nx, ny, 2.5, 2.5);
   }
 
   const texture = new THREE.CanvasTexture(canvas);
@@ -63,18 +69,18 @@ function createPavedStoneTexture() {
   canvas.height = 512;
   const ctx = canvas.getContext('2d');
 
-  ctx.fillStyle = '#E3DBCF';
+  ctx.fillStyle = '#EDE5D8';
   ctx.fillRect(0, 0, 512, 512);
 
-  // Stone tile slabs
-  ctx.strokeStyle = '#B5A998';
+  // Sandstone paving slabs
+  ctx.strokeStyle = '#C7BBA8';
   ctx.lineWidth = 3;
   const tileSize = 64;
   for (let x = 0; x < 512; x += tileSize) {
     for (let y = 0; y < 512; y += tileSize) {
       ctx.strokeRect(x, y, tileSize, tileSize);
       if ((x + y) % 128 === 0) {
-        ctx.fillStyle = 'rgba(180, 160, 140, 0.15)';
+        ctx.fillStyle = 'rgba(190, 170, 150, 0.18)';
         ctx.fillRect(x + 2, y + 2, tileSize - 4, tileSize - 4);
       }
     }
@@ -87,23 +93,48 @@ function createPavedStoneTexture() {
   return texture;
 }
 
-function createWaterCausticsTexture() {
+function createGrassTexture() {
   const canvas = document.createElement('canvas');
-  canvas.width = 256;
-  canvas.height = 256;
+  canvas.width = 512;
+  canvas.height = 512;
   const ctx = canvas.getContext('2d');
 
-  ctx.fillStyle = '#0F5868';
-  ctx.fillRect(0, 0, 256, 256);
+  // Vibrant, lush temple lawn green
+  ctx.fillStyle = '#658D52';
+  ctx.fillRect(0, 0, 512, 512);
+
+  // Grass blade flecks
+  for (let i = 0; i < 5000; i++) {
+    const gx = Math.random() * 512;
+    const gy = Math.random() * 512;
+    ctx.fillStyle = Math.random() > 0.5 ? '#7CA764' : '#4E723D';
+    ctx.fillRect(gx, gy, 1.5, 3.5);
+  }
+
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.wrapS = THREE.RepeatWrapping;
+  texture.wrapT = THREE.RepeatWrapping;
+  texture.repeat.set(10, 8);
+  return texture;
+}
+
+function createWaterCausticsTexture() {
+  const canvas = document.createElement('canvas');
+  canvas.width = 512;
+  canvas.height = 512;
+  const ctx = canvas.getContext('2d');
+
+  ctx.fillStyle = '#116373';
+  ctx.fillRect(0, 0, 512, 512);
 
   // Soft rippling caustic lines
-  ctx.strokeStyle = 'rgba(165, 243, 252, 0.35)';
-  ctx.lineWidth = 2.5;
-  for (let i = 0; i < 40; i++) {
+  ctx.strokeStyle = 'rgba(186, 243, 252, 0.4)';
+  ctx.lineWidth = 3.0;
+  for (let i = 0; i < 60; i++) {
     ctx.beginPath();
-    const cx = Math.random() * 256;
-    const cy = Math.random() * 256;
-    const r = 15 + Math.random() * 35;
+    const cx = Math.random() * 512;
+    const cy = Math.random() * 512;
+    const r = 20 + Math.random() * 55;
     ctx.arc(cx, cy, r, 0, Math.PI * 2);
     ctx.stroke();
   }
@@ -111,17 +142,14 @@ function createWaterCausticsTexture() {
   const texture = new THREE.CanvasTexture(canvas);
   texture.wrapS = THREE.RepeatWrapping;
   texture.wrapT = THREE.RepeatWrapping;
-  texture.repeat.set(3, 3);
+  texture.repeat.set(4, 4);
   return texture;
 }
 
-/**
- * Builds the entire Mata Tripura Sundari Temple architectural campus
- * @param {THREE.Scene} scene
- * @param {Function} scaleX - D3 linear scale for X
- * @param {Function} scaleZ - D3 linear scale for Z
- * @returns {Object} References to dynamic animated meshes (turtles, flag, water)
- */
+// =========================================================================
+// MAIN BUILDER FUNCTION
+// =========================================================================
+
 export function buildTempleCampus(scene, scaleX, scaleZ) {
   const campusGroup = new THREE.Group();
   campusGroup.name = 'templeCampusComplete';
@@ -129,52 +157,55 @@ export function buildTempleCampus(scene, scaleX, scaleZ) {
   // Shared Procedural Textures & Materials
   const terracottaTex = createTerracottaBrickTexture();
   const stoneTex = createPavedStoneTexture();
+  const grassTex = createGrassTexture();
   const waterTex = createWaterCausticsTexture();
 
   const terracottaMat = new THREE.MeshStandardMaterial({
     map: terracottaTex,
-    color: 0xA6442E,
-    roughness: 0.65,
-    metalness: 0.08,
+    color: 0xB54228,
+    roughness: 0.6,
+    metalness: 0.05,
   });
 
   const stonePavedMat = new THREE.MeshStandardMaterial({
     map: stoneTex,
-    color: 0xE8E2D6,
-    roughness: 0.75,
-    metalness: 0.05,
+    color: 0xF0ECE1,
+    roughness: 0.7,
+    metalness: 0.04,
   });
 
   const goldKalasaMat = new THREE.MeshStandardMaterial({
-    color: 0xF3C64D,
-    roughness: 0.25,
-    metalness: 0.85,
+    color: 0xF5C74C,
+    roughness: 0.22,
+    metalness: 0.88,
     emissive: 0x664B10,
-    emissiveIntensity: 0.25,
+    emissiveIntensity: 0.28,
   });
 
   const whiteMarbleTrimMat = new THREE.MeshStandardMaterial({
-    color: 0xF5F0E6,
-    roughness: 0.5,
+    color: 0xFAF7F2,
+    roughness: 0.45,
+    metalness: 0.02,
   });
 
   const darkWoodMat = new THREE.MeshStandardMaterial({
-    color: 0x3D2314,
-    roughness: 0.8,
+    color: 0x422616,
+    roughness: 0.85,
   });
 
   const lawnGreenMat = new THREE.MeshStandardMaterial({
-    color: 0x3E5E32,
-    roughness: 0.9,
+    map: grassTex,
+    color: 0x689255,
+    roughness: 0.85,
   });
 
   const waterMat = new THREE.MeshStandardMaterial({
     map: waterTex,
-    color: 0x0E7490,
-    roughness: 0.15,
-    metalness: 0.35,
+    color: 0x148296,
+    roughness: 0.12,
+    metalness: 0.45,
     transparent: true,
-    opacity: 0.88,
+    opacity: 0.86,
   });
 
   // Coordinates for core landmarks (mapped via D3 scales)
@@ -184,18 +215,31 @@ export function buildTempleCampus(scene, scaleX, scaleZ) {
   const annadanamPos = { x: scaleX(540), z: scaleZ(570) };
   const melaPos = { x: scaleX(330), z: scaleZ(160) };
 
+  // Helper to tag meshes for interactive landmark inspection
+  const tagLandmark = (mesh, landmarkInfo) => {
+    mesh.userData.isLandmark = true;
+    mesh.userData.landmark = landmarkInfo;
+  };
+
   // =========================================================================
   // 1. KURMA-PITHA SACRED HILLOCK (Tortoise-Mound Base & Terraces)
   // =========================================================================
   const kurmaGroup = new THREE.Group();
   kurmaGroup.name = 'kurmaPithaMound';
 
-  // Base campus ground slab (Lower Campus Level Y = 0)
+  // Base campus ground slab (Lower Campus Level Y = 0) with warm sandstone border plinth
   const groundSlabGeo = new THREE.BoxGeometry(108, 1.2, 76);
   const groundSlabMesh = new THREE.Mesh(groundSlabGeo, lawnGreenMat);
   groundSlabMesh.position.y = -0.6;
   groundSlabMesh.receiveShadow = true;
   kurmaGroup.add(groundSlabMesh);
+
+  // Sandstone retaining plinth border around the campus perimeter
+  const plinthBorderGeo = new THREE.BoxGeometry(109.2, 0.4, 77.2);
+  const plinthBorderMesh = new THREE.Mesh(plinthBorderGeo, stonePavedMat);
+  plinthBorderMesh.position.y = -1.1;
+  plinthBorderMesh.receiveShadow = true;
+  kurmaGroup.add(plinthBorderMesh);
 
   // Paved central plaza apron around mound
   const plazaApronGeo = new THREE.CylinderGeometry(34, 38, 0.4, 48);
@@ -218,6 +262,12 @@ export function buildTempleCampus(scene, scaleX, scaleZ) {
   kurmaPlinthMesh.position.set(sanctumPos.x, 2.2, sanctumPos.z);
   kurmaPlinthMesh.castShadow = true;
   kurmaPlinthMesh.receiveShadow = true;
+  tagLandmark(kurmaPlinthMesh, {
+    key: 'sanctum',
+    name: 'Kurmapitha Hillock Plinth',
+    style: 'Convex Tortoise-Backed Foundation',
+    desc: 'Holiest Agamic foundation resembling a tortoise shell (Kurma avatar), representing stability and spiritual pratyahara.',
+  });
   kurmaGroup.add(kurmaPlinthMesh);
 
   // Ornate decorative balustrade around Kurma plinth perimeter
@@ -231,8 +281,7 @@ export function buildTempleCampus(scene, scaleX, scaleZ) {
   const numBalusters = 36;
   for (let i = 0; i < numBalusters; i++) {
     const angle = (i / numBalusters) * Math.PI * 2;
-    // Leave gap for west stairs
-    if (Math.abs(angle - Math.PI) < 0.28) continue;
+    if (Math.abs(angle - Math.PI) < 0.28) continue; // Gap for west stairs
     const bx = sanctumPos.x + Math.cos(angle) * 17.5;
     const bz = sanctumPos.z + Math.sin(angle) * 17.5;
     const bGeo = new THREE.CylinderGeometry(0.12, 0.16, 0.8, 8);
@@ -255,7 +304,7 @@ export function buildTempleCampus(scene, scaleX, scaleZ) {
     kurmaGroup.add(stepMesh);
   }
 
-  // Flanking Guardian Lion / Vyala Statues at staircase entry
+  // Flanking Guardian Lion / Gajasimha Statues at staircase entry
   [-4.8, 4.8].forEach((offsetZ) => {
     const lionPedestal = new THREE.Mesh(new THREE.BoxGeometry(1.6, 1.2, 1.4), terracottaMat);
     lionPedestal.position.set(sanctumPos.x - 24.5, 0.6, sanctumPos.z + offsetZ);
@@ -271,7 +320,7 @@ export function buildTempleCampus(scene, scaleX, scaleZ) {
   campusGroup.add(kurmaGroup);
 
   // =========================================================================
-  // 2. MAIN SANCTUM: CHAR-CHALA TERRACOTTA SHIKHARA & GARBHAGRIHA
+  // 2. MAIN SANCTUM: BENGALI CHAR-CHALA TERRACOTTA SHIKHARA & GARBHAGRIHA
   // =========================================================================
   const sanctumGroup = new THREE.Group();
   sanctumGroup.name = 'mainSanctumGarbhagriha';
@@ -292,6 +341,12 @@ export function buildTempleCampus(scene, scaleX, scaleZ) {
   garbhagrihaMesh.position.set(sanctumPos.x, plinthY + 4.75, sanctumPos.z);
   garbhagrihaMesh.castShadow = true;
   garbhagrihaMesh.receiveShadow = true;
+  tagLandmark(garbhagrihaMesh, {
+    key: 'sanctum',
+    name: 'Main Sanctum (Garbhagriha)',
+    style: 'Bengali Char-Chala Style (1501 CE)',
+    desc: 'Core shrine consecrated by Maharaja Dhanya Manikya, housing Maa Tripura Sundari (Soroshi) and Chhoto-Ma atop the Kurmapitha hillock.',
+  });
   sanctumGroup.add(garbhagrihaMesh);
 
   // Decorative White Cornice Bands across temple facade
@@ -302,84 +357,106 @@ export function buildTempleCampus(scene, scaleX, scaleZ) {
     sanctumGroup.add(corniceMesh);
   });
 
-  // Authentic Bengali Char-Chala 4-Curved Eaves Roof Structure:
-  // Medieval Bengal/Tripura Char-Chala features distinct outward sweeping curved eaves
-  const chalaLowerGeo = new THREE.ConeGeometry(9.6, 5.2, 4);
+  // Authentic 4-Sloping Bengali Char-Chala Roof (Gracefully curved eaves)
+  const chalaLowerGeo = new THREE.ConeGeometry(9.8, 5.4, 4);
   chalaLowerGeo.rotateY(Math.PI / 4);
   const chalaLowerMesh = new THREE.Mesh(chalaLowerGeo, terracottaMat);
-  chalaLowerMesh.position.set(sanctumPos.x, plinthY + 11.0, sanctumPos.z);
+  chalaLowerMesh.position.set(sanctumPos.x, plinthY + 11.1, sanctumPos.z);
   chalaLowerMesh.castShadow = true;
+  tagLandmark(chalaLowerMesh, {
+    key: 'sanctum',
+    name: 'Char-Chala Curvilinear Roof',
+    style: 'Bengal Thatched-Hut Adaptation',
+    desc: 'Four-sided curved eaves roof imitating traditional Bengal rural huts, designed to withstand torrential monsoons.',
+  });
   sanctumGroup.add(chalaLowerMesh);
 
-  // Swept Vault Eaves Trim (Curvilinear roof trim)
-  const eaveTrimGeo = new THREE.BoxGeometry(12.6, 0.4, 12.6);
+  // Flared Eaves Cornice Trim (White stucco rim)
+  const eaveTrimGeo = new THREE.BoxGeometry(12.8, 0.45, 12.8);
   eaveTrimGeo.rotateY(Math.PI / 4);
   const eaveTrimMesh = new THREE.Mesh(eaveTrimGeo, whiteMarbleTrimMat);
-  eaveTrimMesh.position.set(sanctumPos.x, plinthY + 8.6, sanctumPos.z);
+  eaveTrimMesh.position.set(sanctumPos.x, plinthY + 8.7, sanctumPos.z);
   sanctumGroup.add(eaveTrimMesh);
 
-  // Upper Conical Stupa-Shikhara / Ek-Ratna Dome Tower (Signature Matabari conical spire)
-  const shikharaDomeGeo = new THREE.CylinderGeometry(1.6, 6.2, 6.8, 32);
+  // Circular Neck Drum (Griva) with decorative alcoves
+  const drumGeo = new THREE.CylinderGeometry(5.2, 5.6, 1.8, 24);
+  const drumMesh = new THREE.Mesh(drumGeo, whiteMarbleTrimMat);
+  drumMesh.position.set(sanctumPos.x, plinthY + 13.0, sanctumPos.z);
+  drumMesh.castShadow = true;
+  sanctumGroup.add(drumMesh);
+
+  // Upper Conical Stupa-Shikhara Spire (Signature Matabari dome with horizontal concentric molding bands)
+  const shikharaDomeGeo = new THREE.CylinderGeometry(1.6, 5.0, 6.2, 32);
   const shikharaDomeMesh = new THREE.Mesh(shikharaDomeGeo, terracottaMat);
-  shikharaDomeMesh.position.set(sanctumPos.x, plinthY + 14.2, sanctumPos.z);
+  shikharaDomeMesh.position.set(sanctumPos.x, plinthY + 16.2, sanctumPos.z);
   shikharaDomeMesh.castShadow = true;
   sanctumGroup.add(shikharaDomeMesh);
 
-  // Ribbed Amalaka Ring
-  const amalakaGeo = new THREE.TorusGeometry(2.2, 0.65, 12, 32);
+  // Concentric horizontal molding rings on shikhara
+  [plinthY + 14.5, plinthY + 16.0, plinthY + 17.5].forEach((my, idx) => {
+    const ringRadius = 4.2 - idx * 0.9;
+    const ringGeo = new THREE.TorusGeometry(ringRadius, 0.18, 8, 32);
+    ringGeo.rotateX(Math.PI / 2);
+    const ringMesh = new THREE.Mesh(ringGeo, whiteMarbleTrimMat);
+    ringMesh.position.set(sanctumPos.x, my, sanctumPos.z);
+    sanctumGroup.add(ringMesh);
+  });
+
+  // Ribbed Fluted Amalaka Ring
+  const amalakaGeo = new THREE.TorusGeometry(2.3, 0.7, 12, 32);
   amalakaGeo.rotateX(Math.PI / 2);
   const amalakaMesh = new THREE.Mesh(amalakaGeo, whiteMarbleTrimMat);
-  amalakaMesh.position.set(sanctumPos.x, plinthY + 17.6, sanctumPos.z);
+  amalakaMesh.position.set(sanctumPos.x, plinthY + 19.5, sanctumPos.z);
   sanctumGroup.add(amalakaMesh);
 
   // 16-Petal Gilded Lotus Base (Padmapitha)
-  const lotusBaseGeo = new THREE.CylinderGeometry(1.8, 2.3, 0.7, 16);
+  const lotusBaseGeo = new THREE.CylinderGeometry(1.8, 2.4, 0.8, 16);
   const lotusBaseMesh = new THREE.Mesh(lotusBaseGeo, goldKalasaMat);
-  lotusBaseMesh.position.set(sanctumPos.x, plinthY + 18.2, sanctumPos.z);
+  lotusBaseMesh.position.set(sanctumPos.x, plinthY + 20.2, sanctumPos.z);
   sanctumGroup.add(lotusBaseMesh);
 
-  // Gilded Kalasha Finial (Sacred Urn of Immortality)
-  const kalashaGeo = new THREE.SphereGeometry(1.1, 24, 24);
+  // Gilded Kalasha Finial (Sacred Pitcher of Amrita)
+  const kalashaGeo = new THREE.SphereGeometry(1.15, 24, 24);
   const kalashaMesh = new THREE.Mesh(kalashaGeo, goldKalasaMat);
-  kalashaMesh.position.set(sanctumPos.x, plinthY + 19.3, sanctumPos.z);
+  kalashaMesh.position.set(sanctumPos.x, plinthY + 21.3, sanctumPos.z);
   sanctumGroup.add(kalashaMesh);
 
   // Sacred Brass Trishula (Trident) at the Temple Apex
   const trishulaRodGeo = new THREE.CylinderGeometry(0.12, 0.12, 3.2, 12);
   const trishulaRodMesh = new THREE.Mesh(trishulaRodGeo, goldKalasaMat);
-  trishulaRodMesh.position.set(sanctumPos.x, plinthY + 21.2, sanctumPos.z);
+  trishulaRodMesh.position.set(sanctumPos.x, plinthY + 23.2, sanctumPos.z);
   sanctumGroup.add(trishulaRodMesh);
 
   // Trident Prongs
-  const prongGeo = new THREE.TorusGeometry(0.8, 0.08, 8, 16, Math.PI);
+  const prongGeo = new THREE.TorusGeometry(0.85, 0.09, 8, 16, Math.PI);
   prongGeo.rotateX(Math.PI);
   const prongMesh = new THREE.Mesh(prongGeo, goldKalasaMat);
-  prongMesh.position.set(sanctumPos.x, plinthY + 22.4, sanctumPos.z);
+  prongMesh.position.set(sanctumPos.x, plinthY + 24.5, sanctumPos.z);
   sanctumGroup.add(prongMesh);
 
   // Animated Saffron Temple Flag (Dhwaja) fluttering in breeze
-  const flagGeo = new THREE.PlaneGeometry(1.8, 1.1, 8, 4);
+  const flagGeo = new THREE.PlaneGeometry(2.0, 1.2, 8, 4);
   const flagMat = new THREE.MeshStandardMaterial({
-    color: 0xF97316, // Saffron
+    color: 0xF97316,
     side: THREE.DoubleSide,
-    roughness: 0.3,
+    roughness: 0.35,
   });
   const flagMesh = new THREE.Mesh(flagGeo, flagMat);
-  flagMesh.position.set(sanctumPos.x + 0.9, plinthY + 22.0, sanctumPos.z);
+  flagMesh.position.set(sanctumPos.x + 1.0, plinthY + 24.0, sanctumPos.z);
   flagMesh.name = 'templeFlag';
   sanctumGroup.add(flagMesh);
 
   // West Arched Portal / Entrance Porch with Ornate Brass Door
-  const doorArchGeo = new THREE.BoxGeometry(1.6, 5.0, 3.8);
+  const doorArchGeo = new THREE.BoxGeometry(1.8, 5.2, 3.8);
   const doorArchMesh = new THREE.Mesh(doorArchGeo, darkWoodMat);
-  doorArchMesh.position.set(sanctumPos.x - 5.1, plinthY + 3.5, sanctumPos.z);
+  doorArchMesh.position.set(sanctumPos.x - 5.2, plinthY + 3.6, sanctumPos.z);
   doorArchMesh.castShadow = true;
   sanctumGroup.add(doorArchMesh);
 
   // Brass Door Trim & Ornate Handle
   const doorGiltGeo = new THREE.BoxGeometry(0.2, 4.4, 3.2);
   const doorGiltMesh = new THREE.Mesh(doorGiltGeo, goldKalasaMat);
-  doorGiltMesh.position.set(sanctumPos.x - 5.9, plinthY + 3.5, sanctumPos.z);
+  doorGiltMesh.position.set(sanctumPos.x - 6.0, plinthY + 3.6, sanctumPos.z);
   sanctumGroup.add(doorGiltMesh);
 
   // Hanging Brass Temple Bells (Ghanta) at the entrance
@@ -395,7 +472,7 @@ export function buildTempleCampus(scene, scaleX, scaleZ) {
     sanctumGroup.add(bellMesh);
   });
 
-  // Akhanda Jyoti: Warm flickering golden sanctum light casting glow out through portal
+  // Akhanda Jyoti: Warm golden sanctum glow
   const sanctumInnerLight = new THREE.PointLight(0xF59E0B, 3.2, 28);
   sanctumInnerLight.position.set(sanctumPos.x - 3.0, plinthY + 4.0, sanctumPos.z);
   sanctumInnerLight.castShadow = true;
@@ -417,6 +494,12 @@ export function buildTempleCampus(scene, scaleX, scaleZ) {
   const natmandirFloorMesh = new THREE.Mesh(natmandirFloorGeo, stonePavedMat);
   natmandirFloorMesh.position.set(natmandirX, plinthY + 0.25, natmandirZ);
   natmandirFloorMesh.receiveShadow = true;
+  tagLandmark(natmandirFloorMesh, {
+    key: 'sanctum',
+    name: 'Natmandir Assembly Hall',
+    style: 'Orissa-Bengal Composite Pillared Pavilion',
+    desc: 'Spacious pillared prayer and bhajan hall fronting the sanctum where pilgrims gather for daily aarti and devotional chanting.',
+  });
   natmandirGroup.add(natmandirFloorMesh);
 
   // Red Pilgrim Runner Carpet in the center of Natmandir
@@ -482,13 +565,11 @@ export function buildTempleCampus(scene, scaleX, scaleZ) {
   parikramaGroup.name = 'concentricParikrama';
 
   const parikramaRadiusInner = 20.0;
-  const parikramaRadiusOuter = 23.5;
   const numColonnadePillars = 28;
 
   for (let i = 0; i < numColonnadePillars; i++) {
     const angle = (i / numColonnadePillars) * Math.PI * 2;
-    // Don't obstruct west main entrance staircase
-    if (Math.abs(angle - Math.PI) < 0.22) continue;
+    if (Math.abs(angle - Math.PI) < 0.22) continue; // Leave entrance open
 
     const px = sanctumPos.x + Math.cos(angle) * parikramaRadiusInner;
     const pz = sanctumPos.z + Math.sin(angle) * parikramaRadiusInner * 0.88;
@@ -520,14 +601,12 @@ export function buildTempleCampus(scene, scaleX, scaleZ) {
     const lx = sanctumPos.x + Math.cos(card.angle) * 26.5;
     const lz = sanctumPos.z + Math.sin(card.angle) * 23.5;
 
-    // Multi-tiered stone pillar
     const stambhaGeo = new THREE.CylinderGeometry(0.35, 0.65, 6.2, 12);
     const stambhaMesh = new THREE.Mesh(stambhaGeo, whiteMarbleTrimMat);
     stambhaMesh.position.set(lx, 3.5, lz);
     stambhaMesh.castShadow = true;
     parikramaGroup.add(stambhaMesh);
 
-    // Lamp bowls on tiers
     [2.2, 4.2, 5.8].forEach((ly) => {
       const bowlGeo = new THREE.TorusGeometry(0.75, 0.12, 6, 16);
       bowlGeo.rotateX(Math.PI / 2);
@@ -536,7 +615,6 @@ export function buildTempleCampus(scene, scaleX, scaleZ) {
       parikramaGroup.add(bowlMesh);
     });
 
-    // Flickering eternal oil lamp glow
     const lampGlow = new THREE.PointLight(0xF59E0B, 1.2, 10);
     lampGlow.position.set(lx, 6.8, lz);
     parikramaGroup.add(lampGlow);
@@ -545,14 +623,14 @@ export function buildTempleCampus(scene, scaleX, scaleZ) {
   campusGroup.add(parikramaGroup);
 
   // =========================================================================
-  // 5. KALYAN SAGAR SACRED LAKE & STEPPED STONE GHATS
+  // 5. KALYAN SAGAR SACRED LAKE, STEPPED STONE GHATS & TURTLE DECK
   // =========================================================================
   const lakeGroup = new THREE.Group();
   lakeGroup.name = 'kalyanSagarLakeComplex';
 
-  // Sunken Lake Basin with Depth (Y = -2.8 to 0.2)
+  // Sunken Lake Basin with Depth
   const basinGeo = new THREE.CylinderGeometry(18.5, 20.0, 2.8, 48);
-  const basinMat = new THREE.MeshStandardMaterial({ color: 0x0A2B36, roughness: 0.9 });
+  const basinMat = new THREE.MeshStandardMaterial({ color: 0x092D36, roughness: 0.9 });
   const basinMesh = new THREE.Mesh(basinGeo, basinMat);
   basinMesh.position.set(lakePos.x, -1.2, lakePos.z);
   lakeGroup.add(basinMesh);
@@ -562,6 +640,12 @@ export function buildTempleCampus(scene, scaleX, scaleZ) {
   const lakeWaterMesh = new THREE.Mesh(lakeWaterGeo, waterMat);
   lakeWaterMesh.position.set(lakePos.x, 0.15, lakePos.z);
   lakeWaterMesh.name = 'kalyanWaterMesh';
+  tagLandmark(lakeWaterMesh, {
+    key: 'lake',
+    name: 'Kalyan Sagar Sacred Lake',
+    style: '6.4-Acre Historic Reservoir (1501 CE)',
+    desc: 'Eastern holy lake sanctified by Maharaja Dhanya Manikya, famous for housing endangered sacred Bostami softshell turtles.',
+  });
   lakeGroup.add(lakeWaterMesh);
 
   // 4 Concentric Tiers of Stepped Stone Ghats (Devotees descend to water)
@@ -592,15 +676,38 @@ export function buildTempleCampus(scene, scaleX, scaleZ) {
     postMesh.position.set(px, 1.9, pz);
     lakeGroup.add(postMesh);
 
-    // Lifebuoy rescue ring at specific intervals
     if (i % 5 === 0) {
       const buoyGeo = new THREE.TorusGeometry(0.45, 0.12, 8, 16);
-      const buoyMat = new THREE.MeshStandardMaterial({ color: 0xEA580C, roughness: 0.3 }); // Safety Orange
+      const buoyMat = new THREE.MeshStandardMaterial({ color: 0xEA580C, roughness: 0.3 });
       const buoyMesh = new THREE.Mesh(buoyGeo, buoyMat);
       buoyMesh.position.set(px, 2.1, pz);
       lakeGroup.add(buoyMesh);
     }
   }
+
+  // Wooden Turtle Observation & Feeding Deck extending over water
+  const deckX = lakePos.x - 12.0;
+  const deckZ = lakePos.z - 8.0;
+
+  const deckPlankGeo = new THREE.BoxGeometry(6.5, 0.3, 5.0);
+  const deckPlankMesh = new THREE.Mesh(deckPlankGeo, darkWoodMat);
+  deckPlankMesh.position.set(deckX, 0.75, deckZ);
+  deckPlankMesh.castShadow = true;
+  tagLandmark(deckPlankMesh, {
+    key: 'turtle_deck',
+    name: 'Bostami Turtle Observation Deck',
+    style: 'Lakefront Feeding Pavilion',
+    desc: 'Wooden observation deck where devotees offer puffed rice (muri) to the sacred Nilssonia nigricans softshell tortoises.',
+  });
+  lakeGroup.add(deckPlankMesh);
+
+  // Deck Pilings into Water
+  [[-2.8, -2.0], [-2.8, 2.0], [2.8, -2.0], [2.8, 2.0]].forEach(([px, pz]) => {
+    const pileGeo = new THREE.CylinderGeometry(0.18, 0.18, 2.5, 8);
+    const pileMesh = new THREE.Mesh(pileGeo, darkWoodMat);
+    pileMesh.position.set(deckX + px, -0.3, deckZ + pz);
+    lakeGroup.add(pileMesh);
+  });
 
   // Animated 3D Sacred Bostami Softshell Turtles Swimming in the Lake
   const turtles = [];
@@ -619,7 +726,7 @@ export function buildTempleCampus(scene, scaleX, scaleZ) {
     tGroup.name = `bostamiTurtle_${idx}`;
     tGroup.userData = { ...tp, baseAngle: tp.angle };
 
-    // Shell (Carapace - flattened dome)
+    // Shell
     const shellGeo = new THREE.SphereGeometry(1.2, 16, 12);
     shellGeo.scale(1.0, 0.35, 1.3);
     const shell = new THREE.Mesh(shellGeo, turtleShellMat);
@@ -655,7 +762,7 @@ export function buildTempleCampus(scene, scaleX, scaleZ) {
   campusGroup.add(lakeGroup);
 
   // =========================================================================
-  // 6. WEST TORANA GOPURAM (Grand Main Gateway & Security Turnstiles)
+  // 6. SINGH DWAR (WEST ROYAL GATEWAY & SECURITY ENTRY)
   // =========================================================================
   const gopuramGroup = new THREE.Group();
   gopuramGroup.name = 'westToranaGopuram';
@@ -663,9 +770,8 @@ export function buildTempleCampus(scene, scaleX, scaleZ) {
   const gX = gopuramPos.x;
   const gZ = gopuramPos.z;
 
-  // Twin Flanking Terracotta Gateway Towers
+  // Twin Flanking Terracotta Gateway Towers (Octagonal Manikya royal design)
   [-4.8, 4.8].forEach((offsetZ) => {
-    // 3-tiered gateway pylon
     const pylonLower = new THREE.Mesh(new THREE.BoxGeometry(4.2, 6.0, 3.6), terracottaMat);
     pylonLower.position.set(gX, 3.0, gZ + offsetZ);
     pylonLower.castShadow = true;
@@ -676,7 +782,7 @@ export function buildTempleCampus(scene, scaleX, scaleZ) {
     pylonUpper.castShadow = true;
     gopuramGroup.add(pylonUpper);
 
-    // Pyramidal Cap with Golden Finial
+    // Domed Chhatri Cap with Golden Finial
     const pylonCap = new THREE.Mesh(new THREE.ConeGeometry(2.0, 2.5, 4), goldKalasaMat);
     pylonCap.rotateY(Math.PI / 4);
     pylonCap.position.set(gX, 11.4, gZ + offsetZ);
@@ -688,6 +794,12 @@ export function buildTempleCampus(scene, scaleX, scaleZ) {
   const lintelMesh = new THREE.Mesh(lintelGeo, terracottaMat);
   lintelMesh.position.set(gX, 7.1, gZ);
   lintelMesh.castShadow = true;
+  tagLandmark(lintelMesh, {
+    key: 'gopuram',
+    name: 'Singh Dwar (West Royal Gate)',
+    style: 'Tripura Manikya Fortified Gateway',
+    desc: 'Main ceremonial pedestrian entrance along NH-8 corridor, featuring baggage check, shoe deposit counters, and computerized turnstiles.',
+  });
   gopuramGroup.add(lintelMesh);
 
   // Golden Inscription Plaque above Archway
@@ -704,7 +816,6 @@ export function buildTempleCampus(scene, scaleX, scaleZ) {
     turnstileMesh.position.set(gX, 0.65, gZ + tz);
     gopuramGroup.add(turnstileMesh);
 
-    // Green/Red LED pass indicator
     const ledGeo = new THREE.SphereGeometry(0.08, 8, 8);
     const ledMat = new THREE.MeshBasicMaterial({ color: 0x10B981 });
     const ledMesh = new THREE.Mesh(ledGeo, ledMat);
@@ -723,11 +834,16 @@ export function buildTempleCampus(scene, scaleX, scaleZ) {
   const aX = annadanamPos.x;
   const aZ = annadanamPos.z;
 
-  // Hall Main Structure
   const hallBase = new THREE.Mesh(new THREE.BoxGeometry(18.0, 5.0, 11.0), terracottaMat);
   hallBase.position.set(aX, 2.5, aZ);
   hallBase.castShadow = true;
   hallBase.receiveShadow = true;
+  tagLandmark(hallBase, {
+    key: 'annadanam',
+    name: 'Sri Annapurna Dining Hall',
+    style: 'Mahaprasad Free Kitchen Complex',
+    desc: 'Free community kitchen serving hot consecrated Anna-Prasad to over 3,000 devotees daily from 12:30 PM to 02:30 PM.',
+  });
   annadanamGroup.add(hallBase);
 
   // Gable Sloping Roof
@@ -749,39 +865,41 @@ export function buildTempleCampus(scene, scaleX, scaleZ) {
   campusGroup.add(annadanamGroup);
 
   // =========================================================================
-  // 8. NORTH BARRIER-FREE WHEELCHAIR RAMP
+  // 8. SACRED PEEPAL / BANYAN TREE WITH CIRCULAR STONE CHABUTRA PLATFORM
   // =========================================================================
-  const rampGroup = new THREE.Group();
-  rampGroup.name = 'northBarrierFreeRamp';
+  const treeGroup = new THREE.Group();
+  treeGroup.name = 'sacredPeepalChabutra';
 
-  const rampStartX = sanctumPos.x - 14.0;
-  const rampEndX = sanctumPos.x + 2.0;
-  const rampZ = sanctumPos.z - 16.0;
+  const treeX = sanctumPos.x - 22.0;
+  const treeZ = sanctumPos.z + 18.0;
 
-  // Sloping Ramp Slab (Rising from Y = 0.4 to 3.0)
-  const rampGeo = new THREE.BoxGeometry(16.0, 0.35, 3.2);
-  const rampMat = new THREE.MeshStandardMaterial({ color: 0x065F46, roughness: 0.8 }); // Green tactile non-slip
-  const rampMesh = new THREE.Mesh(rampGeo, rampMat);
-  rampMesh.position.set((rampStartX + rampEndX) / 2, 1.7, rampZ);
-  rampMesh.rotation.z = -0.16; // Sloping upward toward sanctum
-  rampMesh.castShadow = true;
-  rampMesh.receiveShadow = true;
-  rampGroup.add(rampMesh);
+  // Circular Stone Chabutra (Sitting & Prayer Platform)
+  const chabutraGeo = new THREE.CylinderGeometry(4.2, 4.5, 0.9, 24);
+  const chabutraMesh = new THREE.Mesh(chabutraGeo, whiteMarbleTrimMat);
+  chabutraMesh.position.set(treeX, 0.45, treeZ);
+  chabutraMesh.receiveShadow = true;
+  treeGroup.add(chabutraMesh);
 
-  // Yellow Safety Handrails
-  [-1.5, 1.5].forEach((rz) => {
-    const railGeo = new THREE.CylinderGeometry(0.06, 0.06, 16.0, 8);
-    const railMat = new THREE.MeshStandardMaterial({ color: 0xEAB308, metalness: 0.7 });
-    const railMesh = new THREE.Mesh(railGeo, railMat);
-    railMesh.position.set((rampStartX + rampEndX) / 2, 2.6, rampZ + rz);
-    railMesh.rotation.z = -0.16 + Math.PI / 2;
-    rampGroup.add(railMesh);
-  });
+  // Ancient Banyan Trunk with Aerial Prop Roots
+  const banyanTrunkGeo = new THREE.CylinderGeometry(0.9, 1.4, 4.8, 12);
+  const banyanTrunkMesh = new THREE.Mesh(banyanTrunkGeo, darkWoodMat);
+  banyanTrunkMesh.position.set(treeX, 3.0, treeZ);
+  banyanTrunkMesh.castShadow = true;
+  treeGroup.add(banyanTrunkMesh);
 
-  campusGroup.add(rampGroup);
+  // Broad Spreading Canopy
+  const canopyGeo1 = new THREE.SphereGeometry(4.5, 16, 12);
+  canopyGeo1.scale(1.4, 0.7, 1.3);
+  const canopyMat1 = new THREE.MeshStandardMaterial({ color: 0x2D5A27, roughness: 0.8 });
+  const canopyMesh1 = new THREE.Mesh(canopyGeo1, canopyMat1);
+  canopyMesh1.position.set(treeX, 6.4, treeZ);
+  canopyMesh1.castShadow = true;
+  treeGroup.add(canopyMesh1);
+
+  campusGroup.add(treeGroup);
 
   // =========================================================================
-  // 9. DIWALI MELA FESTIVAL GROUNDS & CANOPY STALLS
+  // 9. DIWALI MELA FESTIVAL GROUNDS & COOPERATIVE PRASAD STALLS
   // =========================================================================
   const melaGroup = new THREE.Group();
   melaGroup.name = 'diwaliMelaGrounds';
@@ -796,13 +914,11 @@ export function buildTempleCampus(scene, scaleX, scaleZ) {
   ];
 
   stallPositions.forEach((sp, idx) => {
-    // Stall Table
     const table = new THREE.Mesh(new THREE.BoxGeometry(3.4, 1.0, 2.2), darkWoodMat);
     table.position.set(sp.x, 0.5, sp.z);
     table.castShadow = true;
     melaGroup.add(table);
 
-    // Striped Canopy
     const canopyGeo = new THREE.ConeGeometry(2.4, 1.4, 4);
     canopyGeo.rotateY(Math.PI / 4);
     const canopyMat = new THREE.MeshStandardMaterial({
@@ -817,25 +933,30 @@ export function buildTempleCampus(scene, scaleX, scaleZ) {
   campusGroup.add(melaGroup);
 
   // =========================================================================
-  // 10. CAMPUS PERIMETER PRAKARA WALLS & TRIPURA TREES
+  // 10. CAMPUS PERIMETER LOW BALUSTRADE (Airy open sightlines into light sky)
   // =========================================================================
   const envGroup = new THREE.Group();
   envGroup.name = 'campusPerimeterEnvironment';
 
-  // Perimeter Fortress Walls (Prakara) with battlements
-  const wallMat = new THREE.MeshStandardMaterial({ color: 0x8C331E, roughness: 0.8 });
+  // Low decorative terracotta-and-marble balustrade wall (1.2m height)
+  const lowWallMat = new THREE.MeshStandardMaterial({ color: 0xA63F28, roughness: 0.7 });
   const wallSections = [
-    { w: 104, h: 2.8, d: 1.2, x: 0, z: -35.5 }, // North Wall
-    { w: 104, h: 2.8, d: 1.2, x: 0, z: 35.5 },  // South Wall
-    { w: 1.2, h: 2.8, d: 70, x: -51.5, z: 0 },  // West Wall (with gate gap)
-    { w: 1.2, h: 2.8, d: 70, x: 51.5, z: 0 },   // East Wall (behind lake)
+    { w: 104, h: 1.2, d: 0.8, x: 0, z: -35.5 }, // North Wall
+    { w: 104, h: 1.2, d: 0.8, x: 0, z: 35.5 },  // South Wall
+    { w: 0.8, h: 1.2, d: 70, x: -51.5, z: 0 },  // West Wall
+    { w: 0.8, h: 1.2, d: 70, x: 51.5, z: 0 },   // East Wall
   ];
   wallSections.forEach((ws) => {
-    const wall = new THREE.Mesh(new THREE.BoxGeometry(ws.w, ws.h, ws.d), wallMat);
+    const wall = new THREE.Mesh(new THREE.BoxGeometry(ws.w, ws.h, ws.d), lowWallMat);
     wall.position.set(ws.x, ws.h / 2, ws.z);
     wall.castShadow = true;
     wall.receiveShadow = true;
     envGroup.add(wall);
+
+    // White marble coping cap
+    const cap = new THREE.Mesh(new THREE.BoxGeometry(ws.w, 0.15, ws.d + 0.2), whiteMarbleTrimMat);
+    cap.position.set(ws.x, ws.h + 0.08, ws.z);
+    envGroup.add(cap);
   });
 
   // Stylized Tripura Cypress & Champak Trees along perimeter
@@ -846,8 +967,8 @@ export function buildTempleCampus(scene, scaleX, scaleZ) {
   ];
 
   const trunkMat = new THREE.MeshStandardMaterial({ color: 0x422818, roughness: 0.9 });
-  const foliageMat1 = new THREE.MeshStandardMaterial({ color: 0x1E4620, roughness: 0.8 });
-  const foliageMat2 = new THREE.MeshStandardMaterial({ color: 0x2A5D2C, roughness: 0.7 });
+  const foliageMat1 = new THREE.MeshStandardMaterial({ color: 0x2A5822, roughness: 0.75 });
+  const foliageMat2 = new THREE.MeshStandardMaterial({ color: 0x3C6E33, roughness: 0.7 });
 
   treePositions.forEach((tp, i) => {
     const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.3, 0.45, 3.5, 8), trunkMat);
@@ -874,4 +995,3 @@ export function buildTempleCampus(scene, scaleX, scaleZ) {
     sanctumInnerLight,
   };
 }
-
