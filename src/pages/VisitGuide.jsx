@@ -136,6 +136,18 @@ export default function VisitGuide({ isEmbedded = false }) {
 
   // Filtered map markers (Streamlined into 6 concise categories to avoid scrollbars)
   // Filtered and searched markers for directory
+  const filteredMarkers = useMemo(() => {
+    return mapMarkers.filter((m) => {
+      if (selectedMapCategory === 'All' || selectedMapCategory === 'ALL') return true;
+      if (selectedMapCategory === 'Sanctum') return m.category === 'Temple';
+      if (selectedMapCategory === 'Gates & Parking') return ['Entry Point', 'Exit Point', 'Parking'].includes(m.category);
+      if (selectedMapCategory === 'Amenities') return ['Drinking Water', 'Toilets', 'Help Desk', 'Accommodation'].includes(m.category);
+      if (selectedMapCategory === 'Prasad & Dining') return ['Prasad Area', 'Annadanam Area'].includes(m.category);
+      if (selectedMapCategory === 'Kalyan Sagar') return m.category === 'Other Facility';
+      return m.category === selectedMapCategory;
+    });
+  }, [mapMarkers, selectedMapCategory]);
+
   const searchedDirectoryMarkers = useMemo(() => {
     return filteredMarkers.filter((m) => {
       if (!directorySearch.trim()) return true;
@@ -159,17 +171,7 @@ export default function VisitGuide({ isEmbedded = false }) {
     { step: '06', id: 'MKR-012', name: 'Kalyan Sagar Lake', sub: 'Turtle Sanctuary', tip: 'Sacred Bostami turtle observation deck' },
   ];
 
-  const filteredMarkers = useMemo(() => {
-    return mapMarkers.filter((m) => {
-      if (selectedMapCategory === 'All' || selectedMapCategory === 'ALL') return true;
-      if (selectedMapCategory === 'Sanctum') return m.category === 'Temple';
-      if (selectedMapCategory === 'Gates & Parking') return ['Entry Point', 'Exit Point', 'Parking'].includes(m.category);
-      if (selectedMapCategory === 'Amenities') return ['Drinking Water', 'Toilets', 'Help Desk', 'Accommodation'].includes(m.category);
-      if (selectedMapCategory === 'Prasad & Dining') return ['Prasad Area', 'Annadanam Area'].includes(m.category);
-      if (selectedMapCategory === 'Kalyan Sagar') return m.category === 'Other Facility';
-      return m.category === selectedMapCategory;
-    });
-  }, [mapMarkers, selectedMapCategory]);
+
 
   // Streamlined marker categories (Fits on one line without horizontal scrollbars)
   const markerCategories = [
