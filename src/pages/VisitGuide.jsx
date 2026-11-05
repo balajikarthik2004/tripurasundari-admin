@@ -9,6 +9,7 @@ import {
   Search,
   Filter,
   Eye,
+  EyeOff,
   Edit3,
   Trash2,
   CheckCircle,
@@ -30,6 +31,9 @@ import {
   RotateCcw,
   X,
   Info,
+  PhoneCall,
+  ArrowRight,
+  ExternalLink,
   ChevronRight,
   ShieldCheck,
   Tag
@@ -77,6 +81,7 @@ export default function VisitGuide({ isEmbedded = false }) {
   const [isEditMarkerModalOpen, setIsEditMarkerModalOpen] = useState(false);
 
   // FAQ search & filter
+  const [directorySearch, setDirectorySearch] = useState('');
   const [faqSearch, setFaqSearch] = useState('');
   const [faqCatFilter, setFaqCatFilter] = useState('ALL');
 
@@ -129,6 +134,30 @@ export default function VisitGuide({ isEmbedded = false }) {
   );
 
   // Filtered map markers (Streamlined into 6 concise categories to avoid scrollbars)
+  // Filtered and searched markers for directory
+  const searchedDirectoryMarkers = useMemo(() => {
+    return filteredMarkers.filter((m) => {
+      if (!directorySearch.trim()) return true;
+      const q = directorySearch.toLowerCase();
+      return (
+        m.name?.toLowerCase().includes(q) ||
+        m.category?.toLowerCase().includes(q) ||
+        m.shortDescription?.toLowerCase().includes(q) ||
+        m.visitorInstructions?.toLowerCase().includes(q) ||
+        m.id?.toLowerCase().includes(q)
+      );
+    });
+  }, [filteredMarkers, directorySearch]);
+
+  const DEVOTEE_JOURNEY_STEPS = [
+    { step: '01', id: 'MKR-004', name: 'West Parking (Lot B)', sub: 'Arrival & Vehicles', tip: 'Organized tourist coach & car bays' },
+    { step: '02', id: 'MKR-002', name: 'Singh Dwar (Gate 1)', sub: 'Main Pedestrian Entry', tip: 'Security scanning & free footwear counter' },
+    { step: '03', id: 'MKR-007', name: 'Help Desk & Water', sub: 'Pilgrim Amenities', tip: 'RO chilled water & sevadal guidance' },
+    { step: '04', id: 'MKR-001', name: 'Garbhagriha Sanctum', sub: 'Holy Darshan', tip: 'Historic 1501 CE shrine of Maa Tripura Sundari' },
+    { step: '05', id: 'MKR-008', name: 'Prasad Stalls', sub: 'Bhog & Matabari Peda', tip: 'Pure condensed milk pedas & dry bhog' },
+    { step: '06', id: 'MKR-012', name: 'Kalyan Sagar Lake', sub: 'Turtle Sanctuary', tip: 'Sacred Bostami turtle observation deck' },
+  ];
+
   const filteredMarkers = useMemo(() => {
     return mapMarkers.filter((m) => {
       if (selectedMapCategory === 'All' || selectedMapCategory === 'ALL') return true;
@@ -368,6 +397,139 @@ export default function VisitGuide({ isEmbedded = false }) {
       {/* TAB 1: INTERACTIVE FACILITIES MAP (FULL WIDTH WITH SLIDE-IN INSPECTOR DRAWER) */}
       {activeTab === 'facilities_map' && (
         <div className="w-full space-y-4">
+          {/* Quick Overview & Admin Instructions */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            <div className="bg-white p-3.5 rounded-xl border border-stone-200/90 shadow-2xs flex items-center gap-3">
+              <div className="w-9 h-9 rounded-lg bg-[#55132D]/10 text-[#55132D] flex items-center justify-center shrink-0">
+                <Compass className="w-4.5 h-4.5" />
+              </div>
+              <div className="min-w-0">
+                <div className="text-[10px] uppercase font-bold text-stone-500 tracking-wider truncate">Campus Orientation</div>
+                <div className="text-xs font-bold text-stone-900 mt-0.5 truncate">West NH-8 to Kalyan Sagar</div>
+              </div>
+            </div>
+
+            <div className="bg-white p-3.5 rounded-xl border border-stone-200/90 shadow-2xs flex items-center gap-3">
+              <div className="w-9 h-9 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center shrink-0">
+                <MapPin className="w-4.5 h-4.5" />
+              </div>
+              <div className="min-w-0">
+                <div className="text-[10px] uppercase font-bold text-stone-500 tracking-wider truncate">Managed Facilities</div>
+                <div className="text-xs font-bold text-stone-900 mt-0.5 truncate">{mapMarkers.length} Points of Interest</div>
+              </div>
+            </div>
+
+            <div className="bg-white p-3.5 rounded-xl border border-stone-200/90 shadow-2xs flex items-center gap-3">
+              <div className="w-9 h-9 rounded-lg bg-blue-50 text-blue-700 flex items-center justify-center shrink-0">
+                <Eye className="w-4.5 h-4.5" />
+              </div>
+              <div className="min-w-0">
+                <div className="text-[10px] uppercase font-bold text-stone-500 tracking-wider truncate">Devotee Portal Visibility</div>
+                <div className="text-xs font-bold text-stone-900 mt-0.5 truncate">{visibleMarkersCount} Visible on Map</div>
+              </div>
+            </div>
+
+            <div className="bg-white p-3.5 rounded-xl border border-stone-200/90 shadow-2xs flex items-center gap-3">
+              <div className="w-9 h-9 rounded-lg bg-amber-50 text-amber-700 flex items-center justify-center shrink-0">
+                <Info className="w-4.5 h-4.5" />
+              </div>
+              <div className="min-w-0">
+                <div className="text-[10px] uppercase font-bold text-stone-500 tracking-wider truncate">Admin Action Guide</div>
+                <div className="text-xs font-bold text-stone-900 mt-0.5 truncate">Click Any Pin to Inspect</div>
+              </div>
+            </div>
+          </div>
+          {/* First-Time Pilgrim Suggested Flow (Step-by-Step Campus Route) */}
+          <div className="bg-gradient-to-r from-[#FFFDF9] via-[#FAF6ED] to-[#FFF9F2] rounded-2xl border border-[#E2BC6B]/50 p-4 shadow-2xs space-y-2.5">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+              <div className="flex items-center gap-2">
+                <span className="w-6 h-6 rounded-lg bg-[#55132D] text-[#E2BC6B] flex items-center justify-center text-xs font-bold font-serif">
+                  ॐ
+                </span>
+                <div>
+                  <h4 className="font-serif font-bold text-stone-900 text-xs sm:text-sm">
+                    Recommended Pilgrim Route (For First-Time Devotees)
+                  </h4>
+                  <p className="text-[11px] text-stone-500">
+                    Step-by-step campus walkway flow from vehicle parking to sanctum darshan &amp; lake observation. Click any stage to inspect.
+                  </p>
+                </div>
+              </div>
+              <span className="text-[10px] font-bold text-[#55132D] bg-[#55132D]/10 px-2.5 py-1 rounded-full shrink-0">
+                Avg. Campus Walk: 350m · 20-30 Mins
+              </span>
+            </div>
+
+            {/* Stepper Flow Grid */}
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2 pt-1">
+              {DEVOTEE_JOURNEY_STEPS.map((st, idx) => {
+                const targetMarker = mapMarkers.find((m) => m.id === st.id);
+                const isSelected = selectedMarker?.id === st.id;
+                return (
+                  <button
+                    key={st.step}
+                    type="button"
+                    onClick={() => {
+                      if (targetMarker) {
+                        setSelectedMarker(targetMarker);
+                        setIsDrawerOpen(true);
+                      }
+                    }}
+                    className={`text-left p-2.5 rounded-xl border transition-all cursor-pointer group flex flex-col justify-between ${
+                      isSelected
+                        ? 'border-[#55132D] bg-[#55132D] text-white shadow-xs ring-2 ring-[#E2BC6B]/40'
+                        : 'border-stone-200/90 bg-white hover:border-[#55132D]/40 hover:bg-[#FFFDF9]'
+                    }`}
+                  >
+                    <div>
+                      <div className="flex items-center justify-between gap-1 mb-1">
+                        <span
+                          className={`text-[10px] font-mono font-bold px-1.5 py-0.5 rounded ${
+                            isSelected
+                              ? 'bg-white/20 text-[#E2BC6B]'
+                              : 'bg-stone-100 text-[#55132D]'
+                          }`}
+                        >
+                          Step {st.step}
+                        </span>
+                        {idx < DEVOTEE_JOURNEY_STEPS.length - 1 && (
+                          <ArrowRight
+                            className={`w-3 h-3 hidden lg:block ${
+                              isSelected ? 'text-[#E2BC6B]' : 'text-stone-300'
+                            }`}
+                          />
+                        )}
+                      </div>
+                      <div
+                        className={`font-bold text-xs truncate ${
+                          isSelected ? 'text-white' : 'text-stone-900 group-hover:text-[#55132D]'
+                        }`}
+                      >
+                        {st.name}
+                      </div>
+                      <div
+                        className={`text-[10px] truncate mt-0.5 ${
+                          isSelected ? 'text-amber-100/90' : 'text-stone-500'
+                        }`}
+                      >
+                        {st.sub}
+                      </div>
+                    </div>
+                    <div
+                      className={`text-[9.5px] mt-2 pt-1.5 border-t line-clamp-1 ${
+                        isSelected
+                          ? 'border-white/20 text-white/80'
+                          : 'border-stone-100 text-stone-400'
+                      }`}
+                    >
+                      {st.tip}
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
           {/* Full Width Pencil-Drawn Architectural Masterplan */}
           <TempleArchitectureMap
             markers={filteredMarkers}
@@ -382,6 +544,219 @@ export default function VisitGuide({ isEmbedded = false }) {
             onSelectCategory={setSelectedMapCategory}
             categories={markerCategories}
           />
+
+          {/* Campus Facilities & Administrative Directory */}
+          <div className="bg-white rounded-2xl border border-stone-200/90 p-4 sm:p-5 shadow-2xs space-y-4">
+            {/* Directory Header with Search & Counter */}
+            <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-3 pb-3 border-b border-stone-150">
+              <div className="flex items-center gap-2.5">
+                <div className="w-9 h-9 rounded-xl bg-[#55132D]/10 text-[#55132D] flex items-center justify-center shrink-0">
+                  <Building2 className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="font-bold font-serif text-stone-900 text-sm sm:text-base">
+                    Campus Facilities &amp; Amenity Directory
+                  </h3>
+                  <p className="text-[11px] text-stone-500">
+                    Complete administrative POI registry. Search, inspect visitor guidelines, or toggle live visibility on devotee portal.
+                  </p>
+                </div>
+              </div>
+
+              {/* Search & Actions Bar */}
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full md:w-auto">
+                <div className="relative min-w-[220px]">
+                  <Search className="w-3.5 h-3.5 text-stone-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                  <input
+                    type="text"
+                    value={directorySearch}
+                    onChange={(e) => setDirectorySearch(e.target.value)}
+                    placeholder="Search by facility name or ID..."
+                    className="w-full pl-8 pr-3 py-1.5 text-xs bg-stone-50 border border-stone-200 rounded-xl focus:bg-white focus:outline-hidden focus:border-[#55132D] focus:ring-1 focus:ring-[#55132D] transition-colors"
+                  />
+                  {directorySearch && (
+                    <button
+                      onClick={() => setDirectorySearch('')}
+                      className="absolute right-2.5 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-600 text-xs"
+                    >
+                      ×
+                    </button>
+                  )}
+                </div>
+                <span className="text-[11px] font-semibold text-stone-600 bg-stone-100 px-3 py-1.5 rounded-xl shrink-0 text-center">
+                  Showing {searchedDirectoryMarkers.length} of {mapMarkers.length} Facilities
+                </span>
+              </div>
+            </div>
+
+            {/* Category Filter Badges */}
+            <div className="flex flex-wrap items-center gap-1.5 text-xs">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-stone-400 mr-1">
+                Category:
+              </span>
+              {markerCategories.map((cat) => {
+                const isSelected = selectedMapCategory === cat;
+                return (
+                  <button
+                    key={cat}
+                    onClick={() => setSelectedMapCategory(cat)}
+                    className={`px-3 py-1 rounded-xl text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
+                      isSelected
+                        ? 'bg-[#55132D] text-white shadow-2xs'
+                        : 'bg-stone-100 text-stone-700 hover:bg-stone-200 border border-stone-200/80'
+                    }`}
+                  >
+                    {cat}
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Directory Cards Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3.5 pt-1">
+              {searchedDirectoryMarkers.map((marker) => {
+                const isSelected = selectedMarker?.id === marker.id;
+                const badgeInfo = getMarkerBadgeInfo(marker.category);
+                return (
+                  <div
+                    key={marker.id}
+                    className={`p-4 rounded-xl border transition-all flex flex-col justify-between gap-3 ${
+                      isSelected
+                        ? 'border-[#55132D] bg-[#FFF9F2] shadow-xs ring-1 ring-[#55132D]/30'
+                        : 'border-stone-200/90 bg-white hover:border-[#55132D]/40 hover:shadow-2xs'
+                    }`}
+                  >
+                    <div className="space-y-2">
+                      {/* Top Bar: Category, ID & Devotee Visibility Toggle */}
+                      <div className="flex items-center justify-between gap-2">
+                        <div className="flex items-center gap-1.5">
+                          <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md ${badgeInfo.bg} ${badgeInfo.text}`}>
+                            {badgeInfo.label}
+                          </span>
+                          <span className="text-[10px] font-mono text-stone-400 font-semibold bg-stone-100 px-1.5 py-0.5 rounded">
+                            {marker.id}
+                          </span>
+                        </div>
+
+                        {/* Visibility Toggle Button */}
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            toggleMarkerVisibility(marker.id);
+                            showToast(
+                              `Marker "${marker.name}" is now ${
+                                marker.isVisible ? 'hidden from' : 'visible on'
+                              } devotee portal.`
+                            );
+                          }}
+                          className={`flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold border transition-colors cursor-pointer ${
+                            marker.isVisible
+                              ? 'bg-emerald-50 text-emerald-800 border-emerald-200 hover:bg-emerald-100'
+                              : 'bg-stone-100 text-stone-500 border-stone-200 hover:bg-stone-200'
+                          }`}
+                          title="Click to toggle public devotee visibility"
+                        >
+                          {marker.isVisible ? (
+                            <>
+                              <Eye className="w-3 h-3 text-emerald-700" />
+                              <span>Devotee Visible</span>
+                            </>
+                          ) : (
+                            <>
+                              <EyeOff className="w-3 h-3 text-stone-400" />
+                              <span>Hidden</span>
+                            </>
+                          )}
+                        </button>
+                      </div>
+
+                      {/* Title & Short Description */}
+                      <div>
+                        <h4
+                          className="font-bold text-stone-900 font-serif text-sm leading-tight hover:text-[#55132D] transition-colors cursor-pointer"
+                          onClick={() => {
+                            setSelectedMarker(marker);
+                            setIsDrawerOpen(true);
+                          }}
+                        >
+                          {marker.name}
+                        </h4>
+                        <p className="text-[11.5px] text-stone-600 mt-1 line-clamp-2 leading-relaxed">
+                          {marker.shortDescription}
+                        </p>
+                      </div>
+
+                      {/* Devotee Visitor Guideline Tip Box */}
+                      {marker.visitorInstructions && (
+                        <div className="bg-stone-50 rounded-lg p-2 border border-stone-200/70 text-[10.5px] text-stone-600 flex items-start gap-1.5">
+                          <Info className="w-3.5 h-3.5 text-[#55132D] shrink-0 mt-0.5" />
+                          <span className="line-clamp-2 leading-tight">
+                            {marker.visitorInstructions}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Card Footer Actions */}
+                    <div className="pt-2.5 border-t border-stone-150 flex items-center justify-between text-xs">
+                      <span className="text-[10px] text-stone-400 font-mono">
+                        Grid ({marker.x}%, {marker.y}%)
+                      </span>
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setSelectedMarker(marker);
+                            setIsEditMarkerModalOpen(true);
+                          }}
+                          className="p-1 hover:bg-stone-100 rounded text-stone-500 hover:text-stone-800 transition-colors"
+                          title="Edit marker metadata"
+                        >
+                          <Edit3 className="w-3.5 h-3.5" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setSelectedMarker(marker);
+                            setIsDrawerOpen(true);
+                          }}
+                          className="px-2.5 py-1 rounded-lg bg-[#55132D]/10 hover:bg-[#55132D] text-[#55132D] hover:text-white font-semibold text-[11px] transition-colors flex items-center gap-1 cursor-pointer"
+                        >
+                          <span>Inspect</span>
+                          <ChevronRight className="w-3 h-3" />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Emergency & Campus Control Contacts Strip */}
+            <div className="bg-[#FFFDF9] rounded-xl border border-amber-200/80 p-3 flex flex-col md:flex-row items-start md:items-center justify-between gap-3 text-xs">
+              <div className="flex items-center gap-2.5">
+                <div className="w-7 h-7 rounded-lg bg-amber-100 text-amber-900 flex items-center justify-center shrink-0">
+                  <PhoneCall className="w-3.5 h-3.5" />
+                </div>
+                <div>
+                  <span className="font-bold text-stone-900 text-xs">Temple Administration &amp; Pilgrim Emergency Hotlines</span>
+                  <div className="text-[11px] text-stone-500">24/7 on-site sevadal volunteers, first-aid medical personnel, and administrative control desk.</div>
+                </div>
+              </div>
+              <div className="flex flex-wrap items-center gap-2 text-[11px]">
+                <span className="bg-white border border-stone-200 px-2.5 py-1 rounded-md font-mono font-medium text-stone-700">
+                  Security: <strong>+91 3821 222 108</strong>
+                </span>
+                <span className="bg-white border border-stone-200 px-2.5 py-1 rounded-md font-mono font-medium text-stone-700">
+                  First Aid: <strong>Ext 104</strong>
+                </span>
+                <span className="bg-white border border-stone-200 px-2.5 py-1 rounded-md font-mono font-medium text-stone-700">
+                  Yatri Sahayata: <strong>+91 3821 222 109</strong>
+                </span>
+              </div>
+            </div>
+          </div>
         </div>
       )}
 

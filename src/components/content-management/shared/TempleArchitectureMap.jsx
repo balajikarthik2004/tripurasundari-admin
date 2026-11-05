@@ -11,6 +11,22 @@ import {
   CheckCircle2,
 } from 'lucide-react';
 
+function getShortMarkerName(name = '') {
+  if (name.includes('Sanctum') || name.includes('Garbhagriha')) return 'Garbhagriha';
+  if (name.includes('Singh Dwar') || name.includes('West Gate')) return 'Singh Dwar (Gate 1)';
+  if (name.includes('Purva Dwar') || name.includes('East Lake Gate')) return 'Purva Dwar (Gate 2)';
+  if (name.includes('Parking')) return 'Parking (Lot B)';
+  if (name.includes('Drinking Water') || name.includes('RO Water')) return 'RO Water';
+  if (name.includes('Sanitation') || name.includes('Restrooms') || name.includes('Washrooms')) return 'Restrooms';
+  if (name.includes('Help Desk') || name.includes('First Aid') || name.includes('Information')) return 'Help Desk';
+  if (name.includes('Annapurna') || name.includes('Annadanam')) return 'Annapurna Hall';
+  if (name.includes('Prasad') || name.includes('Peda')) return 'Prasad Stalls';
+  if (name.includes('Yatri Nivas')) return 'Yatri Niwas';
+  if (name.includes('Bathing Ghats')) return 'Bathing Ghats';
+  if (name.includes('Turtle') || name.includes('Observation')) return 'Turtle Deck';
+  return name.split('(')[0].trim().slice(0, 16);
+}
+
 export default function TempleArchitectureMap({
   markers = [],
   selectedMarker = null,
@@ -127,6 +143,53 @@ export default function TempleArchitectureMap({
         </div>
       )}
 
+      {/* 2b. Map Category Color Legend (Instantly understandable for first-time users and admins) */}
+      <div className="flex flex-wrap items-center gap-x-3.5 gap-y-1.5 px-3 py-2 bg-stone-50/90 rounded-xl border border-stone-200/80 text-[11px] text-stone-700">
+        <span className="font-bold text-stone-500 text-[10px] uppercase tracking-wider shrink-0 mr-0.5">
+          Campus Legend:
+        </span>
+        <div className="flex items-center gap-1.5 shrink-0">
+          <span className="w-2.5 h-2.5 rounded-full bg-[#55132D] ring-2 ring-[#E2BC6B]/60" />
+          <span className="font-semibold text-stone-800">Sanctum</span>
+        </div>
+        <div className="flex items-center gap-1.5 shrink-0">
+          <span className="w-2.5 h-2.5 rounded-full bg-[#059669] ring-2 ring-[#A7F3D0]" />
+          <span className="font-semibold text-stone-800">Gates (Entry/Exit)</span>
+        </div>
+        <div className="flex items-center gap-1.5 shrink-0">
+          <span className="w-2.5 h-2.5 rounded-full bg-[#2563EB] ring-2 ring-[#BFDBFE]" />
+          <span className="font-semibold text-stone-800">Parking</span>
+        </div>
+        <div className="flex items-center gap-1.5 shrink-0">
+          <span className="w-2.5 h-2.5 rounded-full bg-[#0891B2] ring-2 ring-[#A5F3FC]" />
+          <span className="font-semibold text-stone-800">Drinking Water</span>
+        </div>
+        <div className="flex items-center gap-1.5 shrink-0">
+          <span className="w-2.5 h-2.5 rounded-full bg-[#4F46E5] ring-2 ring-[#C7D2FE]" />
+          <span className="font-semibold text-stone-800">Restrooms</span>
+        </div>
+        <div className="flex items-center gap-1.5 shrink-0">
+          <span className="w-2.5 h-2.5 rounded-full bg-[#D97706] ring-2 ring-[#FDE68A]" />
+          <span className="font-semibold text-stone-800">Help Desk</span>
+        </div>
+        <div className="flex items-center gap-1.5 shrink-0">
+          <span className="w-2.5 h-2.5 rounded-full bg-[#EA580C] ring-2 ring-[#FED7AA]" />
+          <span className="font-semibold text-stone-800">Annadanam Hall</span>
+        </div>
+        <div className="flex items-center gap-1.5 shrink-0">
+          <span className="w-2.5 h-2.5 rounded-full bg-[#E11D48] ring-2 ring-[#FECDD3]" />
+          <span className="font-semibold text-stone-800">Prasad Stalls</span>
+        </div>
+        <div className="flex items-center gap-1.5 shrink-0">
+          <span className="w-2.5 h-2.5 rounded-full bg-[#7C3AED] ring-2 ring-[#DDD6FE]" />
+          <span className="font-semibold text-stone-800">Yatri Niwas</span>
+        </div>
+        <div className="flex items-center gap-1.5 shrink-0">
+          <span className="w-2.5 h-2.5 rounded-full bg-[#0284C7] ring-2 ring-[#BAE6FD]" />
+          <span className="font-semibold text-stone-800">Kalyan Sagar Lake</span>
+        </div>
+      </div>
+
       {/* 3. Full-Width Rectangular Architectural Canvas (2:1 Widescreen Ratio) */}
       <div className="bg-[#FAF7F0] border-2 border-stone-300 rounded-2xl overflow-hidden shadow-inner relative w-full aspect-[2/1] min-h-[460px] sm:min-h-[520px] lg:min-h-[580px] flex items-center justify-center">
         {/* Adding Marker Notification */}
@@ -136,6 +199,16 @@ export default function TempleArchitectureMap({
             <span>Click anywhere on the architectural map to place pin</span>
           </div>
         )}
+
+        {/* Top-Left Floating Instructions Pill */}
+        <div className="absolute top-3 left-3 z-20 bg-white/95 backdrop-blur-xs border border-stone-300 px-3 py-1.5 rounded-xl shadow-xs text-xs flex items-center gap-2 select-none pointer-events-none max-w-sm hidden sm:flex">
+          <div className="w-5 h-5 rounded-md bg-[#55132D]/10 text-[#55132D] flex items-center justify-center shrink-0">
+            <Info className="w-3.5 h-3.5" />
+          </div>
+          <span className="text-[11px] text-stone-700 font-medium leading-tight">
+            Click any facility marker to inspect timings, amenities, and pilgrim rules.
+          </span>
+        </div>
 
         {/* Vintage Drafting Compass Rose */}
         <div className="absolute top-3 right-3 z-20 bg-white/90 backdrop-blur-xs border border-stone-300 px-3 py-2 rounded-xl shadow-2xs flex flex-col items-center select-none pointer-events-none">
@@ -434,6 +507,7 @@ export default function TempleArchitectureMap({
               const isSelected = selectedMarker?.id === marker.id;
               const isHovered = hoveredMarker?.id === marker.id;
               const theme = getCategoryDotStyle(marker.category);
+              const shortName = getShortMarkerName(marker.name);
 
               // Calculate positions for 200x100 rectangular layout
               // If marker.x is percentage (0-100), map to 0-200. If already > 100, use as-is.
@@ -483,17 +557,44 @@ export default function TempleArchitectureMap({
                     fill="#FFFFFF"
                   />
 
+                  {/* Always-Visible Concise Facility Label Badge */}
+                  <g transform="translate(0, 4.0)" className="pointer-events-none select-none">
+                    <rect
+                      x={-((shortName.length * 1.35 + 4.2) / 2)}
+                      y="-1.9"
+                      width={shortName.length * 1.35 + 4.2}
+                      height="3.8"
+                      rx="0.9"
+                      fill="#FFFFFF"
+                      fillOpacity="0.96"
+                      stroke={theme.color}
+                      strokeWidth="0.3"
+                      filter="drop-shadow(0px 0.8px 1.5px rgba(0,0,0,0.18))"
+                    />
+                    <text
+                      x="0"
+                      y="0.8"
+                      fontSize="1.7"
+                      fontFamily="system-ui, -apple-system, sans-serif"
+                      fontWeight="bold"
+                      fill={theme.color}
+                      textAnchor="middle"
+                    >
+                      {shortName}
+                    </text>
+                  </g>
+
                   {/* On-Map Floating Name Tooltip */}
                   {(isHovered || isSelected) && (
                     <g transform="translate(0, -5)" className="pointer-events-none z-40">
                       <rect
-                        x="-18"
-                        y="-4.8"
-                        width="36"
-                        height="5.4"
+                        x="-23"
+                        y="-5.5"
+                        width="46"
+                        height="6.4"
                         rx="1.2"
                         fill="#55132D"
-                        stroke="#B68A36"
+                        stroke="#E2BC6B"
                         strokeWidth="0.25"
                         filter="drop-shadow(0px 2px 3px rgba(0,0,0,0.45))"
                       />
