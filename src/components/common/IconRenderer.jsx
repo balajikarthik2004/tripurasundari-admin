@@ -26,6 +26,8 @@ import {
   HelpCircle,
   FileCheck,
   AlertTriangle,
+  Crown,
+  Award,
 } from 'lucide-react';
 
 const ICON_MAP = {
@@ -54,6 +56,8 @@ const ICON_MAP = {
   Settings,
   FileCheck,
   AlertTriangle,
+  Crown,
+  Award,
 };
 
 export default function IconRenderer({ name, className = 'w-4 h-4', ...props }) {

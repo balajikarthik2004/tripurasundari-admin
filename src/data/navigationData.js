@@ -50,6 +50,15 @@ export const NAVIGATION_GROUPS = [
         hasSubmenu: true,
       },
       {
+        id: 'membership',
+        label: 'Devotee Membership',
+        path: '/membership',
+        icon: 'Crown',
+        description: 'Manage devotee membership tiers, annual Sankalpa Archana schedule, fast-track passes, and Mahaprasad dispatch.',
+        badge: 'New',
+        badgeColor: 'bg-[#E2BC6B] text-[#4A1027]',
+      },
+      {
         id: 'devotees',
         label: 'Devotees',
         path: '/devotees',

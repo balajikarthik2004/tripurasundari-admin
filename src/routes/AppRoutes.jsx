@@ -6,6 +6,7 @@ import Dashboard from '../pages/Dashboard';
 // Devotee Services Modules (Phase 3)
 import DarshanBookings from '../pages/DarshanBookings';
 import PoojaSeva from '../pages/PoojaSeva';
+import Membership from '../pages/Membership';
 import Devotees from '../pages/Devotees';
 import Donations from '../pages/Donations';
 import PrasadStore from '../pages/PrasadStore';
@@ -56,6 +57,7 @@ export default function AppRoutes() {
         {/* Devotee Services */}
         <Route path="bookings" element={<DarshanBookings />} />
         <Route path="pooja-seva" element={<PoojaSeva />} />
+        <Route path="membership" element={<Membership />} />
         <Route path="devotees" element={<Devotees />} />
         <Route path="donations" element={<Donations />} />
         <Route path="prasad-store" element={<PrasadStore />} />

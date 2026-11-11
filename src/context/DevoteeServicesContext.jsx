@@ -10,6 +10,12 @@ import {
   INITIAL_MAINTENANCE_REQUESTS,
 } from '../data/facilitiesData';
 import { INITIAL_DARSHAN_BOOKINGS } from '../data/darshanBookings';
+import {
+  INITIAL_MEMBERSHIP_TIERS,
+  INITIAL_MEMBERS,
+  INITIAL_SANKALPA_PUJAS,
+  INITIAL_KIT_DISPATCHES,
+} from '../data/membershipData';
 
 const DevoteeServicesContext = createContext(null);
 
@@ -40,6 +46,12 @@ export function DevoteeServicesProvider({ children }) {
   const [accommodationTypes, setAccommodationTypes] = useState(INITIAL_ACCOMMODATION_TYPES);
   const [accommodationRequests, setAccommodationRequests] = useState(INITIAL_ACCOMMODATION_REQUESTS);
   const [maintenanceRequests, setMaintenanceRequests] = useState(INITIAL_MAINTENANCE_REQUESTS);
+
+  // 7. Bhakta Mandal & Membership
+  const [members, setMembers] = useState(INITIAL_MEMBERS);
+  const [membershipTiers, setMembershipTiers] = useState(INITIAL_MEMBERSHIP_TIERS);
+  const [sankalpaPujas, setSankalpaPujas] = useState(INITIAL_SANKALPA_PUJAS);
+  const [kitDispatches, setKitDispatches] = useState(INITIAL_KIT_DISPATCHES);
 
   // Global Toast
   const [toast, setToast] = useState(null);
@@ -490,6 +502,123 @@ export function DevoteeServicesProvider({ children }) {
     showToast(`Maintenance ticket ${id} marked as ${status}.`);
   };
 
+  // ========================================================
+  // 7. MEMBERSHIP ACTIONS
+  // ========================================================
+  const addMember = (memberData) => {
+    const id = memberData.id || `MTS-MEM-2026-${Math.floor(1000 + Math.random() * 9000)}`;
+    const newMember = {
+      ...memberData,
+      id,
+      joiningDate: memberData.joiningDate || new Date().toISOString().slice(0, 10),
+      status: memberData.status || 'Active',
+      darshanPassesUsed: memberData.darshanPassesUsed || 0,
+    };
+    setMembers((prev) => [newMember, ...prev]);
+
+    // Also schedule their annual sankalpa puja if date provided
+    if (newMember.sankalpaDate) {
+      const newSankalpa = {
+        id: `SP-2026-${Math.floor(800 + Math.random() * 200)}`,
+        memberId: id,
+        memberName: newMember.name,
+        gotra: newMember.gotra,
+        nakshatra: newMember.nakshatra || '',
+        tierName: newMember.tierName,
+        date: newMember.sankalpaDate,
+        timeSlot: '09:00 AM',
+        occasion: newMember.sankalpaOccasion || 'Annual Devotional Archana',
+        priest: 'Pt. Bhabatosh Bhattacharya',
+        status: 'Scheduled',
+        videoLinkSent: false,
+        prasadDispatched: false,
+      };
+      setSankalpaPujas((prev) => [newSankalpa, ...prev]);
+    }
+
+    // Also add to prasad kit fulfillment queue
+    const newKit = {
+      id: `KIT-2026-${Math.floor(400 + Math.random() * 100)}`,
+      memberId: id,
+      memberName: newMember.name,
+      tierName: newMember.tierName,
+      address: newMember.address,
+      items: newMember.tierId === 'poshak'
+        ? 'Gold-plated Sri Yantra, Pure Silk Vastra & Grand Bhog Box'
+        : newMember.tierId === 'rajarajeshwari'
+        ? 'Pure Silver Coin, Silk Chunari & Dry Peda Box'
+        : 'Silver-foil Sri Yantra, Blessed Peda & Holy Sindoor',
+      carrier: 'India Post Speed Post',
+      trackingNumber: 'Awaiting Packing',
+      status: 'Ready for Dispatch',
+      dispatchDate: 'Pending',
+    };
+    setKitDispatches((prev) => [newKit, ...prev]);
+
+    showToast(`Devotee ${newMember.name} enrolled under ${newMember.tierName} (${id}).`);
+    return newMember;
+  };
+
+  const updateMemberStatus = (memberId, status, remarks = '') => {
+    setMembers((prev) =>
+      prev.map((m) => (m.id === memberId ? { ...m, status, remarks: remarks || m.remarks } : m))
+    );
+    showToast(`Member ${memberId} status updated to ${status}.`);
+  };
+
+  const renewMember = (memberId, durationYears = 1) => {
+    setMembers((prev) =>
+      prev.map((m) => {
+        if (m.id !== memberId) return m;
+        const currentExp = new Date(m.validUntil);
+        const baseDate = isNaN(currentExp.getTime()) ? new Date() : currentExp;
+        baseDate.setFullYear(baseDate.getFullYear() + durationYears);
+        const newValidUntil = baseDate.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+        return {
+          ...m,
+          status: 'Active',
+          validUntil: newValidUntil,
+          darshanPassesUsed: 0,
+        };
+      })
+    );
+    showToast(`Member ${memberId} renewed for ${durationYears} year(s).`);
+  };
+
+  const completeSankalpaPuja = (pujaId, priest = 'Pt. Bhabatosh Bhattacharya') => {
+    setSankalpaPujas((prev) =>
+      prev.map((p) =>
+        p.id === pujaId
+          ? { ...p, status: 'Completed', priest, videoLinkSent: true, prasadDispatched: true }
+          : p
+      )
+    );
+    showToast(`Sankalpa Archana ${pujaId} consecrated & completed by ${priest}. Devotee notified.`);
+  };
+
+  const updateKitDispatch = (kitId, trackingNumber, status = 'Dispatched') => {
+    setKitDispatches((prev) =>
+      prev.map((k) =>
+        k.id === kitId
+          ? {
+              ...k,
+              trackingNumber: trackingNumber || k.trackingNumber,
+              status,
+              dispatchDate: new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }),
+            }
+          : k
+      )
+    );
+    showToast(`Prasad kit ${kitId} marked as ${status} (Tracking: ${trackingNumber}).`);
+  };
+
+  const updateTierConfig = (tierId, updatedFields) => {
+    setMembershipTiers((prev) =>
+      prev.map((t) => (t.id === tierId ? { ...t, ...updatedFields } : t))
+    );
+    showToast(`Membership tier ${tierId} configuration updated.`);
+  };
+
   return (
     <DevoteeServicesContext.Provider
       value={{
@@ -548,6 +677,18 @@ export function DevoteeServicesProvider({ children }) {
         updateAccommodationStatus,
         createMaintenanceRequest,
         updateMaintenanceStatus,
+
+        // Bhakta Mandal & Membership
+        members,
+        membershipTiers,
+        sankalpaPujas,
+        kitDispatches,
+        addMember,
+        updateMemberStatus,
+        renewMember,
+        completeSankalpaPuja,
+        updateKitDispatch,
+        updateTierConfig,
 
         // Global UI
         toast,
